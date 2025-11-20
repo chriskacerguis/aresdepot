@@ -89,7 +89,8 @@ async function seed() {
       { name: 'AUXCOMM', description: 'Completed AUXCOMM training', requires_proof: 1, admin_only: 0 },
       { name: 'COM/L', description: 'Completed COM/L training', requires_proof: 1, admin_only: 0 },
       { name: 'COM/T', description: 'Completed COM/T training', requires_proof: 1, admin_only: 0 },
-      { name: 'NetControl Certified', description: 'Member can act as netcontrol', requires_proof: 0, admin_only: 1 },
+      { name: 'NetControl Certified', description: 'Member can serve as netcontrol', requires_proof: 0, admin_only: 1 },
+      { name: 'Field Deployable', description: 'Member is certified to be field deployable', requires_proof: 0, admin_only: 1 },
     ];
 
     for (const achievement of achievements) {

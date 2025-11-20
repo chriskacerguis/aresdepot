@@ -131,8 +131,35 @@ router.post('/tiers/:id/tasks/create',
 // View members
 router.get('/members', requireAdmin, async (req, res) => {
   try {
-    const members = await Member.getAll();
-    res.render('admin/members', { members });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const search = req.query.search || '';
+    const offset = (page - 1) * limit;
+
+    let members = await Member.getAll();
+    
+    // Filter by search if provided
+    if (search) {
+      const searchLower = search.toLowerCase();
+      members = members.filter(m => 
+        (m.first_name && m.first_name.toLowerCase().includes(searchLower)) ||
+        (m.last_name && m.last_name.toLowerCase().includes(searchLower)) ||
+        (m.callsign && m.callsign.toLowerCase().includes(searchLower)) ||
+        (m.email && m.email.toLowerCase().includes(searchLower))
+      );
+    }
+    
+    const totalMembers = members.length;
+    const totalPages = Math.ceil(totalMembers / limit);
+    const paginatedMembers = members.slice(offset, offset + limit);
+    
+    res.render('admin/members', { 
+      members: paginatedMembers,
+      totalMembers,
+      currentPage: page,
+      totalPages,
+      search
+    });
   } catch (error) {
     console.error('Members error:', error);
     res.render('error', { message: 'Error loading members' });
