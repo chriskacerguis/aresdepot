@@ -7,16 +7,21 @@ async function seed() {
     console.log('🌱 Seeding database...');
 
     // Create admin user
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    const adminCallsign = process.env.ADMIN_CALLSIGN || 'ADMIN001';
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-    const existingAdmin = await db.get('SELECT id FROM users WHERE email = ?', [adminEmail]);
+    const existingAdmin = await db.get('SELECT id FROM users WHERE email = ?', [adminCallsign + '@admin.local']);
     
     if (!existingAdmin) {
-      await db.run(
+      const userId = await db.run(
         'INSERT INTO users (email, password, is_admin) VALUES (?, ?, 1)',
-        [adminEmail, hashedPassword]
+        [adminCallsign + '@admin.local', hashedPassword]
+      );
+      // Create member record for admin
+      await db.run(
+        'INSERT INTO members (user_id, first_name, last_name, callsign, phone, address, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userId.lastID, 'Admin', 'User', adminCallsign, '555-0000', '123 Admin St', 'City', 'ST', '00000']
       );
       console.log('✅ Admin user created');
     } else {
