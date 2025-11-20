@@ -175,7 +175,8 @@ router.get('/members/:id', requireAdmin, async (req, res) => {
     }
 
     const tasks = await Task.getMemberTasks(req.params.id);
-    res.render('admin/member-details', { member, tasks });
+    const allCertifications = await Achievement.getAll();
+    res.render('admin/member-details', { member, tasks, allCertifications });
   } catch (error) {
     console.error('Member details error:', error);
     res.render('error', { message: 'Error loading member details' });
@@ -482,10 +483,18 @@ router.post('/certifications/:id/delete', requireAdmin, async (req, res) => {
 router.post('/certifications/:memberId/:achievementId/verify', requireAdmin, async (req, res) => {
   try {
     await Achievement.verify(req.params.memberId, req.params.achievementId, req.session.user.id, req.body.notes || '');
-    res.redirect('/admin/certifications');
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.json({ success: true });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   } catch (error) {
     console.error('Verify achievement error:', error);
-    res.redirect('/admin/certifications');
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.status(500).json({ success: false, error: error.message });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   }
 });
 
@@ -493,10 +502,18 @@ router.post('/certifications/:memberId/:achievementId/verify', requireAdmin, asy
 router.post('/certifications/:memberId/:achievementId/grant', requireAdmin, async (req, res) => {
   try {
     await Achievement.grantAdminAchievement(req.params.memberId, req.params.achievementId, req.session.user.id, req.body.notes || '');
-    res.redirect(`/admin/members/${req.params.memberId}`);
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.json({ success: true });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   } catch (error) {
     console.error('Grant achievement error:', error);
-    res.redirect(`/admin/members/${req.params.memberId}`);
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.status(500).json({ success: false, error: error.message });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   }
 });
 
@@ -504,10 +521,18 @@ router.post('/certifications/:memberId/:achievementId/grant', requireAdmin, asyn
 router.post('/certifications/:memberId/:achievementId/revoke', requireAdmin, async (req, res) => {
   try {
     await Achievement.revokeAdminAchievement(req.params.memberId, req.params.achievementId);
-    res.redirect(`/admin/members/${req.params.memberId}`);
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.json({ success: true });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   } catch (error) {
     console.error('Revoke achievement error:', error);
-    res.redirect(`/admin/members/${req.params.memberId}`);
+    if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+      res.status(500).json({ success: false, error: error.message });
+    } else {
+      res.redirect(`/admin/members/${req.params.memberId}#certifications`);
+    }
   }
 });
 

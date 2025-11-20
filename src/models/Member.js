@@ -152,14 +152,19 @@ class Member {
       ORDER BY t.sort_order
     `, [memberId, memberId]);
 
-    // Get special achievements
+    // Get special achievements (only ones the member has)
     const achievements = await db.all(`
       SELECT 
-        sa.id, sa.name, sa.description,
-        msa.verified, msa.verified_at, msa.proof_file_path
-      FROM special_achievements sa
-      LEFT JOIN member_special_achievements msa 
-        ON sa.id = msa.achievement_id AND msa.member_id = ?
+        sa.id, sa.name, sa.description, sa.admin_only, sa.requires_proof,
+        msa.verified, msa.verified_at, msa.proof_file_path,
+        msa.granted_by, msa.granted_at,
+        m1.first_name || ' ' || m1.last_name as granted_by_name,
+        m2.first_name || ' ' || m2.last_name as verified_by_name
+      FROM member_special_achievements msa
+      INNER JOIN special_achievements sa ON sa.id = msa.achievement_id
+      LEFT JOIN members m1 ON msa.granted_by = m1.user_id
+      LEFT JOIN members m2 ON msa.verified_by = m2.user_id
+      WHERE msa.member_id = ?
     `, [memberId]);
 
     return {

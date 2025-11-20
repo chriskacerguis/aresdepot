@@ -54,8 +54,10 @@ class Achievement {
   static async verify(memberId, achievementId, verifiedBy, notes = '') {
     const existing = await db.get(
       'SELECT id FROM member_special_achievements WHERE member_id = ? AND achievement_id = ?',
-      [memberId, achievementId]
+      [parseInt(memberId), parseInt(achievementId)]
     );
+
+    console.log('Verify called:', { memberId, achievementId, verifiedBy, existing });
 
     if (existing) {
       await db.run(
@@ -63,11 +65,16 @@ class Achievement {
           verified = 1,
           verified_by = ?,
           verified_at = CURRENT_TIMESTAMP,
+          granted_by = ?,
+          granted_at = CURRENT_TIMESTAMP,
           notes = ?,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = ?`,
-        [verifiedBy, notes, existing.id]
+        [verifiedBy, verifiedBy, notes, existing.id]
       );
+      console.log('Updated certification:', existing.id);
+    } else {
+      console.log('No existing certification found to verify');
     }
   }
 
