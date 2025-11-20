@@ -169,19 +169,60 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.hf_capable ? '✓' : '✗' %> HF<% if (member.hf_power) { %> (<%= member.hf_power %>W)<% } %>
+                <% if (member.hf_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.hf_capable ? 'text-gray-900' : 'text-gray-500' %>">HF<% if (member.hf_power) { %> (<%= member.hf_power %>W)<% } %></span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.vhf_uhf_capable ? '✓' : '✗' %> VHF/UHF<% if (member.vhf_uhf_power) { %> (<%= member.vhf_uhf_power %>W)<% } %>
+                <% if (member.vhf_uhf_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.vhf_uhf_capable ? 'text-gray-900' : 'text-gray-500' %>">VHF/UHF<% if (member.vhf_uhf_power) { %> (<%= member.vhf_uhf_power %>W)<% } %></span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.mobile_station ? '✓' : '✗' %> Mobile Station
+                <% if (member.mobile_station) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.mobile_station ? 'text-gray-900' : 'text-gray-500' %>">Mobile Station</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.portable_station ? '✓' : '✗' %> Portable Station
+                <% if (member.portable_station) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.portable_station ? 'text-gray-900' : 'text-gray-500' %>">Portable Station</span>
               </div>
               <% if (member.tower_antenna_height) { %>
-                <div class="text-xs text-gray-600 ml-5">Tower/Antenna: <%= member.tower_antenna_height %> ft</div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                  <svg class="h-4 w-4 text-indigo-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  <span>Tower/Antenna: <%= member.tower_antenna_height %> ft</span>
+                </div>
               <% } %>
             </div>
           </div>
@@ -196,25 +237,88 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.winlink_capable ? '✓' : '✗' %> Winlink
+                <% if (member.winlink_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.winlink_capable ? 'text-gray-900' : 'text-gray-500' %>">Winlink</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.aprs_capable ? '✓' : '✗' %> APRS
+                <% if (member.aprs_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.aprs_capable ? 'text-gray-900' : 'text-gray-500' %>">APRS</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.packet_radio ? '✓' : '✗' %> Packet Radio
+                <% if (member.packet_radio) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.packet_radio ? 'text-gray-900' : 'text-gray-500' %>">Packet Radio</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.ft8_capable ? '✓' : '✗' %> FT8
+                <% if (member.ft8_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.ft8_capable ? 'text-gray-900' : 'text-gray-500' %>">FT8</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.js8call_capable ? '✓' : '✗' %> JS8Call
+                <% if (member.js8call_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.js8call_capable ? 'text-gray-900' : 'text-gray-500' %>">JS8Call</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.rtty_capable ? '✓' : '✗' %> RTTY
+                <% if (member.rtty_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.rtty_capable ? 'text-gray-900' : 'text-gray-500' %>">RTTY</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.sstv_capable ? '✓' : '✗' %> SSTV
+                <% if (member.sstv_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.sstv_capable ? 'text-gray-900' : 'text-gray-500' %>">SSTV</span>
               </div>
             </div>
           </div>
@@ -229,13 +333,40 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.dstar_capable ? '✓' : '✗' %> D-STAR
+                <% if (member.dstar_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.dstar_capable ? 'text-gray-900' : 'text-gray-500' %>">D-STAR</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.dmr_capable ? '✓' : '✗' %> DMR
+                <% if (member.dmr_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.dmr_capable ? 'text-gray-900' : 'text-gray-500' %>">DMR</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.fusion_capable ? '✓' : '✗' %> Fusion (C4FM)
+                <% if (member.fusion_capable) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.fusion_capable ? 'text-gray-900' : 'text-gray-500' %>">Fusion (C4FM)</span>
               </div>
             </div>
           </div>
@@ -250,19 +381,64 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.emergency_power ? '✓' : '✗' %> Emergency Power<% if (member.emergency_power_type) { %> (<%= member.emergency_power_type %>)<% } %>
+                <% if (member.emergency_power) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.emergency_power ? 'text-gray-900' : 'text-gray-500' %>">Emergency Power<% if (member.emergency_power_type) { %> (<%= member.emergency_power_type %>)<% } %></span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.backup_batteries ? '✓' : '✗' %> Backup Batteries
+                <% if (member.backup_batteries) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.backup_batteries ? 'text-gray-900' : 'text-gray-500' %>">Backup Batteries</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.solar_power ? '✓' : '✗' %> Solar Power
+                <% if (member.solar_power) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.solar_power ? 'text-gray-900' : 'text-gray-500' %>">Solar Power</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.satellite_internet ? '✓' : '✗' %> Satellite Internet<% if (member.satellite_internet_type) { %> (<%= member.satellite_internet_type %>)<% } %>
+                <% if (member.satellite_internet) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.satellite_internet ? 'text-gray-900' : 'text-gray-500' %>">Satellite Internet<% if (member.satellite_internet_type) { %> (<%= member.satellite_internet_type %>)<% } %></span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.mesh_network ? '✓' : '✗' %> Mesh Network
+                <% if (member.mesh_network) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.mesh_network ? 'text-gray-900' : 'text-gray-500' %>">Mesh Network</span>
               </div>
             </div>
           </div>
@@ -277,16 +453,52 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.ares_races_trained ? '✓' : '✗' %> ARES/RACES
+                <% if (member.ares_races_trained) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.ares_races_trained ? 'text-gray-900' : 'text-gray-500' %>">ARES/RACES</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.skywarn_trained ? '✓' : '✗' %> SKYWARN
+                <% if (member.skywarn_trained) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.skywarn_trained ? 'text-gray-900' : 'text-gray-500' %>">SKYWARN</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.incident_command_trained ? '✓' : '✗' %> Incident Command (ICS)
+                <% if (member.incident_command_trained) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.incident_command_trained ? 'text-gray-900' : 'text-gray-500' %>">Incident Command (ICS)</span>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <%= member.cpr_first_aid_certified ? '✓' : '✗' %> CPR/First Aid
+                <% if (member.cpr_first_aid_certified) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.cpr_first_aid_certified ? 'text-gray-900' : 'text-gray-500' %>">CPR/First Aid</span>
               </div>
             </div>
           </div>
@@ -301,7 +513,16 @@
             </h3>
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-sm">
-                <%= member.go_kit_ready ? '✓' : '✗' %> Go-Kit Ready
+                <% if (member.go_kit_ready) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.go_kit_ready ? 'text-gray-900' : 'text-gray-500' %>">Go-Kit Ready</span>
               </div>
             </div>
           </div>

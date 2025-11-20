@@ -448,4 +448,84 @@ router.get('/reports/member-progress', requireAdmin, async (req, res) => {
   }
 });
 
+// Capabilities report
+router.get('/reports/capabilities', requireAdmin, async (req, res) => {
+  try {
+    const members = await Member.getAll();
+    
+    // Calculate capability statistics
+    const stats = {
+      // Radio Equipment
+      hfCapable: members.filter(m => m.hf_capable).length,
+      vhfUhfCapable: members.filter(m => m.vhf_uhf_capable).length,
+      mobileStation: members.filter(m => m.mobile_station).length,
+      portableStation: members.filter(m => m.portable_station).length,
+      
+      // Digital Modes
+      winlinkCapable: members.filter(m => m.winlink_capable).length,
+      aprsCapable: members.filter(m => m.aprs_capable).length,
+      packetRadio: members.filter(m => m.packet_radio).length,
+      ft8Capable: members.filter(m => m.ft8_capable).length,
+      js8callCapable: members.filter(m => m.js8call_capable).length,
+      rttyCapable: members.filter(m => m.rtty_capable).length,
+      sstvCapable: members.filter(m => m.sstv_capable).length,
+      
+      // Digital Voice
+      dstarCapable: members.filter(m => m.dstar_capable).length,
+      dmrCapable: members.filter(m => m.dmr_capable).length,
+      fusionCapable: members.filter(m => m.fusion_capable).length,
+      
+      // Power & Infrastructure
+      emergencyPower: members.filter(m => m.emergency_power).length,
+      backupBatteries: members.filter(m => m.backup_batteries).length,
+      solarPower: members.filter(m => m.solar_power).length,
+      satelliteInternet: members.filter(m => m.satellite_internet).length,
+      meshNetwork: members.filter(m => m.mesh_network).length,
+      
+      // Training & Certifications
+      aresRacesTrained: members.filter(m => m.ares_races_trained).length,
+      skywarnTrained: members.filter(m => m.skywarn_trained).length,
+      incidentCommandTrained: members.filter(m => m.incident_command_trained).length,
+      cprFirstAidCertified: members.filter(m => m.cpr_first_aid_certified).length,
+      
+      // Emergency Readiness
+      goKitReady: members.filter(m => m.go_kit_ready).length,
+      
+      // Totals
+      totalMembers: members.length,
+      activeMembers: members.filter(m => m.status === 'active').length
+    };
+
+    // Get members with specific capabilities for detailed views
+    const capabilityDetails = {
+      hfOperators: members.filter(m => m.hf_capable).map(m => ({
+        name: `${m.first_name} ${m.last_name}`,
+        callsign: m.callsign,
+        power: m.hf_power
+      })),
+      winlinkOperators: members.filter(m => m.winlink_capable).map(m => ({
+        name: `${m.first_name} ${m.last_name}`,
+        callsign: m.callsign
+      })),
+      emergencyPowerSources: members.filter(m => m.emergency_power).map(m => ({
+        name: `${m.first_name} ${m.last_name}`,
+        callsign: m.callsign,
+        type: m.emergency_power_type
+      })),
+      trainedPersonnel: members.filter(m => m.ares_races_trained || m.skywarn_trained || m.incident_command_trained).map(m => ({
+        name: `${m.first_name} ${m.last_name}`,
+        callsign: m.callsign,
+        ares: m.ares_races_trained,
+        skywarn: m.skywarn_trained,
+        ics: m.incident_command_trained
+      }))
+    };
+
+    res.render('admin/capabilities-report', { stats, capabilityDetails });
+  } catch (error) {
+    console.error('Capabilities report error:', error);
+    res.render('error', { message: 'Error generating capabilities report' });
+  }
+});
+
 module.exports = router;

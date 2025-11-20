@@ -1,0 +1,406 @@
+<% title = 'Capabilities Report' %>
+
+<div class="px-4 sm:px-0 max-w-7xl mx-auto">
+  <div class="mb-6">
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">Capabilities Report</h1>
+        <p class="mt-2 text-sm text-gray-700">Summary of member equipment, training, and emergency preparedness capabilities</p>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <a href="/admin/reports" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Reports
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview Stats -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Total Members</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.totalMembers %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Active Members</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.activeMembers %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">HF Operators</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.hfCapable %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Emergency Power</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.emergencyPower %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Radio Equipment -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Radio Equipment</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">HF Capable</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.hfCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">VHF/UHF Capable</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.vhfUhfCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Mobile Station</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.mobileStation %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Portable Station</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.portableStation %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Digital Modes -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Digital Modes</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Winlink</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.winlinkCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">APRS</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.aprsCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">FT8</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.ft8Capable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">JS8Call</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.js8callCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Packet Radio</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.packetRadio %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">RTTY</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.rttyCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">SSTV</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.sstvCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Digital Voice -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Digital Voice</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">D-STAR</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.dstarCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">DMR</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.dmrCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Fusion (C4FM)</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.fusionCapable %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Power & Infrastructure -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Power & Infrastructure</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Emergency Power</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.emergencyPower %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Backup Batteries</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.backupBatteries %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Solar Power</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.solarPower %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Satellite Internet</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.satelliteInternet %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Mesh Network</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.meshNetwork %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Training & Certifications -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Training & Certifications</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">ARES/RACES</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.aresRacesTrained %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">SKYWARN</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.skywarnTrained %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Incident Command (ICS)</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.incidentCommandTrained %> / <%= stats.totalMembers %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">CPR/First Aid</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.cprFirstAidCertified %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Emergency Readiness -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center mb-4">
+          <svg class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <h2 class="text-lg font-semibold text-gray-900">Emergency Readiness</h2>
+        </div>
+        <dl class="space-y-3">
+          <div class="flex justify-between">
+            <dt class="text-sm text-gray-600">Go-Kit Ready</dt>
+            <dd class="text-sm font-semibold text-gray-900"><%= stats.goKitReady %> / <%= stats.totalMembers %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Lists -->
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- HF Operators -->
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">HF Operators (<%= capabilityDetails.hfOperators.length %>)</h2>
+        <% if (capabilityDetails.hfOperators.length > 0) { %>
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Callsign</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Power</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% capabilityDetails.hfOperators.forEach(operator => { %>
+                  <tr>
+                    <td class="py-2 text-sm text-gray-900"><%= operator.name %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= operator.callsign %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= operator.power ? operator.power + 'W' : 'N/A' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-gray-500">No HF operators found</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Winlink Operators -->
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Winlink Operators (<%= capabilityDetails.winlinkOperators.length %>)</h2>
+        <% if (capabilityDetails.winlinkOperators.length > 0) { %>
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Callsign</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% capabilityDetails.winlinkOperators.forEach(operator => { %>
+                  <tr>
+                    <td class="py-2 text-sm text-gray-900"><%= operator.name %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= operator.callsign %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-gray-500">No Winlink operators found</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Emergency Power Sources -->
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Emergency Power Sources (<%= capabilityDetails.emergencyPowerSources.length %>)</h2>
+        <% if (capabilityDetails.emergencyPowerSources.length > 0) { %>
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Callsign</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% capabilityDetails.emergencyPowerSources.forEach(source => { %>
+                  <tr>
+                    <td class="py-2 text-sm text-gray-900"><%= source.name %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= source.callsign %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= source.type || 'N/A' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-gray-500">No emergency power sources found</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Trained Personnel -->
+    <div class="card">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Trained Personnel (<%= capabilityDetails.trainedPersonnel.length %>)</h2>
+        <% if (capabilityDetails.trainedPersonnel.length > 0) { %>
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Callsign</th>
+                  <th class="py-2 text-left text-xs font-medium text-gray-500 uppercase">Training</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% capabilityDetails.trainedPersonnel.forEach(person => { %>
+                  <tr>
+                    <td class="py-2 text-sm text-gray-900"><%= person.name %></td>
+                    <td class="py-2 text-sm text-gray-600"><%= person.callsign %></td>
+                    <td class="py-2 text-sm text-gray-600">
+                      <div class="flex flex-wrap gap-1">
+                        <% if (person.ares) { %>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">ARES</span>
+                        <% } %>
+                        <% if (person.skywarn) { %>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">SKYWARN</span>
+                        <% } %>
+                        <% if (person.ics) { %>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">ICS</span>
+                        <% } %>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-gray-500">No trained personnel found</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
