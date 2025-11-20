@@ -158,8 +158,8 @@ class Member {
         sa.id, sa.name, sa.description, sa.admin_only, sa.requires_proof,
         msa.verified, msa.verified_at, msa.proof_file_path,
         msa.granted_by, msa.granted_at,
-        m1.first_name || ' ' || m1.last_name as granted_by_name,
-        m2.first_name || ' ' || m2.last_name as verified_by_name
+        m1.callsign as granted_by_callsign,
+        m2.callsign as verified_by_callsign
       FROM member_special_achievements msa
       INNER JOIN special_achievements sa ON sa.id = msa.achievement_id
       LEFT JOIN members m1 ON msa.granted_by = m1.user_id

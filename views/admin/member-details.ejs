@@ -1173,7 +1173,7 @@
                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        Granted by <%= memberCert.verified_by_name || memberCert.granted_by_name || 'Admin' %> on <%= new Date(memberCert.verified_at || memberCert.granted_at).toLocaleDateString() %>
+                        Verified by <%= memberCert.verified_by_callsign || memberCert.granted_by_callsign || 'Admin' %> on <%= new Date(memberCert.verified_at || memberCert.granted_at).toLocaleDateString() %>
                       </span>
                     <% } else if (isPending) { %>
                       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -1221,13 +1221,13 @@
                       </button>
                     </form>
                   <% } else { %>
-                    <!-- Grant button if member doesn't have this certification at all -->
+                    <!-- Verify button if member doesn't have this certification at all -->
                     <form method="POST" action="/admin/certifications/<%= member.id %>/<%= cert.id %>/grant" class="inline">
                       <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        Grant
+                        Verify
                       </button>
                     </form>
                   <% } %>

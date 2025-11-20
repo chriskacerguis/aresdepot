@@ -508,7 +508,7 @@ router.post('/certifications/:memberId/:achievementId/grant', requireAdmin, asyn
       res.redirect(`/admin/members/${req.params.memberId}#certifications`);
     }
   } catch (error) {
-    console.error('Grant achievement error:', error);
+    console.error('Verify achievement error:', error);
     if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
       res.status(500).json({ success: false, error: error.message });
     } else {
