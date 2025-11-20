@@ -23,7 +23,7 @@ class Member {
 
   static async findById(id) {
     return await db.get(`
-      SELECT m.*, u.email 
+      SELECT m.*, u.email, u.is_admin 
       FROM members m
       LEFT JOIN users u ON m.user_id = u.id
       WHERE m.id = ?

@@ -242,6 +242,33 @@ router.post('/members/:id/update',
   }
 );
 
+// Toggle admin status
+router.post('/members/:id/toggle-admin',
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const member = await Member.findById(req.params.id);
+      
+      if (!member) {
+        return res.redirect('/admin/members');
+      }
+
+      // Prevent admins from removing their own admin access
+      if (member.user_id === req.session.user.id) {
+        return res.redirect('/admin/members/' + req.params.id);
+      }
+
+      // Toggle admin status
+      await User.toggleAdmin(member.user_id);
+      
+      res.redirect('/admin/members/' + req.params.id);
+    } catch (error) {
+      console.error('Toggle admin error:', error);
+      res.redirect('/admin/members/' + req.params.id);
+    }
+  }
+);
+
 // Update member capabilities
 router.post('/members/:id/update-capabilities', requireAdmin, async (req, res) => {
   try {

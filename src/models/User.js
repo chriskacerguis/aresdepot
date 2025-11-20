@@ -58,6 +58,16 @@ class User {
       ORDER BY m.last_name, m.first_name
     `);
   }
+
+  static async toggleAdmin(userId) {
+    const user = await db.get('SELECT is_admin FROM users WHERE id = ?', [userId]);
+    const newAdminStatus = user.is_admin ? 0 : 1;
+    await db.run(
+      'UPDATE users SET is_admin = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [newAdminStatus, userId]
+    );
+    return newAdminStatus;
+  }
 }
 
 module.exports = User;
