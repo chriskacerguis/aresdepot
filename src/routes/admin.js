@@ -11,10 +11,11 @@ const Achievement = require('../models/Achievement');
 const Setting = require('../models/Setting');
 const Passkey = require('../models/Passkey');
 const Document = require('../models/Document');
-const { testSmtpConnection } = require('../utils/email');
+const { sendEmail, testSmtpConnection } = require('../utils/email');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const db = require('../database/config');
 
 // Admin dashboard
 router.get('/dashboard', requireAdmin, async (req, res) => {
@@ -46,47 +47,54 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
-// Manage tiers
-router.get('/tiers', requireAdmin, async (req, res) => {
+// Alerts page
+router.get('/alerts', requireAdmin, async (req, res) => {
   try {
-    const tiers = await Tier.getAll();
-    res.render('admin/tiers', { tiers, errors: [], formData: {} });
+    const success = req.session.success;
+    const error = req.session.error;
+    delete req.session.success;
+    delete req.session.error;
+    
+    res.render('admin/alerts', {
+      title: 'Broadcast Alerts',
+      currentPage: 'alerts',
+      success,
+      error
+    });
   } catch (error) {
-    console.error('Tiers error:', error);
-    res.render('error', { message: 'Error loading tiers' });
+    console.error('Alerts page error:', error);
+    res.render('error', { message: 'Error loading alerts page' });
   }
+});
+
+// Manage tiers - redirect to settings
+router.get('/tiers', requireAdmin, async (req, res) => {
+  res.redirect('/admin/settings#tiers');
 });
 
 // Create tier
 router.post('/tiers/create',
   requireAdmin,
   [
-    body('name').trim().notEmpty(),
-    body('sortOrder').isInt()
+    body('name').trim().notEmpty().withMessage('Tier name is required'),
+    body('sortOrder').isInt().withMessage('Sort order must be a number')
   ],
   async (req, res) => {
     const errors = require('express-validator').validationResult(req);
     
     if (!errors.isEmpty()) {
-      const tiers = await Tier.getAll();
-      return res.render('admin/tiers', {
-        tiers,
-        errors: errors.array(),
-        formData: req.body
-      });
+      req.session.error = errors.array()[0].msg;
+      return res.redirect('/admin/settings?error=' + encodeURIComponent(errors.array()[0].msg) + '#tiers');
     }
 
     try {
       await Tier.create(req.body.name, req.body.description || '', req.body.sortOrder);
-      res.redirect('/admin/tiers');
+      req.session.success = 'Tier created successfully';
+      res.redirect('/admin/settings?success=' + encodeURIComponent('Tier created successfully') + '#tiers');
     } catch (error) {
       console.error('Create tier error:', error);
-      const tiers = await Tier.getAll();
-      res.render('admin/tiers', {
-        tiers,
-        errors: [{ msg: 'Error creating tier' }],
-        formData: req.body
-      });
+      req.session.error = 'Error creating tier';
+      res.redirect('/admin/settings?error=' + encodeURIComponent('Error creating tier') + '#tiers');
     }
   }
 );
@@ -403,42 +411,8 @@ router.post('/events/create',
 
 // Manage special achievements
 router.get('/certifications', requireAdmin, async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 5;
-    const search = req.query.search || '';
-    const offset = (page - 1) * limit;
-
-    let certifications = await Achievement.getAll();
-    
-    // Filter by search if provided
-    if (search) {
-      const searchLower = search.toLowerCase();
-      certifications = certifications.filter(a => 
-        a.name.toLowerCase().includes(searchLower) || 
-        (a.description && a.description.toLowerCase().includes(searchLower))
-      );
-    }
-    
-    const totalCertifications = certifications.length;
-    const totalPages = Math.ceil(totalCertifications / limit);
-    const paginatedCertifications = certifications.slice(offset, offset + limit);
-    
-    const pending = await Achievement.getPendingVerifications();
-    res.render('admin/certifications', { 
-      certifications: paginatedCertifications,
-      totalCertifications,
-      currentPage: page,
-      totalPages,
-      search,
-      pending, 
-      errors: [], 
-      formData: {} 
-    });
-  } catch (error) {
-    console.error('Certifications error:', error);
-    res.render('error', { message: 'Error loading certifications' });
-  }
+  // Redirect to settings page with certifications tab
+  res.redirect('/admin/settings#certifications');
 });
 
 // Create special achievement
@@ -449,18 +423,7 @@ router.post('/certifications/create',
     const errors = require('express-validator').validationResult(req);
     
     if (!errors.isEmpty()) {
-      const certifications = await Achievement.getAll();
-      const pending = await Achievement.getPendingVerifications();
-      return res.render('admin/certifications', {
-        certifications,
-        totalCertifications: certifications.length,
-        currentPage: 1,
-        totalPages: Math.ceil(certifications.length / 5),
-        search: '',
-        pending,
-        errors: errors.array(),
-        formData: req.body
-      });
+      return res.redirect('/admin/settings?error=' + encodeURIComponent(errors.array()[0].msg) + '#certifications');
     }
 
     try {
@@ -470,21 +433,10 @@ router.post('/certifications/create',
         req.body.requiresProof === 'true',
         req.body.adminOnly === 'true'
       );
-      res.redirect('/admin/certifications');
+      res.redirect('/admin/settings?success=' + encodeURIComponent('Certification created successfully') + '#certifications');
     } catch (error) {
       console.error('Create certification error:', error);
-      const certifications = await Achievement.getAll();
-      const pending = await Achievement.getPendingVerifications();
-      res.render('admin/certifications', {
-        certifications,
-        totalCertifications: certifications.length,
-        currentPage: 1,
-        totalPages: Math.ceil(certifications.length / 5),
-        search: '',
-        pending,
-        errors: [{ msg: 'Error creating certification' }],
-        formData: req.body
-      });
+      res.redirect('/admin/settings?error=' + encodeURIComponent('Error creating certification') + '#certifications');
     }
   }
 );
@@ -497,7 +449,7 @@ router.post('/certifications/:id/update',
     const errors = require('express-validator').validationResult(req);
     
     if (!errors.isEmpty()) {
-      return res.redirect('/admin/certifications');
+      return res.redirect('/admin/settings?error=' + encodeURIComponent(errors.array()[0].msg) + '#certifications');
     }
 
     try {
@@ -508,10 +460,10 @@ router.post('/certifications/:id/update',
         req.body.requiresProof === 'true',
         req.body.adminOnly === 'true'
       );
-      res.redirect('/admin/certifications');
+      res.redirect('/admin/settings?success=' + encodeURIComponent('Certification updated successfully') + '#certifications');
     } catch (error) {
       console.error('Update achievement error:', error);
-      res.redirect('/admin/certifications');
+      res.redirect('/admin/settings?error=' + encodeURIComponent('Error updating certification') + '#certifications');
     }
   }
 );
@@ -520,10 +472,10 @@ router.post('/certifications/:id/update',
 router.post('/certifications/:id/delete', requireAdmin, async (req, res) => {
   try {
     await Achievement.delete(req.params.id);
-    res.redirect('/admin/certifications');
+    res.redirect('/admin/settings?success=' + encodeURIComponent('Certification deleted successfully') + '#certifications');
   } catch (error) {
     console.error('Delete achievement error:', error);
-    res.redirect('/admin/certifications');
+    res.redirect('/admin/settings?error=' + encodeURIComponent('Error deleting certification') + '#certifications');
   }
 });
 
@@ -972,7 +924,19 @@ router.get('/reports/event-attendance', requireAdmin, async (req, res) => {
 router.get('/settings', requireAdmin, async (req, res) => {
   try {
     const smtpConfig = await Setting.getSmtpConfig();
-    res.render('admin/settings', { smtpConfig, success: req.query.success, error: req.query.error });
+    const tiers = await Tier.getAll();
+    const certifications = await Achievement.getAll();
+    const pendingVerifications = await Achievement.getPendingVerifications();
+    const pendingCount = pendingVerifications.length;
+    
+    res.render('admin/settings', { 
+      smtpConfig, 
+      tiers,
+      certifications,
+      pendingCount,
+      success: req.query.success, 
+      error: req.query.error 
+    });
   } catch (error) {
     console.error('Settings page error:', error);
     res.render('error', { message: 'Error loading settings' });
@@ -1183,6 +1147,135 @@ router.post('/documents/:id/delete', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Document delete error:', error);
     res.redirect('/admin/documents?error=' + encodeURIComponent('Error deleting document'));
+  }
+});
+
+// Broadcast alerts to members
+router.post('/alerts/broadcast', requireAdmin, async (req, res) => {
+  try {
+    const { alert_type, alert_subject, alert_message, recipient_filter, send_email } = req.body;
+    
+    if (!send_email) {
+      req.session.error = 'Please select at least one delivery method';
+      return res.redirect('/admin/alerts');
+    }
+
+    // Get members based on filter
+    let members;
+    if (recipient_filter === 'self') {
+      // Send only to the logged-in admin user for testing
+      members = await db.all(`
+        SELECT m.*, u.email 
+        FROM members m
+        INNER JOIN users u ON m.user_id = u.id
+        WHERE u.id = ?
+        ORDER BY m.last_name, m.first_name
+      `, [req.session.user.id]);
+    } else if (recipient_filter === 'active') {
+      members = await db.all(`
+        SELECT m.*, u.email 
+        FROM members m
+        INNER JOIN users u ON m.user_id = u.id
+        WHERE m.status = 'active'
+        ORDER BY m.last_name, m.first_name
+      `);
+    } else {
+      members = await db.all(`
+        SELECT m.*, u.email 
+        FROM members m
+        INNER JOIN users u ON m.user_id = u.id
+        ORDER BY m.last_name, m.first_name
+      `);
+    }
+
+    if (members.length === 0) {
+      req.session.error = 'No members found matching the selected criteria';
+      return res.redirect('/admin/alerts');
+    }
+
+    // Get admin info for signature
+    const admin = await Member.findByUserId(req.session.user.id);
+    const adminName = admin ? `${admin.first_name} ${admin.last_name} (${admin.callsign})` : req.session.user.email;
+
+    // Prepare email content
+    const alertTypeLabels = {
+      info: 'INFORMATION',
+      warning: 'WARNING',
+      emergency: '🚨 EMERGENCY',
+      activation: '📢 ACTIVATION'
+    };
+
+    const emailSubject = `[ARES ${alertTypeLabels[alert_type]}] ${alert_subject}`;
+    
+    const emailBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: ${alert_type === 'emergency' ? '#dc2626' : alert_type === 'warning' ? '#f59e0b' : alert_type === 'activation' ? '#2563eb' : '#6b7280'}; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none; }
+    .message { background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; white-space: pre-wrap; }
+    .footer { background-color: #f3f4f6; padding: 15px; border-radius: 0 0 8px 8px; font-size: 12px; color: #6b7280; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0; font-size: 24px;">${alertTypeLabels[alert_type]}</h1>
+      <p style="margin: 10px 0 0 0; font-size: 18px;">${alert_subject}</p>
+    </div>
+    <div class="content">
+      <div class="message">
+        ${alert_message.replace(/\n/g, '<br>')}
+      </div>
+      <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <strong>Sent by:</strong> ${adminName}<br>
+        <strong>Date:</strong> ${new Date().toLocaleString()}<br>
+        <strong>Type:</strong> ${alertTypeLabels[alert_type]}
+      </p>
+    </div>
+    <div class="footer">
+      This is an official ARES alert. Please do not reply to this email.
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    // Send emails
+    let successCount = 0;
+    let failCount = 0;
+    const errors = [];
+
+    for (const member of members) {
+      try {
+        await sendEmail(member.email, emailSubject, emailBody);
+        successCount++;
+      } catch (error) {
+        failCount++;
+        errors.push(`${member.callsign}: ${error.message}`);
+        console.error(`Failed to send alert to ${member.email}:`, error);
+      }
+    }
+
+    // Prepare success message
+    let message = `Alert broadcast complete: ${successCount} sent successfully`;
+    if (failCount > 0) {
+      message += `, ${failCount} failed`;
+      if (errors.length <= 5) {
+        message += ` (${errors.join(', ')})`;
+      }
+    }
+
+    req.session.success = message;
+    res.redirect('/admin/alerts');
+    
+  } catch (error) {
+    console.error('Alert broadcast error:', error);
+    req.session.error = 'Error broadcasting alert: ' + error.message;
+    res.redirect('/admin/alerts');
   }
 });
 

@@ -1,0 +1,225 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-3xl font-bold text-gray-900">Broadcast Alerts</h1>
+      <p class="mt-2 text-sm text-gray-700">
+        Send emergency alerts and important notifications to all members via email and SMS
+      </p>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  <% if (success) { %>
+    <div class="rounded-md bg-green-50 p-4 mt-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-green-800"><%= success %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="rounded-md bg-red-50 p-4 mt-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800"><%= error %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Alert Form -->
+  <div class="mt-8">
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="/admin/alerts/broadcast" onsubmit="return confirmBroadcast(event)" class="space-y-6">
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <!-- Alert Type -->
+            <div>
+              <label for="alert_type" class="block text-sm font-medium text-gray-700">Alert Type</label>
+              <div class="mt-2">
+                <select 
+                  name="alert_type" 
+                  id="alert_type" 
+                  required
+                  class="form-input"
+                >
+                  <option value="info">Information</option>
+                  <option value="warning">Warning</option>
+                  <option value="emergency">Emergency</option>
+                  <option value="activation">Activation</option>
+                </select>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Select the severity level of this alert</p>
+            </div>
+
+            <!-- Recipient Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Recipients</label>
+              <div class="mt-2 space-y-2">
+                <label class="inline-flex items-center">
+                  <input type="radio" name="recipient_filter" value="all" checked class="form-radio h-4 w-4 text-indigo-600">
+                  <span class="ml-2 text-sm text-gray-700">All Members</span>
+                </label>
+                <label class="inline-flex items-center ml-6">
+                  <input type="radio" name="recipient_filter" value="active" class="form-radio h-4 w-4 text-indigo-600">
+                  <span class="ml-2 text-sm text-gray-700">Active Members Only</span>
+                </label>
+                <label class="inline-flex items-center ml-6">
+                  <input type="radio" name="recipient_filter" value="self" class="form-radio h-4 w-4 text-indigo-600">
+                  <span class="ml-2 text-sm text-gray-700">Me (for testing)</span>
+                </label>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Choose who will receive this alert</p>
+            </div>
+          </div>
+
+          <!-- Subject -->
+          <div>
+            <label for="alert_subject" class="block text-sm font-medium text-gray-700">Subject</label>
+            <div class="mt-2">
+              <input 
+                type="text" 
+                name="alert_subject" 
+                id="alert_subject" 
+                required
+                maxlength="200"
+                class="form-input"
+                placeholder="Enter alert subject...">
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Brief subject line for the alert</p>
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label for="alert_message" class="block text-sm font-medium text-gray-700">Message</label>
+            <div class="mt-2">
+              <textarea 
+                name="alert_message" 
+                id="alert_message" 
+                required
+                rows="12"
+                class="form-input"
+                placeholder="Enter your alert message here...
+
+Include all important details such as:
+- What is happening
+- When and where
+- What actions members should take
+- Contact information for questions"></textarea>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Detailed message to send to all members</p>
+          </div>
+
+          <!-- Delivery Method -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Method</label>
+            <div class="space-y-2">
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="send_email" value="1" checked class="form-checkbox h-4 w-4 text-indigo-600">
+                <span class="ml-2 text-sm text-gray-700">Email</span>
+              </label>
+              <label class="inline-flex items-center ml-6">
+                <input type="checkbox" name="send_sms" value="1" disabled class="form-checkbox h-4 w-4 text-gray-400">
+                <span class="ml-2 text-sm text-gray-400">SMS (Coming Soon)</span>
+              </label>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">SMS functionality will be available in a future update</p>
+          </div>
+
+          <!-- Send Button -->
+          <div class="pt-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <button 
+                  type="submit" 
+                  id="broadcast-btn"
+                  class="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                  </svg>
+                  Broadcast Alert
+                </button>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-gray-500">
+                  <strong class="text-red-600">Warning:</strong> This will send the alert to all selected members immediately.
+                </p>
+                <p class="text-xs text-gray-500">
+                  Please review carefully before sending.
+                </p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Information Panel -->
+  <div class="mt-8">
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">Alert Best Practices</h3>
+          <div class="mt-2 text-sm text-blue-700">
+            <ul class="list-disc list-inside space-y-1">
+              <li>Use <strong>Emergency</strong> alerts only for life-threatening situations or immediate threats</li>
+              <li>Use <strong>Activation</strong> for deployment and mobilization requests</li>
+              <li>Use <strong>Warning</strong> for upcoming severe weather or potential incidents</li>
+              <li>Use <strong>Information</strong> for routine updates and announcements</li>
+              <li>Always include contact information for questions or follow-up</li>
+              <li>Specify exact time, location, and required actions</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function confirmBroadcast(event) {
+  const subject = document.getElementById('alert_subject').value;
+  const message = document.getElementById('alert_message').value;
+  const type = document.getElementById('alert_type').value;
+  const recipientFilter = document.querySelector('input[name="recipient_filter"]:checked').value;
+  
+  const recipientText = recipientFilter === 'all' ? 'ALL members' : 'ACTIVE members only';
+  const typeText = type.toUpperCase();
+  
+  const confirmed = confirm(
+    `⚠️ BROADCAST CONFIRMATION\n\n` +
+    `Type: ${typeText}\n` +
+    `Subject: ${subject}\n` +
+    `Recipients: ${recipientText}\n\n` +
+    `Are you sure you want to send this alert? This action cannot be undone.`
+  );
+  
+  if (confirmed) {
+    const btn = document.getElementById('broadcast-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
+  }
+  
+  return confirmed;
+}
+</script>

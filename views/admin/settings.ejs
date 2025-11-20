@@ -59,6 +59,32 @@
             </li>
             <li>
               <a 
+                href="#tiers" 
+                @click.prevent="activeTab = 'tiers'; window.location.hash = 'tiers'"
+                :class="activeTab === 'tiers' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Tiers
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#certifications" 
+                @click.prevent="activeTab = 'certifications'; window.location.hash = 'certifications'"
+                :class="activeTab === 'certifications' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                Certifications
+              </a>
+            </li>
+            <li>
+              <a 
                 href="#instacard" 
                 @click.prevent="activeTab = 'instacard'; window.location.hash = 'instacard'"
                 :class="activeTab === 'instacard' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
@@ -320,6 +346,183 @@
               </div>
             </form>
           </div>
+        </div>
+      </div>
+
+      <!-- Tiers Tab -->
+      <div x-show="activeTab === 'tiers'" x-cloak>
+        <div class="space-y-6">
+          <!-- Create Tier Form -->
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Tier</h2>
+              
+              <form method="POST" action="/admin/tiers/create" class="space-y-6">
+                <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-3">
+                  <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700" for="name">Tier Name</label>
+                    <div class="mt-2">
+                      <input class="form-input" id="name" name="name" type="text" required>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700" for="sortOrder">Sort Order</label>
+                    <div class="mt-2">
+                      <input class="form-input" id="sortOrder" name="sortOrder" type="number" required value="<%= (tiers && tiers.length ? tiers.length + 1 : 1) %>">
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
+                  <div class="mt-2">
+                    <textarea class="form-input" id="description" name="description" rows="3"></textarea>
+                  </div>
+                </div>
+                <div class="flex justify-end">
+                  <button class="btn-primary" type="submit">Create Tier</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Existing Tiers -->
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-xl font-bold text-gray-900 mb-4">Existing Tiers</h2>
+              <% if (tiers && tiers.length > 0) { %>
+                <div class="space-y-4">
+                  <% tiers.forEach(tier => { %>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                      <div class="flex items-center justify-between gap-6">
+                        <div class="min-w-0 flex-1">
+                          <h3 class="text-base font-semibold text-gray-900"><%= tier.name %></h3>
+                          <p class="mt-1 text-sm text-gray-600"><%= tier.description %></p>
+                          <p class="mt-1 text-xs text-gray-500">Sort Order: <%= tier.sort_order %></p>
+                        </div>
+                        <div class="flex-shrink-0">
+                          <a href="/admin/tiers/<%= tier.id %>/tasks" class="btn-primary">Manage Tasks</a>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <p class="text-sm text-gray-500">No tiers created yet. Create your first tier using the form above.</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certifications Tab -->
+      <div x-show="activeTab === 'certifications'" x-cloak>
+        <div class="space-y-6">
+          <!-- Create Certification Form -->
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Certification</h2>
+              
+              <form class="space-y-6" method="POST" action="/admin/certifications/create">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700" for="certification_name">Certification Name</label>
+                  <div class="mt-2">
+                    <input class="form-input" id="certification_name" name="name" type="text" required>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700" for="certification_description">Description</label>
+                  <div class="mt-2">
+                    <textarea class="form-input" id="certification_description" name="description" rows="3"></textarea>
+                  </div>
+                </div>
+
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="requiresProof" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" checked>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="requiresProof" class="font-medium text-gray-900">Require verification upload</label>
+                    <p class="text-xs text-gray-500">Members must upload proof when submitting this certification</p>
+                  </div>
+                </div>
+
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="adminOnly" name="adminOnly" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="adminOnly" class="font-medium text-gray-900">Admin-only</label>
+                    <p class="text-xs text-gray-500">Only admins can grant/revoke this certification</p>
+                  </div>
+                </div>
+
+                <div class="flex justify-end">
+                  <button class="btn-primary" type="submit">Create Certification</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Existing Certifications -->
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-xl font-bold text-gray-900 mb-4">Existing Certifications</h2>
+              <% if (certifications && certifications.length > 0) { %>
+                <div class="space-y-3">
+                  <% certifications.forEach(cert => { %>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                      <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center gap-2 mb-1">
+                            <h3 class="text-sm font-semibold text-gray-900"><%= cert.name %></h3>
+                            <% if (cert.requires_proof) { %>
+                              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                </svg>
+                                Proof Required
+                              </span>
+                            <% } %>
+                            <% if (cert.admin_only) { %>
+                              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Admin Only
+                              </span>
+                            <% } %>
+                          </div>
+                          <p class="text-sm text-gray-600"><%= cert.description %></p>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } else { %>
+                <p class="text-sm text-gray-500">No certifications created yet. Create your first certification using the form above.</p>
+              <% } %>
+            </div>
+          </div>
+          
+          <!-- Pending Verifications Notice -->
+          <% if (pendingCount && pendingCount > 0) { %>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-yellow-700">
+                    <strong><%= pendingCount %></strong> certification<%= pendingCount !== 1 ? 's' : '' %> pending verification. 
+                    <a href="/admin/certifications" class="font-medium underline text-yellow-700 hover:text-yellow-600">View all certifications &rarr;</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% } %>
         </div>
       </div>
 

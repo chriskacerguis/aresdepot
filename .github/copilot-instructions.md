@@ -171,13 +171,49 @@ ARES Depot is a comprehensive member management system for Amateur Radio Emergen
 4. "Order Card" button (only enabled if member has profile photo)
 5. View mode shows: Active/Not Issued badge, expiry date, "Issued by CALLSIGN on DATE"
 
+### Admin Navigation Structure
+- **Main Navigation** (7 items - operational features):
+  - Dashboard: Overview and quick stats
+  - Members: Member management and profiles
+  - Calendar: Event management and RSVPs
+  - Documents: Document library
+  - Alerts: Emergency alert broadcasting (standalone page)
+  - Reports: Analytics and reporting
+  - Settings: Configuration submenu
+- **Settings Submenu** (configuration features):
+  - Tiers: Moved from main nav to Settings tab
+  - Certifications: Moved from main nav to Settings tab
+  - Email, General, Notifications, InstaCard, Security: Other configuration tabs
+
 ### Admin Settings Page
 - Tabbed interface using Alpine.js
-- Tabs: Email (SMTP), General, Notifications, Security, InstaCard
+- Tabs: Email (SMTP), General, Notifications, Tiers, Certifications, InstaCard, Security
 - Grid layout: `grid-cols-1 lg:grid-cols-[256px_1fr]`
+- Tiers tab:
+  - Create new tiers with name, description, and sort order
+  - View and manage existing tiers
+  - Link to manage tasks for each tier
+  - Backend route `/admin/tiers/create` (implemented)
+- Certifications tab:
+  - Create new certifications with name, description, and options (requires proof, admin-only)
+  - View all existing certifications with badges for special attributes
+  - Pending verifications notice with count
+  - Old route `/admin/certifications` redirects to `/admin/settings#certifications`
+  - Backend routes: `/admin/certifications/create`, `/admin/certifications/:id/update`, `/admin/certifications/:id/delete` (all redirect to settings)
 - InstaCard tab fields:
   - Base URL, Email, Password, Organization ID, Card ID
   - Backend route `/admin/settings/instacard` (pending implementation)
+
+### Alert Broadcasting System
+- Standalone page at `/admin/alerts` in main navigation
+- Broadcast system for emergency alerts and notifications
+- Alert types: Info, Warning, Emergency, Activation
+- Email delivery with HTML formatting and color-coded headers
+- Recipient filtering (all members or active only)
+- SMS support (coming soon)
+- Confirmation dialog before sending
+- Success/failure tracking with detailed reporting
+- Backend route `/admin/alerts/broadcast` (implemented)
 
 ## Security Considerations
 
@@ -389,12 +425,14 @@ Required in `.env`:
 ## Recent Changes & Context
 
 ### Latest Updates
-1. **ID Card Management** (Migrations 17-20): Complete lifecycle tracking for member ID cards
-2. **Settings Page Refactor**: Grid-based sidebar with 5 tabs including InstaCard integration
-3. **CSP Updates**: Added `scriptSrcAttr` directive for inline event handlers
-4. **Documents Feature**: List-only view (removed grid view toggle)
-5. **Member Capabilities**: 40+ radio equipment/capability tracking fields
-6. **Geocoding**: Automatic address geocoding with OpenStreetMap
+1. **Navigation Reorganization**: Moved Tiers and Certifications from main nav to Settings submenu for cleaner UX
+2. **Alert Broadcasting System**: Admins can send emergency alerts and notifications via email to all or active members
+3. **ID Card Management** (Migrations 17-20): Complete lifecycle tracking for member ID cards
+4. **Settings Page Refactor**: Grid-based sidebar with 7 tabs: Email, General, Notifications, Tiers, Certifications, InstaCard, Security
+5. **CSP Updates**: Added `scriptSrcAttr` directive for inline event handlers
+6. **Documents Feature**: List-only view (removed grid view toggle)
+7. **Member Capabilities**: 40+ radio equipment/capability tracking fields
+8. **Geocoding**: Automatic address geocoding with OpenStreetMap
 
 ### Known Issues
 - Migration 20 may fail on duplicate `current_challenge` column (pre-existing from Migration 14)
