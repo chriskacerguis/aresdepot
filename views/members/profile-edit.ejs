@@ -31,6 +31,9 @@
           <button type="button" id="capabilities-tab" class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
             Capabilities & Equipment
           </button>
+          <button type="button" id="security-tab" class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+            Security & Passkeys
+          </button>
         </nav>
       </div>
     </div>
@@ -419,6 +422,39 @@
       </div>
       <!-- End Capabilities Tab Content -->
 
+      <!-- Security Tab Content -->
+      <div id="security-content" class="tab-content hidden">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Passkeys</h3>
+            <p class="text-sm text-gray-600 mb-6">
+              Passkeys provide a secure, passwordless way to sign in using your device's fingerprint, face recognition, or PIN. 
+              They're more secure than passwords and can't be phished.
+            </p>
+
+            <!-- Passkey List -->
+            <div id="passkeyList" class="space-y-3 mb-6">
+              <div class="text-center py-8">
+                <svg class="mx-auto h-12 w-12 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">Loading passkeys...</p>
+              </div>
+            </div>
+
+            <!-- Add Passkey Button -->
+            <button type="button" id="addPasskeyBtn" class="btn-primary">
+              <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Passkey
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- End Security Tab Content -->
+
     </form>
 
     <div class="flex justify-between pt-4 border-t mt-6">
@@ -428,37 +464,164 @@
   </div>
 </div>
 
-<script>
-  // Tab switching functionality
-  const profileTab = document.getElementById('profile-tab');
-  const capabilitiesTab = document.getElementById('capabilities-tab');
-  const profileContent = document.getElementById('profile-content');
-  const capabilitiesContent = document.getElementById('capabilities-content');
+<script type="module">
+import { startRegistration } from 'https://unpkg.com/@simplewebauthn/browser@10.0.0/dist/bundle/index.js';
 
-  function switchTab(tab) {
-    // Remove active class from all tabs
-    document.querySelectorAll('.tab-button').forEach(btn => {
-      btn.classList.remove('active', 'border-indigo-500', 'text-indigo-600');
-      btn.classList.add('border-transparent', 'text-gray-500');
-    });
+// Tab switching functionality
+const profileTab = document.getElementById('profile-tab');
+const capabilitiesTab = document.getElementById('capabilities-tab');
+const securityTab = document.getElementById('security-tab');
+const profileContent = document.getElementById('profile-content');
+const capabilitiesContent = document.getElementById('capabilities-content');
+const securityContent = document.getElementById('security-content');
 
-    // Hide all content
-    document.querySelectorAll('.tab-content').forEach(content => {
-      content.classList.add('hidden');
-    });
+function switchTab(tab) {
+  // Remove active class from all tabs
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.classList.remove('active', 'border-indigo-500', 'text-indigo-600');
+    btn.classList.add('border-transparent', 'text-gray-500');
+  });
 
-    // Activate selected tab
-    if (tab === 'profile') {
-      profileTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
-      profileTab.classList.remove('border-transparent', 'text-gray-500');
-      profileContent.classList.remove('hidden');
-    } else {
-      capabilitiesTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
-      capabilitiesTab.classList.remove('border-transparent', 'text-gray-500');
-      capabilitiesContent.classList.remove('hidden');
-    }
+  // Hide all content
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.add('hidden');
+  });
+
+  // Activate selected tab
+  if (tab === 'profile') {
+    profileTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
+    profileTab.classList.remove('border-transparent', 'text-gray-500');
+    profileContent.classList.remove('hidden');
+  } else if (tab === 'capabilities') {
+    capabilitiesTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
+    capabilitiesTab.classList.remove('border-transparent', 'text-gray-500');
+    capabilitiesContent.classList.remove('hidden');
+  } else if (tab === 'security') {
+    securityTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
+    securityTab.classList.remove('border-transparent', 'text-gray-500');
+    securityContent.classList.remove('hidden');
+    loadPasskeys(); // Load passkeys when security tab is opened
   }
+}
 
-  profileTab.addEventListener('click', () => switchTab('profile'));
-  capabilitiesTab.addEventListener('click', () => switchTab('capabilities'));
+profileTab.addEventListener('click', () => switchTab('profile'));
+capabilitiesTab.addEventListener('click', () => switchTab('capabilities'));
+securityTab.addEventListener('click', () => switchTab('security'));
+
+// Check for hash on page load
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash === '#security') {
+    switchTab('security');
+  }
+});
+
+// Passkey management
+async function loadPasskeys() {
+  const passkeyList = document.getElementById('passkeyList');
+  
+  try {
+    const res = await fetch('/members/passkeys');
+    const data = await res.json();
+    
+    if (data.passkeys.length === 0) {
+      passkeyList.innerHTML = `
+        <div class="text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+          </svg>
+          <p class="mt-2 text-sm text-gray-500">No passkeys registered yet</p>
+          <p class="text-xs text-gray-400">Add a passkey to enable passwordless sign-in</p>
+        </div>
+      `;
+      return;
+    }
+    
+    passkeyList.innerHTML = data.passkeys.map(pk => `
+      <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+        <div class="flex items-center gap-3">
+          <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+          </svg>
+          <div>
+            <p class="font-medium text-gray-900">${pk.device_name || 'Unnamed Device'}</p>
+            <p class="text-xs text-gray-500">Added ${new Date(pk.created_at).toLocaleDateString()}</p>
+            ${pk.last_used_at ? `<p class="text-xs text-gray-400">Last used ${new Date(pk.last_used_at).toLocaleDateString()}</p>` : ''}
+          </div>
+        </div>
+        <button type="button" onclick="deletePasskey(${pk.id})" class="text-red-600 hover:text-red-800">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+  } catch (error) {
+    console.error('Load passkeys error:', error);
+    passkeyList.innerHTML = `
+      <div class="text-center py-8 text-red-600">
+        <p>Failed to load passkeys</p>
+      </div>
+    `;
+  }
+}
+
+// Add passkey
+document.getElementById('addPasskeyBtn').addEventListener('click', async () => {
+  const deviceName = prompt('Enter a name for this passkey (e.g., "iPhone", "Windows PC"):', '');
+  if (!deviceName) return;
+  
+  try {
+    // Get registration options
+    const optionsRes = await fetch('/auth/passkey/register-options', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!optionsRes.ok) {
+      throw new Error('Failed to start registration');
+    }
+    
+    const options = await optionsRes.json();
+    
+    // Start WebAuthn registration
+    const credential = await startRegistration(options);
+    
+    // Verify registration
+    const verifyRes = await fetch('/auth/passkey/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential, deviceName })
+    });
+    
+    if (!verifyRes.ok) {
+      throw new Error('Registration failed');
+    }
+    
+    alert('Passkey added successfully!');
+    loadPasskeys();
+  } catch (error) {
+    console.error('Add passkey error:', error);
+    alert(error.message || 'Failed to add passkey');
+  }
+});
+
+// Delete passkey
+window.deletePasskey = async (id) => {
+  if (!confirm('Are you sure you want to remove this passkey?')) return;
+  
+  try {
+    const res = await fetch(`/members/passkeys/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (!res.ok) {
+      throw new Error('Failed to delete passkey');
+    }
+    
+    loadPasskeys();
+  } catch (error) {
+    console.error('Delete passkey error:', error);
+    alert('Failed to delete passkey');
+  }
+};
 </script>

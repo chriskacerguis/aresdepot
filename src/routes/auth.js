@@ -5,7 +5,14 @@ const { redirectIfAuthenticated } = require('../middleware/auth');
 const { loginLimiter } = require('../middleware/rateLimiter');
 const User = require('../models/User');
 const Member = require('../models/Member');
+const Passkey = require('../models/Passkey');
 const { geocodeAddress } = require('../utils/geocode');
+const {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse,
+} = require('@simplewebauthn/server');
 
 // Login page
 router.get('/login', redirectIfAuthenticated, (req, res) => {
@@ -291,5 +298,216 @@ router.post('/reset-password/:token',
     }
   }
 );
+
+// WebAuthn configuration
+const RP_NAME = 'ARES Depot';
+const RP_ID = process.env.RP_ID || 'localhost';
+const ORIGIN = process.env.ORIGIN || 'http://localhost:3000';
+
+// Passkey Registration - Generate Options
+router.post('/passkey/register-options', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const user = await User.findById(req.session.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const member = await Member.findByUserId(user.id);
+    const existingPasskeys = await Passkey.findByUserId(user.id);
+
+    const options = await generateRegistrationOptions({
+      rpName: RP_NAME,
+      rpID: RP_ID,
+      userID: user.id.toString(),
+      userName: member ? member.callsign : user.email,
+      userDisplayName: member ? `${member.first_name} ${member.last_name} (${member.callsign})` : user.email,
+      timeout: 60000,
+      attestationType: 'none',
+      excludeCredentials: existingPasskeys.map(pk => ({
+        id: Buffer.from(pk.credential_id, 'base64'),
+        type: 'public-key',
+        transports: pk.transports || [],
+      })),
+      authenticatorSelection: {
+        residentKey: 'preferred',
+        userVerification: 'preferred',
+      },
+    });
+
+    // Store challenge in database
+    await Passkey.setChallenge(user.id, options.challenge);
+
+    res.json(options);
+  } catch (error) {
+    console.error('Passkey registration options error:', error);
+    res.status(500).json({ error: 'Failed to generate registration options' });
+  }
+});
+
+// Passkey Registration - Verify Response
+router.post('/passkey/register', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const user = await User.findById(req.session.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const expectedChallenge = await Passkey.getChallenge(user.id);
+    if (!expectedChallenge) {
+      return res.status(400).json({ error: 'No registration in progress' });
+    }
+
+    const { credential, deviceName } = req.body;
+
+    const verification = await verifyRegistrationResponse({
+      response: credential,
+      expectedChallenge,
+      expectedOrigin: ORIGIN,
+      expectedRPID: RP_ID,
+    });
+
+    if (!verification.verified || !verification.registrationInfo) {
+      return res.status(400).json({ error: 'Verification failed' });
+    }
+
+    const { credentialPublicKey, credentialID, counter } = verification.registrationInfo;
+
+    // Store the passkey
+    await Passkey.create(
+      user.id,
+      Buffer.from(credentialID).toString('base64'),
+      Buffer.from(credentialPublicKey).toString('base64'),
+      counter,
+      deviceName || 'Unnamed Device',
+      credential.response.transports
+    );
+
+    // Clear the challenge
+    await Passkey.clearChallenge(user.id);
+
+    res.json({ verified: true });
+  } catch (error) {
+    console.error('Passkey registration verification error:', error);
+    res.status(500).json({ error: 'Failed to verify registration' });
+  }
+});
+
+// Passkey Authentication - Generate Options
+router.post('/passkey/login-options', async (req, res) => {
+  try {
+    const { identifier } = req.body;
+
+    if (!identifier) {
+      return res.status(400).json({ error: 'Identifier required' });
+    }
+
+    // Find user by callsign
+    const member = await Member.findByCallsign(identifier.toUpperCase());
+    if (!member) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = await User.findById(member.user_id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const passkeys = await Passkey.findByUserId(user.id);
+
+    if (passkeys.length === 0) {
+      return res.status(404).json({ error: 'No passkeys registered' });
+    }
+
+    const options = await generateAuthenticationOptions({
+      rpID: RP_ID,
+      timeout: 60000,
+      allowCredentials: passkeys.map(pk => ({
+        id: Buffer.from(pk.credential_id, 'base64'),
+        type: 'public-key',
+        transports: pk.transports || [],
+      })),
+      userVerification: 'preferred',
+    });
+
+    // Store challenge in database
+    await Passkey.setChallenge(user.id, options.challenge);
+
+    res.json({ options, userId: user.id });
+  } catch (error) {
+    console.error('Passkey authentication options error:', error);
+    res.status(500).json({ error: 'Failed to generate authentication options' });
+  }
+});
+
+// Passkey Authentication - Verify Response
+router.post('/passkey/login', async (req, res) => {
+  try {
+    const { credential, userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const expectedChallenge = await Passkey.getChallenge(user.id);
+    if (!expectedChallenge) {
+      return res.status(400).json({ error: 'No authentication in progress' });
+    }
+
+    const passkey = await Passkey.findByCredentialId(credential.id);
+    if (!passkey || passkey.user_id !== user.id) {
+      return res.status(404).json({ error: 'Passkey not found' });
+    }
+
+    const verification = await verifyAuthenticationResponse({
+      response: credential,
+      expectedChallenge,
+      expectedOrigin: ORIGIN,
+      expectedRPID: RP_ID,
+      authenticator: {
+        credentialID: Buffer.from(passkey.credential_id, 'base64'),
+        credentialPublicKey: Buffer.from(passkey.credential_public_key, 'base64'),
+        counter: passkey.counter,
+      },
+    });
+
+    if (!verification.verified) {
+      return res.status(400).json({ error: 'Verification failed' });
+    }
+
+    // Update counter
+    await Passkey.updateCounter(passkey.credential_id, verification.authenticationInfo.newCounter);
+
+    // Clear challenge
+    await Passkey.clearChallenge(user.id);
+
+    // Get member info
+    const member = await Member.findByUserId(user.id);
+
+    // Set session
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      callsign: member ? member.callsign : 'Unknown',
+      is_admin: user.is_admin
+    };
+
+    res.json({ 
+      verified: true,
+      redirectTo: user.is_admin ? '/admin/dashboard' : '/members/dashboard'
+    });
+  } catch (error) {
+    console.error('Passkey authentication verification error:', error);
+    res.status(500).json({ error: 'Failed to verify authentication' });
+  }
+});
 
 module.exports = router;

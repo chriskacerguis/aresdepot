@@ -206,7 +206,24 @@ const migrations = [
     value TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`
+  )`,
+
+  // Migration 13: Create passkeys table
+  `CREATE TABLE IF NOT EXISTS passkeys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    credential_id TEXT UNIQUE NOT NULL,
+    credential_public_key TEXT NOT NULL,
+    counter INTEGER DEFAULT 0,
+    device_name TEXT,
+    transports TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_used_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  )`,
+
+  // Migration 14: Add challenge column to users table for WebAuthn
+  `ALTER TABLE users ADD COLUMN current_challenge TEXT`
 ];
 
 async function runMigrations() {

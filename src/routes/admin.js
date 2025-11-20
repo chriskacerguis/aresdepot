@@ -9,6 +9,7 @@ const Task = require('../models/Task');
 const Event = require('../models/Event');
 const Achievement = require('../models/Achievement');
 const Setting = require('../models/Setting');
+const Passkey = require('../models/Passkey');
 const { testSmtpConnection } = require('../utils/email');
 
 // Admin dashboard
@@ -19,6 +20,10 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
     const upcomingEvents = await Event.getUpcoming();
     const pendingVerifications = await Achievement.getPendingVerifications();
 
+    // Check if user has passkeys
+    const passkeys = await Passkey.findByUserId(req.session.user.id);
+    const hasPasskeys = passkeys.length > 0;
+
     res.render('admin/dashboard', {
       stats: {
         totalMembers: members.length,
@@ -28,7 +33,8 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
       },
       recentMembers: members.slice(0, 5),
       upcomingEvents: upcomingEvents.slice(0, 5),
-      pendingVerifications: pendingVerifications.slice(0, 5)
+      pendingVerifications: pendingVerifications.slice(0, 5),
+      hasPasskeys
     });
   } catch (error) {
     console.error('Admin dashboard error:', error);

@@ -6,6 +6,7 @@ const { uploadLicense, uploadPhoto } = require('../middleware/upload');
 const Member = require('../models/Member');
 const Task = require('../models/Task');
 const Event = require('../models/Event');
+const Passkey = require('../models/Passkey');
 const multer = require('multer');
 const { geocodeAddress } = require('../utils/geocode');
 
@@ -31,9 +32,14 @@ router.get('/dashboard', requireAuth, async (req, res) => {
       }
     }
 
+    // Check if user has passkeys
+    const passkeys = await Passkey.findByUserId(req.session.user.id);
+    const hasPasskeys = passkeys.length > 0;
+
     res.render('members/dashboard', { 
       member: progress,
-      events: eligibleEvents
+      events: eligibleEvents,
+      hasPasskeys
     });
   } catch (error) {
     console.error('Dashboard error:', error);
@@ -242,6 +248,28 @@ router.post('/tasks/:taskId/complete', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Task completion error:', error);
     res.redirect('/members/tasks');
+  }
+});
+
+// Get user's passkeys
+router.get('/passkeys', requireAuth, async (req, res) => {
+  try {
+    const passkeys = await Passkey.findByUserId(req.session.user.id);
+    res.json({ passkeys });
+  } catch (error) {
+    console.error('Get passkeys error:', error);
+    res.status(500).json({ error: 'Failed to load passkeys' });
+  }
+});
+
+// Delete a passkey
+router.delete('/passkeys/:id', requireAuth, async (req, res) => {
+  try {
+    await Passkey.delete(req.params.id, req.session.user.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete passkey error:', error);
+    res.status(500).json({ error: 'Failed to delete passkey' });
   }
 });
 
