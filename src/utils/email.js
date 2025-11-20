@@ -4,18 +4,28 @@ const Setting = require('../models/Setting');
 let transporter = null;
 
 async function getTransporter() {
-  const config = await Setting.getSmtpConfig();
-  
-  // Create new transporter with current settings
-  return nodemailer.createTransporter({
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    auth: config.user && config.pass ? {
-      user: config.user,
-      pass: config.pass
-    } : undefined
-  });
+  try {
+    const config = await Setting.getSmtpConfig();
+    
+    // Verify nodemailer is loaded correctly
+    if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
+      throw new Error('Nodemailer module not properly loaded');
+    }
+    
+    // Create new transporter with current settings
+    return nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: config.user && config.pass ? {
+        user: config.user,
+        pass: config.pass
+      } : undefined
+    });
+  } catch (error) {
+    console.error('Error creating transporter:', error);
+    throw error;
+  }
 }
 
 async function sendEmail(to, subject, html, text = null) {
