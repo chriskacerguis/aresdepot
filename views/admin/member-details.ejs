@@ -1,7 +1,6 @@
 <% title = 'Member Details - ' + member.first_name + ' ' + member.last_name %>
 
 <div class="px-4 sm:px-0">
-  <a href="/admin/members" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">← Back to Members</a>
   
   <% 
     const statusBannerConfig = {
@@ -49,22 +48,23 @@
       </div>
     </div>
   <% } %>
-  
+
   <div class="mt-4 mb-8">
-    <div class="flex items-center gap-4">
-      <% if (member.profile_photo_path) { %>
-        <img src="<%= member.profile_photo_path %>" alt="<%= member.first_name %> <%= member.last_name %>" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
-      <% } else { %>
-        <div class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
-          <svg class="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        </div>
-      <% } %>
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-          <%= member.first_name %> <%= member.last_name %> (<%= member.callsign %>)
-        </h1>
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <div class="flex items-center gap-4">
+        <% if (member.profile_photo_path) { %>
+          <img src="<%= member.profile_photo_path %>" alt="<%= member.first_name %> <%= member.last_name %>" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
+        <% } else { %>
+          <div class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
+            <svg class="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+        <% } %>
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+            <%= member.first_name %> <%= member.last_name %> (<%= member.callsign %>)
+          </h1>
       <% 
         const licenseConfig = {
           Technician: { bg: 'bg-slate-100', text: 'text-slate-700', ring: 'ring-slate-600/20', label: 'Technician' },
@@ -94,6 +94,15 @@
             <%= highestTier.name %>
           </span>
         <% } %>
+      </div>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <a href="/admin/members" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Members
+        </a>
       </div>
     </div>
   </div>
