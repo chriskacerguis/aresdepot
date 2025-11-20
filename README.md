@@ -98,6 +98,14 @@ The application uses a database abstraction layer that makes switching from SQLi
 └── uploads/             # User uploaded files
 ```
 
+## Dev Seed Creds
+
+📧 Admin Email: admin@example.com
+🔑 Admin Password: ChangeThisPassword123!
+
+Dummy Password: Password123!
+
+
 ## License
 
 ISC

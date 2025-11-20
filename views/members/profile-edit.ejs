@@ -1,7 +1,7 @@
 <% title = 'Edit Profile' %>
 
-<div class="px-4 sm:px-0">
-  <div class="max-w-3xl mx-auto">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div>
     <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Edit Your Profile</h1>
 
     <% if (errors && errors.length > 0) { %>
@@ -21,117 +21,444 @@
       </div>
     <% } %>
 
-    <div class="card">
-      <div class="card-body">
-        <form class="space-y-6" method="POST" action="/members/profile/edit" enctype="multipart/form-data">
-          <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-            <div>
-              <label class="form-label" for="firstName">First Name *</label>
-              <div class="mt-2">
-                <input class="form-input" id="firstName" name="firstName" type="text" required value="<%= member.first_name || formData.firstName || '' %>">
-              </div>
-            </div>
-            <div>
-              <label class="form-label" for="lastName">Last Name *</label>
-              <div class="mt-2">
-                <input class="form-input" id="lastName" name="lastName" type="text" required value="<%= member.last_name || formData.lastName || '' %>">
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-            <div>
-              <label class="form-label" for="callsign">Callsign *</label>
-              <div class="mt-2">
-                <input class="form-input" id="callsign" name="callsign" type="text" required value="<%= member.callsign || formData.callsign || '' %>">
-              </div>
-            </div>
-            <div>
-              <label class="form-label" for="phone">Phone Number *</label>
-              <div class="mt-2">
-                <input class="form-input" id="phone" name="phone" type="tel" autocomplete="tel" required value="<%= member.phone || formData.phone || '' %>">
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-            <div>
-              <label class="form-label" for="licenseClass">License Class</label>
-              <div class="mt-2">
-                <select class="form-input" id="licenseClass" name="licenseClass">
-                  <option value="">Select License Class</option>
-                  <option value="Technician" <%= (member.license_class || formData.licenseClass) === 'Technician' ? 'selected' : '' %>>Technician</option>
-                  <option value="General" <%= (member.license_class || formData.licenseClass) === 'General' ? 'selected' : '' %>>General</option>
-                  <option value="Extra" <%= (member.license_class || formData.licenseClass) === 'Extra' ? 'selected' : '' %>>Amateur Extra</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label class="form-label" for="county">County *</label>
-              <div class="mt-2">
-                <input class="form-input" id="county" name="county" type="text" required value="<%= member.county || formData.county || '' %>">
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label" for="address">Street Address</label>
-            <div class="mt-2">
-              <input class="form-input" id="address" name="address" type="text" autocomplete="street-address" value="<%= member.address || formData.address || '' %>">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-            <div class="sm:col-span-3">
-              <label class="form-label" for="city">City</label>
-              <div class="mt-2">
-                <input class="form-input" id="city" name="city" type="text" autocomplete="address-level2" value="<%= member.city || formData.city || '' %>">
-              </div>
-            </div>
-            <div class="sm:col-span-2">
-              <label class="form-label" for="state">State</label>
-              <div class="mt-2">
-                <input class="form-input" id="state" name="state" type="text" autocomplete="address-level1" value="<%= member.state || formData.state || '' %>">
-              </div>
-            </div>
-            <div class="sm:col-span-1">
-              <label class="form-label" for="zip">ZIP</label>
-              <div class="mt-2">
-                <input class="form-input" id="zip" name="zip" type="text" autocomplete="postal-code" value="<%= member.zip || formData.zip || '' %>">
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label" for="profilePhoto">Profile Photo</label>
-            <% if (member.profile_photo_path) { %>
-              <div class="mt-2 mb-3">
-                <img src="<%= member.profile_photo_path %>" alt="Current profile photo" class="h-24 w-24 rounded-full object-cover border-2 border-gray-200">
-              </div>
-            <% } %>
-            <div class="mt-2">
-              <input class="form-input" id="profilePhoto" name="profilePhoto" type="file" accept="image/jpeg,image/jpg,image/png">
-              <p class="mt-1 text-xs text-gray-500">Upload a profile photo (JPG or PNG)</p>
-            </div>
-          </div>
-
-          <div>
-            <label class="form-label" for="fccLicense">FCC License (PDF)</label>
-            <% if (member.fcc_license_path) { %>
-              <p class="mt-1 text-sm text-green-600">✓ License on file</p>
-            <% } %>
-            <div class="mt-2">
-              <input class="form-input" id="fccLicense" name="fccLicense" type="file" accept=".pdf">
-              <p class="mt-1 text-xs text-gray-500">Upload a PDF copy of your FCC license</p>
-            </div>
-          </div>
-
-          <div class="flex justify-between pt-4">
-            <a href="/members/dashboard" class="btn-secondary">Cancel</a>
-            <button class="btn-primary" type="submit">Save Profile</button>
-          </div>
-        </form>
+    <!-- Tabs -->
+    <div class="mb-6">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          <button type="button" id="profile-tab" class="tab-button active border-indigo-500 text-indigo-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+            Profile Information
+          </button>
+          <button type="button" id="capabilities-tab" class="tab-button border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+            Capabilities & Equipment
+          </button>
+        </nav>
       </div>
+    </div>
+
+    <form id="profile-form" method="POST" action="/members/profile/edit" enctype="multipart/form-data">
+      
+      <!-- Profile Tab Content -->
+      <div id="profile-content" class="tab-content">
+        <div class="card">
+          <div class="card-body space-y-6">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label" for="firstName">First Name *</label>
+                <div class="mt-2">
+                  <input class="form-input" id="firstName" name="firstName" type="text" required value="<%= member.first_name || formData.firstName || '' %>">
+                </div>
+              </div>
+              <div>
+                <label class="form-label" for="lastName">Last Name *</label>
+                <div class="mt-2">
+                  <input class="form-input" id="lastName" name="lastName" type="text" required value="<%= member.last_name || formData.lastName || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label" for="callsign">Callsign *</label>
+                <div class="mt-2">
+                  <input class="form-input" id="callsign" name="callsign" type="text" required value="<%= member.callsign || formData.callsign || '' %>">
+                </div>
+              </div>
+              <div>
+                <label class="form-label" for="phone">Phone Number *</label>
+                <div class="mt-2">
+                  <input class="form-input" id="phone" name="phone" type="tel" autocomplete="tel" required value="<%= member.phone || formData.phone || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+              <div>
+                <label class="form-label" for="licenseClass">License Class</label>
+                <div class="mt-2">
+                  <select class="form-input" id="licenseClass" name="licenseClass">
+                    <option value="">Select License Class</option>
+                    <option value="Technician" <%= (member.license_class || formData.licenseClass) === 'Technician' ? 'selected' : '' %>>Technician</option>
+                    <option value="General" <%= (member.license_class || formData.licenseClass) === 'General' ? 'selected' : '' %>>General</option>
+                    <option value="Extra" <%= (member.license_class || formData.licenseClass) === 'Extra' ? 'selected' : '' %>>Amateur Extra</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="form-label" for="county">County *</label>
+                <div class="mt-2">
+                  <input class="form-input" id="county" name="county" type="text" required value="<%= member.county || formData.county || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" for="address">Street Address</label>
+              <div class="mt-2">
+                <input class="form-input" id="address" name="address" type="text" autocomplete="street-address" value="<%= member.address || formData.address || '' %>">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label class="form-label" for="city">City</label>
+                <div class="mt-2">
+                  <input class="form-input" id="city" name="city" type="text" autocomplete="address-level2" value="<%= member.city || formData.city || '' %>">
+                </div>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="form-label" for="state">State</label>
+                <div class="mt-2">
+                  <input class="form-input" id="state" name="state" type="text" autocomplete="address-level1" value="<%= member.state || formData.state || '' %>">
+                </div>
+              </div>
+              <div class="sm:col-span-1">
+                <label class="form-label" for="zip">ZIP</label>
+                <div class="mt-2">
+                  <input class="form-input" id="zip" name="zip" type="text" autocomplete="postal-code" value="<%= member.zip || formData.zip || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" for="profilePhoto">Profile Photo</label>
+              <% if (member.profile_photo_path) { %>
+                <div class="mt-2 mb-3">
+                  <img src="<%= member.profile_photo_path %>" alt="Current profile photo" class="h-24 w-24 rounded-full object-cover border-2 border-gray-200">
+                </div>
+              <% } %>
+              <div class="mt-2">
+                <input class="form-input" id="profilePhoto" name="profilePhoto" type="file" accept="image/jpeg,image/jpg,image/png">
+                <p class="mt-1 text-xs text-gray-500">Upload a profile photo (JPG or PNG)</p>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label" for="fccLicense">FCC License (PDF)</label>
+              <% if (member.fcc_license_path) { %>
+                <p class="mt-1 text-sm text-green-600">✓ License on file</p>
+              <% } %>
+              <div class="mt-2">
+                <input class="form-input" id="fccLicense" name="fccLicense" type="file" accept=".pdf">
+                <p class="mt-1 text-xs text-gray-500">Upload a PDF copy of your FCC license</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Profile Tab Content -->
+
+      <!-- Capabilities Tab Content -->
+      <div id="capabilities-content" class="tab-content hidden">
+        <div class="space-y-6">
+
+          <!-- Radio Equipment Card -->
+          <div class="card">
+            <div class="card-body">
+              <h3 class="text-base font-semibold text-gray-900 mb-4">Radio Equipment</h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="hfCapable" name="hfCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.hf_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="hfCapable" class="font-medium text-gray-900">HF capable</label>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-900" for="hfPower">HF Power (Watts)</label>
+                    <div class="mt-1">
+                      <input class="form-input" id="hfPower" name="hfPower" type="number" min="0" placeholder="e.g., 100" value="<%= member.hf_power || '' %>">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="vhfUhfCapable" name="vhfUhfCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.vhf_uhf_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="vhfUhfCapable" class="font-medium text-gray-900">VHF/UHF capable (2M/70CM)</label>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-900" for="vhfUhfPower">VHF/UHF Power (Watts)</label>
+                    <div class="mt-1">
+                      <input class="form-input" id="vhfUhfPower" name="vhfUhfPower" type="number" min="0" placeholder="e.g., 50" value="<%= member.vhf_uhf_power || '' %>">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="mobileStation" name="mobileStation" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.mobile_station ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="mobileStation" class="font-medium text-gray-900">Mobile station</label>
+                  </div>
+                </div>
+
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="portableStation" name="portableStation" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.portable_station ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="portableStation" class="font-medium text-gray-900">Portable station</label>
+                  </div>
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-900" for="towerAntennaHeight">Tower/Antenna Height (feet)</label>
+                  <div class="mt-1">
+                    <input class="form-input" id="towerAntennaHeight" name="towerAntennaHeight" type="number" min="0" placeholder="e.g., 50" value="<%= member.tower_antenna_height || '' %>">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Modes Card -->
+          <div class="card">
+            <div class="card-body">
+              <h3 class="text-base font-semibold text-gray-900 mb-4">Digital Modes</h3>
+              <div class="grid md:grid-cols-3 gap-4">
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="winlinkCapable" name="winlinkCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.winlink_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="winlinkCapable" class="font-medium text-gray-900">Winlink</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="aprsCapable" name="aprsCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.aprs_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="aprsCapable" class="font-medium text-gray-900">APRS</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="packetRadio" name="packetRadio" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.packet_radio ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="packetRadio" class="font-medium text-gray-900">Packet Radio</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="ft8Capable" name="ft8Capable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.ft8_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="ft8Capable" class="font-medium text-gray-900">FT8</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="js8callCapable" name="js8callCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.js8call_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="js8callCapable" class="font-medium text-gray-900">JS8Call</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="rttyCapable" name="rttyCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.rtty_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="rttyCapable" class="font-medium text-gray-900">RTTY</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="sstvCapable" name="sstvCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.sstv_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="sstvCapable" class="font-medium text-gray-900">SSTV</label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Voice Card -->
+          <div class="card">
+            <div class="card-body">
+              <h3 class="text-base font-semibold text-gray-900 mb-4">Digital Voice</h3>
+              <div class="grid md:grid-cols-3 gap-4">
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="dstarCapable" name="dstarCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.dstar_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="dstarCapable" class="font-medium text-gray-900">D-STAR</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="dmrCapable" name="dmrCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.dmr_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="dmrCapable" class="font-medium text-gray-900">DMR</label>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="fusionCapable" name="fusionCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.fusion_capable ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="fusionCapable" class="font-medium text-gray-900">Fusion (C4FM)</label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Power & Infrastructure Card -->
+          <div class="card">
+            <div class="card-body">
+              <h3 class="text-base font-semibold text-gray-900 mb-4">Power & Infrastructure</h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                  <div class="space-y-3">
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input id="emergencyPower" name="emergencyPower" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.emergency_power ? 'checked' : '' %>>
+                      </div>
+                      <div class="ml-3 text-sm leading-6">
+                        <label for="emergencyPower" class="font-medium text-gray-900">Generator Power</label>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-900" for="emergencyPowerType">Type</label>
+                      <div class="mt-1">
+                        <select class="form-input" id="emergencyPowerType" name="emergencyPowerType">
+                          <option value="">Select Type</option>
+                          <option value="Portable" <%= (member.emergency_power_type || '') === 'Portable' ? 'selected' : '' %>>Portable</option>
+                          <option value="Whole Home" <%= (member.emergency_power_type || '') === 'Whole Home' ? 'selected' : '' %>>Whole Home</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input id="backupBatteries" name="backupBatteries" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.backup_batteries ? 'checked' : '' %>>
+                      </div>
+                      <div class="ml-3 text-sm leading-6">
+                        <label for="backupBatteries" class="font-medium text-gray-900">Backup batteries</label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input id="solarPower" name="solarPower" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.solar_power ? 'checked' : '' %>>
+                      </div>
+                      <div class="ml-3 text-sm leading-6">
+                        <label for="solarPower" class="font-medium text-gray-900">Solar power</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="satelliteInternet" name="satelliteInternet" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.satellite_internet ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="satelliteInternet" class="font-medium text-gray-900">Satellite internet</label>
+                    </div>
+                  </div>
+
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="meshNetwork" name="meshNetwork" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.mesh_network ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="meshNetwork" class="font-medium text-gray-900">Mesh network capable</label>
+                    </div>
+                  </div>
+
+                  <div class="relative flex items-start">
+                    <div class="flex h-6 items-center">
+                      <input id="firstnetDevice" name="firstnetDevice" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.firstnet_device ? 'checked' : '' %>>
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                      <label for="firstnetDevice" class="font-medium text-gray-900">FirstNet Capable</label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Readiness Card -->
+          <div class="card">
+            <div class="card-body">
+              <h3 class="text-base font-semibold text-gray-900 mb-4">Emergency Readiness</h3>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="goKitReady" name="goKitReady" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.go_kit_ready ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="goKitReady" class="font-medium text-gray-900">Go-Kit ready (portable emergency communications kit)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Notes Card -->
+          <div class="card">
+            <div class="card-body">
+              <label class="block text-sm font-medium text-gray-900" for="capabilitiesNotes">Additional Notes</label>
+              <div class="mt-2">
+                <textarea class="form-input" id="capabilitiesNotes" name="capabilitiesNotes" rows="4" placeholder="Any additional equipment, capabilities, or notes..."><%= member.capabilities_notes || '' %></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Capabilities Tab Content -->
+
+    </form>
+
+    <div class="flex justify-between pt-4 border-t mt-6">
+      <a href="/members/dashboard" class="btn-secondary">Cancel</a>
+      <button form="profile-form" class="btn-primary" type="submit">Save Profile</button>
     </div>
   </div>
 </div>
+
+<script>
+  // Tab switching functionality
+  const profileTab = document.getElementById('profile-tab');
+  const capabilitiesTab = document.getElementById('capabilities-tab');
+  const profileContent = document.getElementById('profile-content');
+  const capabilitiesContent = document.getElementById('capabilities-content');
+
+  function switchTab(tab) {
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active', 'border-indigo-500', 'text-indigo-600');
+      btn.classList.add('border-transparent', 'text-gray-500');
+    });
+
+    // Hide all content
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+    });
+
+    // Activate selected tab
+    if (tab === 'profile') {
+      profileTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
+      profileTab.classList.remove('border-transparent', 'text-gray-500');
+      profileContent.classList.remove('hidden');
+    } else {
+      capabilitiesTab.classList.add('active', 'border-indigo-500', 'text-indigo-600');
+      capabilitiesTab.classList.remove('border-transparent', 'text-gray-500');
+      capabilitiesContent.classList.remove('hidden');
+    }
+  }
+
+  profileTab.addEventListener('click', () => switchTab('profile'));
+  capabilitiesTab.addEventListener('click', () => switchTab('capabilities'));
+</script>

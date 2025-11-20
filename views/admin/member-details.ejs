@@ -688,6 +688,19 @@
                 <% } %>
                 <span class="<%= member.mesh_network ? 'text-gray-900' : 'text-gray-500' %>">Mesh Network</span>
               </div>
+
+              <div class="flex items-center gap-2 text-sm">
+                <% if (member.firstnet_device) { %>
+                  <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% } else { %>
+                  <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% } %>
+                <span class="<%= member.firstnet_device ? 'text-gray-900' : 'text-gray-500' %>">FirstNet Capable</span>
+              </div>
             </div>
           </div>
 
@@ -1010,6 +1023,15 @@
                 </div>
                 <div class="ml-3 text-sm leading-6">
                   <label for="meshNetwork" class="font-medium text-gray-900">Mesh network capable</label>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="firstnetDevice" name="firstnetDevice" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.firstnet_device ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="firstnetDevice" class="font-medium text-gray-900">FirstNet Capable</label>
                 </div>
               </div>
             </div>

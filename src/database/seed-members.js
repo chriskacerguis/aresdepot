@@ -57,11 +57,10 @@ async function seedMembers() {
         ft8_capable: 1,
         mobile_station: 1,
         portable_station: 1,
-        ares_races_trained: 1,
-        skywarn_trained: 1,
         go_kit_ready: 1,
         tower_antenna_height: 40,
         backup_batteries: 1,
+        firstnet_device: 1,
         capabilities_notes: 'Fully equipped base station with backup power. Available for emergency deployment.'
       },
       {
@@ -88,10 +87,10 @@ async function seedMembers() {
         mobile_station: 1,
         portable_station: 1,
         satellite_internet: 1,
-        satellite_internet_type: 'Starlink',
         skywarn_trained: 1,
         cpr_first_aid_certified: 1,
         go_kit_ready: 1,
+        firstnet_device: 1,
         capabilities_notes: 'Mobile operations specialist. Starlink internet backup.'
       },
       {
@@ -125,8 +124,6 @@ async function seedMembers() {
         solar_power: 1,
         backup_batteries: 1,
         tower_antenna_height: 60,
-        ares_races_trained: 1,
-        incident_command_trained: 1,
         go_kit_ready: 1,
         capabilities_notes: 'HF digital modes expert. Large solar installation with battery backup.'
       },
@@ -239,12 +236,9 @@ async function seedMembers() {
         mobile_station: 1,
         portable_station: 1,
         emergency_power: 1,
-        emergency_power_type: 'Battery Bank',
+        emergency_power_type: 'Generator',
         backup_batteries: 1,
         tower_antenna_height: 35,
-        ares_races_trained: 1,
-        incident_command_trained: 1,
-        cpr_first_aid_certified: 1,
         go_kit_ready: 1,
         capabilities_notes: 'ICS-100, ICS-200, ICS-700, ICS-800 certified. Active ARES member.'
       },
@@ -274,7 +268,6 @@ async function seedMembers() {
         mobile_station: 1,
         portable_station: 1,
         satellite_internet: 1,
-        satellite_internet_type: 'HughesNet',
         skywarn_trained: 1,
         cpr_first_aid_certified: 1,
         go_kit_ready: 1,
@@ -296,12 +289,11 @@ async function seedMembers() {
       const capabilityFields = [
         'license_class', 'status', 'background_check', 'background_check_date', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
         'vhf_uhf_capable', 'vhf_uhf_power', 'winlink_capable', 'satellite_internet',
-        'satellite_internet_type', 'mobile_station', 'portable_station', 'aprs_capable',
+        'mobile_station', 'portable_station', 'aprs_capable',
         'dstar_capable', 'dmr_capable', 'fusion_capable', 'packet_radio', 'sstv_capable',
-        'rtty_capable', 'ft8_capable', 'js8call_capable', 'ares_races_trained',
-        'skywarn_trained', 'incident_command_trained', 'cpr_first_aid_certified',
+        'rtty_capable', 'ft8_capable', 'js8call_capable',
         'go_kit_ready', 'tower_antenna_height', 'backup_batteries', 'solar_power',
-        'mesh_network', 'capabilities_notes'
+        'mesh_network', 'firstnet_device', 'capabilities_notes'
       ];
 
       const fields = [

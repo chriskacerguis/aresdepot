@@ -84,9 +84,11 @@ async function seed() {
     // Create sample special achievements
     const achievements = [
       { name: 'Skywarn Spotter', description: 'Completed NWS Skywarn Spotter training', requires_proof: 1 },
-      { name: 'Field Day Participation', description: 'Participated in ARRL Field Day', requires_proof: 1 },
-      { name: 'Public Service Award', description: 'Recognized for outstanding public service', requires_proof: 1 },
-      { name: 'Emergency Deployment', description: 'Deployed during actual emergency', requires_proof: 0 }
+      { name: 'RACES', description: 'Is a RACES member', requires_proof: 1 },
+      { name: 'Official Emergency Station', description: 'ARRL Official Emergency Station designation', requires_proof: 1 },
+      { name: 'AUXCOMM', description: 'Completed AUXCOMM training', requires_proof: 1 },
+      { name: 'COM/L', description: 'Completed COM/L training', requires_proof: 1 },
+      { name: 'COM/T', description: 'Completed COM/T training', requires_proof: 1 },
     ];
 
     for (const achievement of achievements) {

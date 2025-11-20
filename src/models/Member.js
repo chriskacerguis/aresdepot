@@ -67,7 +67,6 @@ class Member {
       vhfUhfPower: 'vhf_uhf_power',
       winlinkCapable: 'winlink_capable',
       satelliteInternet: 'satellite_internet',
-      satelliteInternetType: 'satellite_internet_type',
       mobileStation: 'mobile_station',
       portableStation: 'portable_station',
       aprsCapable: 'aprs_capable',
@@ -79,15 +78,12 @@ class Member {
       rttyCapable: 'rtty_capable',
       ft8Capable: 'ft8_capable',
       js8callCapable: 'js8call_capable',
-      aresRacesTrained: 'ares_races_trained',
-      skywarnTrained: 'skywarn_trained',
-      incidentCommandTrained: 'incident_command_trained',
-      cprFirstAidCertified: 'cpr_first_aid_certified',
       goKitReady: 'go_kit_ready',
       towerAntennaHeight: 'tower_antenna_height',
       backupBatteries: 'backup_batteries',
       solarPower: 'solar_power',
       meshNetwork: 'mesh_network',
+      firstnetDevice: 'firstnet_device',
       capabilitiesNotes: 'capabilities_notes'
     };
 

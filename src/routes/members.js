@@ -113,7 +113,49 @@ router.post('/profile/edit',
     try {
       const member = await Member.findByUserId(req.session.user.id);
 
-      const updateData = { firstName, lastName, address, city, state, zip, phone, callsign, county, licenseClass };
+      const updateData = { 
+        firstName, 
+        lastName, 
+        address, 
+        city, 
+        state, 
+        zip, 
+        phone, 
+        callsign, 
+        county, 
+        licenseClass,
+        // Radio Equipment
+        hfCapable: req.body.hfCapable ? 1 : 0,
+        hfPower: req.body.hfPower || null,
+        vhfUhfCapable: req.body.vhfUhfCapable ? 1 : 0,
+        vhfUhfPower: req.body.vhfUhfPower || null,
+        mobileStation: req.body.mobileStation ? 1 : 0,
+        portableStation: req.body.portableStation ? 1 : 0,
+        towerAntennaHeight: req.body.towerAntennaHeight || null,
+        // Digital Modes
+        winlinkCapable: req.body.winlinkCapable ? 1 : 0,
+        aprsCapable: req.body.aprsCapable ? 1 : 0,
+        packetRadio: req.body.packetRadio ? 1 : 0,
+        ft8Capable: req.body.ft8Capable ? 1 : 0,
+        js8callCapable: req.body.js8callCapable ? 1 : 0,
+        rttyCapable: req.body.rttyCapable ? 1 : 0,
+        sstvCapable: req.body.sstvCapable ? 1 : 0,
+        // Digital Voice
+        dstarCapable: req.body.dstarCapable ? 1 : 0,
+        dmrCapable: req.body.dmrCapable ? 1 : 0,
+        fusionCapable: req.body.fusionCapable ? 1 : 0,
+        // Power & Infrastructure
+        emergencyPower: req.body.emergencyPower ? 1 : 0,
+        emergencyPowerType: req.body.emergencyPowerType || null,
+        backupBatteries: req.body.backupBatteries ? 1 : 0,
+        solarPower: req.body.solarPower ? 1 : 0,
+        satelliteInternet: req.body.satelliteInternet ? 1 : 0,
+        meshNetwork: req.body.meshNetwork ? 1 : 0,
+        firstnetDevice: req.body.firstnetDevice ? 1 : 0,
+        // Emergency Readiness
+        goKitReady: req.body.goKitReady ? 1 : 0,
+        capabilitiesNotes: req.body.capabilitiesNotes || null
+      };
       if (fccLicensePath) updateData.fccLicensePath = fccLicensePath;
       if (profilePhotoPath) updateData.profilePhotoPath = profilePhotoPath;
 
