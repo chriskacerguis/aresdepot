@@ -82,7 +82,7 @@
             <input id="requiresProof" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= formData.requiresProof !== 'false' ? 'checked' : '' %>>
           </div>
           <div class="ml-3 text-sm leading-6">
-            <label for="requiresProof" class="font-medium text-gray-900">Requires proof upload</label>
+            <label for="requiresProof" class="font-medium text-gray-900">Require verification upload</label>
           </div>
         </div>
 
@@ -145,7 +145,7 @@
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                     </svg>
-                    Proof Required
+                    Verification Required
                   </span>
                 <% } %>
                 <% if (certification.admin_only) { %>
@@ -199,7 +199,7 @@
                   <input id="edit-requiresProof-<%= certification.id %>" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= certification.requires_proof ? 'checked' : '' %>>
                 </div>
                 <div class="ml-3 text-sm leading-6">
-                  <label for="edit-requiresProof-<%= certification.id %>" class="font-medium text-gray-900">Requires proof upload</label>
+                  <label for="edit-requiresProof-<%= certification.id %>" class="font-medium text-gray-900">Require verification upload</label>
                 </div>
               </div>
 
