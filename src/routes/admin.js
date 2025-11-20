@@ -358,7 +358,8 @@ router.post('/achievements/create',
       await Achievement.create(
         req.body.name,
         req.body.description || '',
-        req.body.requiresProof === 'true'
+        req.body.requiresProof === 'true',
+        req.body.adminOnly === 'true'
       );
       res.redirect('/admin/achievements');
     } catch (error) {
@@ -391,7 +392,8 @@ router.post('/achievements/:id/update',
         req.params.id,
         req.body.name,
         req.body.description || '',
-        req.body.requiresProof === 'true'
+        req.body.requiresProof === 'true',
+        req.body.adminOnly === 'true'
       );
       res.redirect('/admin/achievements');
     } catch (error) {
@@ -420,6 +422,28 @@ router.post('/achievements/:memberId/:achievementId/verify', requireAdmin, async
   } catch (error) {
     console.error('Verify achievement error:', error);
     res.redirect('/admin/achievements');
+  }
+});
+
+// Grant admin-only achievement
+router.post('/achievements/:memberId/:achievementId/grant', requireAdmin, async (req, res) => {
+  try {
+    await Achievement.grantAdminAchievement(req.params.memberId, req.params.achievementId, req.session.user.id, req.body.notes || '');
+    res.redirect(`/admin/members/${req.params.memberId}`);
+  } catch (error) {
+    console.error('Grant achievement error:', error);
+    res.redirect(`/admin/members/${req.params.memberId}`);
+  }
+});
+
+// Revoke admin-only achievement
+router.post('/achievements/:memberId/:achievementId/revoke', requireAdmin, async (req, res) => {
+  try {
+    await Achievement.revokeAdminAchievement(req.params.memberId, req.params.achievementId);
+    res.redirect(`/admin/members/${req.params.memberId}`);
+  } catch (error) {
+    console.error('Revoke achievement error:', error);
+    res.redirect(`/admin/members/${req.params.memberId}`);
   }
 });
 

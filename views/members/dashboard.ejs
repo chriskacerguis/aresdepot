@@ -49,6 +49,11 @@
             <h4 class="font-semibold text-sm text-gray-900"><%= achievement.name %></h4>
             <% if (achievement.verified) { %>
               <p class="text-xs text-green-700 mt-1 font-medium">Verified</p>
+              <% if (achievement.granted_by) { %>
+                <p class="text-xs text-gray-500 mt-1">Granted by admin</p>
+              <% } %>
+            <% } else if (achievement.admin_only) { %>
+              <p class="text-xs text-yellow-700 mt-1 font-medium">Admin Only</p>
             <% } %>
           </div>
         </div>

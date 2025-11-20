@@ -130,6 +130,7 @@ const migrations = [
     name TEXT NOT NULL,
     description TEXT,
     requires_proof INTEGER DEFAULT 1,
+    admin_only INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
@@ -143,12 +144,15 @@ const migrations = [
     verified INTEGER DEFAULT 0,
     verified_by INTEGER,
     verified_at DATETIME,
+    granted_by INTEGER,
+    granted_at DATETIME,
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
     FOREIGN KEY (achievement_id) REFERENCES special_achievements(id) ON DELETE CASCADE,
     FOREIGN KEY (verified_by) REFERENCES users(id),
+    FOREIGN KEY (granted_by) REFERENCES users(id),
     UNIQUE(member_id, achievement_id)
   )`,
 

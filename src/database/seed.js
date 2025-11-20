@@ -83,20 +83,21 @@ async function seed() {
 
     // Create sample special achievements
     const achievements = [
-      { name: 'Skywarn Spotter', description: 'Completed NWS Skywarn Spotter training', requires_proof: 1 },
-      { name: 'RACES', description: 'Is a RACES member', requires_proof: 1 },
-      { name: 'Official Emergency Station', description: 'ARRL Official Emergency Station designation', requires_proof: 1 },
-      { name: 'AUXCOMM', description: 'Completed AUXCOMM training', requires_proof: 1 },
-      { name: 'COM/L', description: 'Completed COM/L training', requires_proof: 1 },
-      { name: 'COM/T', description: 'Completed COM/T training', requires_proof: 1 },
+      { name: 'Skywarn Spotter', description: 'Completed NWS Skywarn Spotter training', requires_proof: 1, admin_only: 0 },
+      { name: 'RACES', description: 'Is a RACES member', requires_proof: 1, admin_only: 0 },
+      { name: 'Official Emergency Station', description: 'ARRL Official Emergency Station designation', requires_proof: 1, admin_only: 0 },
+      { name: 'AUXCOMM', description: 'Completed AUXCOMM training', requires_proof: 1, admin_only: 0 },
+      { name: 'COM/L', description: 'Completed COM/L training', requires_proof: 1, admin_only: 0 },
+      { name: 'COM/T', description: 'Completed COM/T training', requires_proof: 1, admin_only: 0 },
+      { name: 'NetControl Certified', description: 'Member can act as netcontrol', requires_proof: 0, admin_only: 1 },
     ];
 
     for (const achievement of achievements) {
       const existing = await db.get('SELECT id FROM special_achievements WHERE name = ?', [achievement.name]);
       if (!existing) {
         await db.run(
-          'INSERT INTO special_achievements (name, description, requires_proof) VALUES (?, ?, ?)',
-          [achievement.name, achievement.description, achievement.requires_proof]
+          'INSERT INTO special_achievements (name, description, requires_proof, admin_only) VALUES (?, ?, ?, ?)',
+          [achievement.name, achievement.description, achievement.requires_proof, achievement.admin_only]
         );
       }
     }

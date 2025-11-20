@@ -86,6 +86,16 @@
           </div>
         </div>
 
+        <div class="relative flex items-start">
+          <div class="flex h-6 items-center">
+            <input id="adminOnly" name="adminOnly" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= formData.adminOnly === 'true' ? 'checked' : '' %>>
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <label for="adminOnly" class="font-medium text-gray-900">Admin-only (only admins can grant/revoke)</label>
+            <p class="text-xs text-gray-500">Admin-only achievements are visible to all but can only be toggled by administrators</p>
+          </div>
+        </div>
+
         <div>
           <button class="btn-primary" type="submit">Create Achievement</button>
         </div>
@@ -110,6 +120,14 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                     </svg>
                     Proof Required
+                  </span>
+                <% } %>
+                <% if (achievement.admin_only) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Admin Only
                   </span>
                 <% } %>
               </div>
@@ -156,6 +174,15 @@
                 </div>
                 <div class="ml-3 text-sm leading-6">
                   <label for="edit-requiresProof-<%= achievement.id %>" class="font-medium text-gray-900">Requires proof upload</label>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="edit-adminOnly-<%= achievement.id %>" name="adminOnly" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= achievement.admin_only ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="edit-adminOnly-<%= achievement.id %>" class="font-medium text-gray-900">Admin-only</label>
                 </div>
               </div>
 
