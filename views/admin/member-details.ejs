@@ -116,6 +116,83 @@
           <p class="text-sm font-medium text-gray-500">County:</p>
           <p class="mt-1 text-sm text-gray-900"><%= member.county %></p>
         </div>
+        <div class="md:col-span-2 pt-4 mt-4 border-t border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">Admin Settings</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Title:</p>
+              <div class="mt-1">
+                <% 
+                  const memberTitle = member.title || 'Member';
+                  let titleBadgeClass = '';
+                  if (memberTitle === 'Emergency Coordinator') {
+                    titleBadgeClass = 'bg-purple-100 text-purple-800';
+                  } else if (memberTitle === 'Deputy Emergency Coordinator') {
+                    titleBadgeClass = 'bg-blue-100 text-blue-800';
+                  } else if (memberTitle === 'Assistant Emergency Coordinator') {
+                    titleBadgeClass = 'bg-indigo-100 text-indigo-800';
+                  } else {
+                    titleBadgeClass = 'bg-gray-100 text-gray-800';
+                  }
+                %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= titleBadgeClass %>">
+                  <%= memberTitle %>
+                </span>
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Status:</p>
+              <div class="mt-1">
+                <% 
+                  const statusLabels = {
+                    active: 'Active',
+                    inactive: 'Inactive',
+                    suspended: 'Suspended',
+                    banned: 'Banned'
+                  };
+                  const statusLabel = statusLabels[member.status] || 'Active';
+                  let statusBadgeClass = '';
+                  if (member.status === 'active') {
+                    statusBadgeClass = 'bg-green-100 text-green-800';
+                  } else if (member.status === 'banned') {
+                    statusBadgeClass = 'bg-red-100 text-red-800';
+                  } else if (member.status === 'suspended') {
+                    statusBadgeClass = 'bg-yellow-100 text-yellow-800';
+                  } else {
+                    statusBadgeClass = 'bg-gray-100 text-gray-800';
+                  }
+                %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= statusBadgeClass %>">
+                  <%= statusLabel %>
+                </span>
+              </div>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Background Check:</p>
+              <div class="mt-1">
+                <% 
+                  const bgCheck = member.background_check || 'Not Started';
+                  let badgeClass = '';
+                  if (bgCheck === 'Passed') {
+                    badgeClass = 'bg-green-100 text-green-800';
+                  } else if (bgCheck === 'Failed') {
+                    badgeClass = 'bg-red-100 text-red-800';
+                  } else if (bgCheck === 'Pending') {
+                    badgeClass = 'bg-yellow-100 text-yellow-800';
+                  } else {
+                    badgeClass = 'bg-gray-100 text-gray-800';
+                  }
+                %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= badgeClass %>">
+                  <%= bgCheck %>
+                  <% if (member.background_check_date) { %>
+                    <span class="ml-1.5 opacity-75">• <%= new Date(member.background_check_date).toLocaleDateString() %></span>
+                  <% } %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Edit Mode -->
@@ -206,11 +283,106 @@
                   Active: Full access • Inactive: No access • Suspended: Temporary restriction • Banned: Permanent restriction
                 </p>
               </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-900" for="backgroundCheck">Background Check *</label>
+                <div class="mt-2">
+                  <select class="form-input" id="backgroundCheck" name="backgroundCheck" required>
+                    <option value="Not Started" <%= (member.background_check || 'Not Started') === 'Not Started' ? 'selected' : '' %>>Not Started</option>
+                    <option value="Pending" <%= member.background_check === 'Pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="Passed" <%= member.background_check === 'Passed' ? 'selected' : '' %>>Passed</option>
+                    <option value="Failed" <%= member.background_check === 'Failed' ? 'selected' : '' %>>Failed</option>
+                  </select>
+                </div>
+                <% if (member.background_check_date) { %>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Last updated: <%= new Date(member.background_check_date).toLocaleDateString() %>
+                  </p>
+                <% } %>
+              </div>
             </div>
           </div>
           <div class="flex gap-3 pt-4">
             <button type="submit" class="btn-primary">Save Changes</button>
             <button type="button" id="cancel-edit-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emergency Contact -->
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Emergency Contact</h2>
+        <button type="button" id="toggle-emergency-btn" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit
+        </button>
+      </div>
+      
+      <!-- View Mode -->
+      <div id="emergency-view">
+        <% if (member.emergency_contact_name) { %>
+          <div class="grid md:grid-cols-2 gap-6 text-sm">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Name:</p>
+              <p class="mt-1 text-sm text-gray-900"><%= member.emergency_contact_name %></p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Relationship:</p>
+              <p class="mt-1 text-sm text-gray-900"><%= member.emergency_contact_relationship || 'N/A' %></p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Phone:</p>
+              <p class="mt-1 text-sm text-gray-900"><%= member.emergency_contact_phone || 'N/A' %></p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Email:</p>
+              <p class="mt-1 text-sm text-gray-900"><%= member.emergency_contact_email || 'N/A' %></p>
+            </div>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-gray-500 italic">No emergency contact information on file</p>
+        <% } %>
+      </div>
+
+      <!-- Edit Mode -->
+      <div id="emergency-edit" class="hidden">
+        <form method="POST" action="/admin/members/<%= member.id %>/update" class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-900" for="emergencyContactName">Contact Name</label>
+              <div class="mt-2">
+                <input class="form-input" id="emergencyContactName" name="emergencyContactName" type="text" value="<%= member.emergency_contact_name || '' %>">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-900" for="emergencyContactRelationship">Relationship</label>
+              <div class="mt-2">
+                <input class="form-input" id="emergencyContactRelationship" name="emergencyContactRelationship" type="text" placeholder="e.g., Spouse, Parent, Sibling" value="<%= member.emergency_contact_relationship || '' %>">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-900" for="emergencyContactPhone">Phone Number</label>
+              <div class="mt-2">
+                <input class="form-input" id="emergencyContactPhone" name="emergencyContactPhone" type="tel" value="<%= member.emergency_contact_phone || '' %>">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-900" for="emergencyContactEmail">Email Address</label>
+              <div class="mt-2">
+                <input class="form-input" id="emergencyContactEmail" name="emergencyContactEmail" type="email" value="<%= member.emergency_contact_email || '' %>">
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button type="submit" class="btn-primary">Save Changes</button>
+            <button type="button" id="cancel-emergency-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Cancel
             </button>
           </div>
@@ -1024,6 +1196,22 @@ document.addEventListener('DOMContentLoaded', function() {
   cancelCapabilitiesBtn.addEventListener('click', function() {
     capabilitiesView.classList.remove('hidden');
     capabilitiesEdit.classList.add('hidden');
+  });
+
+  // Emergency contact toggle
+  const toggleEmergencyBtn = document.getElementById('toggle-emergency-btn');
+  const cancelEmergencyBtn = document.getElementById('cancel-emergency-btn');
+  const emergencyView = document.getElementById('emergency-view');
+  const emergencyEdit = document.getElementById('emergency-edit');
+
+  toggleEmergencyBtn.addEventListener('click', function() {
+    emergencyView.classList.add('hidden');
+    emergencyEdit.classList.remove('hidden');
+  });
+
+  cancelEmergencyBtn.addEventListener('click', function() {
+    emergencyView.classList.remove('hidden');
+    emergencyEdit.classList.add('hidden');
   });
 });
 </script>

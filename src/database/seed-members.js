@@ -43,6 +43,8 @@ async function seedMembers() {
         county: 'Sangamon',
         license_class: 'Extra',
         status: 'active',
+        background_check: 'Passed',
+        background_check_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
         // Capabilities
         emergency_power: 1,
         emergency_power_type: 'Generator (5kW)',
@@ -76,6 +78,8 @@ async function seedMembers() {
         county: 'Peoria',
         license_class: 'General',
         status: 'active',
+        background_check: 'Pending',
+        background_check_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
         // Capabilities
         vhf_uhf_capable: 1,
         vhf_uhf_power: 25,
@@ -104,6 +108,8 @@ async function seedMembers() {
         county: 'Winnebago',
         license_class: 'Extra',
         status: 'active',
+        background_check: 'Passed',
+        background_check_date: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days ago
         // Capabilities
         hf_capable: 1,
         hf_power: 1500,
@@ -138,6 +144,7 @@ async function seedMembers() {
         county: 'Champaign',
         license_class: 'General',
         status: 'active',
+        background_check: 'Not Started',
         // Capabilities
         vhf_uhf_capable: 1,
         vhf_uhf_power: 50,
@@ -167,6 +174,8 @@ async function seedMembers() {
         county: 'Macon',
         license_class: 'General',
         status: 'active',
+        background_check: 'Passed',
+        background_check_date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days ago
         // Capabilities
         hf_capable: 1,
         hf_power: 100,
@@ -194,6 +203,8 @@ async function seedMembers() {
         county: 'McLean',
         license_class: 'Technician',
         status: 'inactive',
+        background_check: 'Failed',
+        background_check_date: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days ago
         // Capabilities
         vhf_uhf_capable: 1,
         vhf_uhf_power: 5,
@@ -214,6 +225,8 @@ async function seedMembers() {
         county: 'Kane',
         license_class: 'Extra',
         status: 'active',
+        background_check: 'Passed',
+        background_check_date: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString(), // 120 days ago
         // Capabilities
         hf_capable: 1,
         hf_power: 200,
@@ -249,6 +262,8 @@ async function seedMembers() {
         county: 'Will',
         license_class: 'Technician',
         status: 'active',
+        background_check: 'Pending',
+        background_check_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
         // Capabilities
         vhf_uhf_capable: 1,
         vhf_uhf_power: 50,
@@ -279,7 +294,7 @@ async function seedMembers() {
 
       // Create member profile
       const capabilityFields = [
-        'license_class', 'status', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
+        'license_class', 'status', 'background_check', 'background_check_date', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
         'vhf_uhf_capable', 'vhf_uhf_power', 'winlink_capable', 'satellite_internet',
         'satellite_internet_type', 'mobile_station', 'portable_station', 'aprs_capable',
         'dstar_capable', 'dmr_capable', 'fusion_capable', 'packet_radio', 'sstv_capable',

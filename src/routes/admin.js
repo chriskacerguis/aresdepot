@@ -177,7 +177,10 @@ router.post('/members/:id/update',
     }
 
     try {
-      await Member.update(req.params.id, {
+      // Get current member to check if background check status changed
+      const currentMember = await Member.findById(req.params.id);
+      
+      const updateData = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phone: req.body.phone,
@@ -187,8 +190,21 @@ router.post('/members/:id/update',
         zip: req.body.zip,
         county: req.body.county,
         callsign: req.body.callsign,
-        status: req.body.status
-      });
+        status: req.body.status,
+        title: req.body.title,
+        backgroundCheck: req.body.backgroundCheck,
+        emergencyContactName: req.body.emergencyContactName,
+        emergencyContactRelationship: req.body.emergencyContactRelationship,
+        emergencyContactPhone: req.body.emergencyContactPhone,
+        emergencyContactEmail: req.body.emergencyContactEmail
+      };
+      
+      // If background check status changed, update the date
+      if (currentMember && currentMember.background_check !== req.body.backgroundCheck) {
+        updateData.backgroundCheckDate = new Date().toISOString();
+      }
+      
+      await Member.update(req.params.id, updateData);
       res.redirect('/admin/members/' + req.params.id);
     } catch (error) {
       console.error('Update member error:', error);
