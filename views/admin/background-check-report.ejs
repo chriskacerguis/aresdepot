@@ -95,19 +95,20 @@
     <div class="card-body">
       <h3 class="text-sm font-medium text-gray-900 mb-3">Overall Completion Rate</h3>
       <div class="relative">
+        <%
+          const completedPct = (stats.completed / stats.total) * 100;
+          const inProgressPct = ((stats.inProgress + stats.pendingReview) / stats.total) * 100;
+          const failedPct = (stats.failed / stats.total) * 100;
+        %>
         <div class="overflow-hidden h-6 text-xs flex rounded-lg bg-gray-200">
-          <% const completedPct = (stats.completed / stats.total) * 100; %>
-          <% const inProgressPct = ((stats.inProgress + stats.pendingReview) / stats.total) * 100; %>
-          <% const failedPct = (stats.failed / stats.total) * 100; %>
-          
-          <div style="width:<%= completedPct %>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
+          <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500" style="width: <%= completedPct.toFixed(2) %>%">
             <% if (completedPct > 8) { %><span class="font-semibold"><%= completedPct.toFixed(0) %>%</span><% } %>
           </div>
-          <div style="width:<%= inProgressPct %>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500">
+          <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500" style="width: <%= inProgressPct.toFixed(2) %>%">
             <% if (inProgressPct > 8) { %><span class="font-semibold"><%= inProgressPct.toFixed(0) %>%</span><% } %>
           </div>
           <% if (failedPct > 0) { %>
-            <div style="width:<%= failedPct %>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500">
+            <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500" style="width: <%= failedPct.toFixed(2) %>%">
               <% if (failedPct > 8) { %><span class="font-semibold"><%= failedPct.toFixed(0) %>%</span><% } %>
             </div>
           <% } %>

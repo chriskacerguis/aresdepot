@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { body } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const { requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const Member = require('../models/Member');
@@ -8,6 +8,8 @@ const Tier = require('../models/Tier');
 const Task = require('../models/Task');
 const Event = require('../models/Event');
 const Achievement = require('../models/Achievement');
+const Setting = require('../models/Setting');
+const { testSmtpConnection } = require('../utils/email');
 
 // Admin dashboard
 router.get('/dashboard', requireAdmin, async (req, res) => {
@@ -912,6 +914,62 @@ router.get('/reports/event-attendance', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Event attendance report error:', error);
     res.render('error', { message: 'Error generating event attendance report' });
+  }
+});
+
+// Settings page
+router.get('/settings', requireAdmin, async (req, res) => {
+  try {
+    const smtpConfig = await Setting.getSmtpConfig();
+    res.render('admin/settings', { smtpConfig, success: req.query.success, error: req.query.error });
+  } catch (error) {
+    console.error('Settings page error:', error);
+    res.render('error', { message: 'Error loading settings' });
+  }
+});
+
+// Update SMTP settings
+router.post('/settings/smtp',
+  requireAdmin,
+  [
+    body('smtp_host').trim().notEmpty().withMessage('SMTP host is required'),
+    body('smtp_port').isInt({ min: 1, max: 65535 }).withMessage('Valid port number required'),
+    body('smtp_user').trim().optional(),
+    body('smtp_pass').optional(),
+    body('smtp_from').trim().isEmail().withMessage('Valid from email address required')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.redirect('/admin/settings?error=' + encodeURIComponent(errors.array()[0].msg));
+    }
+
+    try {
+      const config = {
+        host: req.body.smtp_host,
+        port: parseInt(req.body.smtp_port),
+        secure: req.body.smtp_secure === 'true',
+        user: req.body.smtp_user,
+        pass: req.body.smtp_pass,
+        from: req.body.smtp_from
+      };
+
+      await Setting.setSmtpConfig(config);
+      res.redirect('/admin/settings?success=' + encodeURIComponent('SMTP settings saved successfully'));
+    } catch (error) {
+      console.error('Error saving SMTP settings:', error);
+      res.redirect('/admin/settings?error=' + encodeURIComponent('Failed to save settings'));
+    }
+  }
+);
+
+// Test SMTP connection
+router.post('/settings/smtp/test', requireAdmin, async (req, res) => {
+  try {
+    const result = await testSmtpConnection();
+    res.json(result);
+  } catch (error) {
+    res.json({ success: false, error: error.message });
   }
 });
 

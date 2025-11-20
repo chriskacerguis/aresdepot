@@ -1,0 +1,163 @@
+<% title = 'Admin Settings' %>
+
+<div class="px-4 sm:px-0 max-w-4xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Admin Settings</h1>
+    <p class="mt-2 text-sm text-gray-700">Configure system settings and email notifications</p>
+  </div>
+
+  <% if (success) { %>
+    <div class="rounded-md bg-green-50 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-green-800"><%= success %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-red-800"><%= error %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- SMTP Settings -->
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">Email (SMTP) Settings</h2>
+          <p class="mt-1 text-sm text-gray-600">Configure SMTP server for sending emails</p>
+        </div>
+        <button type="button" id="test-smtp-btn" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Test Connection
+        </button>
+      </div>
+
+      <form method="POST" action="/admin/settings/smtp" class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label for="smtp_host" class="block text-sm font-medium text-gray-700">SMTP Host</label>
+            <input type="text" name="smtp_host" id="smtp_host" value="<%= smtpConfig.host %>" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="smtp.gmail.com">
+            <p class="mt-1 text-xs text-gray-500">Example: smtp.gmail.com, smtp.office365.com</p>
+          </div>
+
+          <div>
+            <label for="smtp_port" class="block text-sm font-medium text-gray-700">Port</label>
+            <input type="number" name="smtp_port" id="smtp_port" value="<%= smtpConfig.port %>" required min="1" max="65535"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="587">
+            <p class="mt-1 text-xs text-gray-500">Usually 587 (TLS) or 465 (SSL)</p>
+          </div>
+
+          <div>
+            <label for="smtp_secure" class="block text-sm font-medium text-gray-700">Security</label>
+            <select name="smtp_secure" id="smtp_secure" 
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+              <option value="false" <%= !smtpConfig.secure ? 'selected' : '' %>>STARTTLS (Port 587)</option>
+              <option value="true" <%= smtpConfig.secure ? 'selected' : '' %>>SSL/TLS (Port 465)</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="smtp_user" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" name="smtp_user" id="smtp_user" value="<%= smtpConfig.user %>"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="your-email@example.com">
+            <p class="mt-1 text-xs text-gray-500">Usually your email address</p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="smtp_pass" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" name="smtp_pass" id="smtp_pass" value="<%= smtpConfig.pass %>"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="••••••••">
+            <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing password. For Gmail, use an App Password.</p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="smtp_from" class="block text-sm font-medium text-gray-700">From Email Address</label>
+            <input type="email" name="smtp_from" id="smtp_from" value="<%= smtpConfig.from %>" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="noreply@aresdepot.org">
+            <p class="mt-1 text-xs text-gray-500">Email address shown in the "From" field</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-primary">Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Help Section -->
+  <div class="card">
+    <div class="card-body">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Common SMTP Providers</h3>
+      <div class="space-y-4 text-sm">
+        <div class="border-l-4 border-blue-500 pl-4">
+          <p class="font-semibold text-gray-900">Gmail</p>
+          <p class="text-gray-600">Host: smtp.gmail.com, Port: 587 (STARTTLS)</p>
+          <p class="text-xs text-gray-500 mt-1">Note: Enable 2-factor authentication and use an App Password</p>
+        </div>
+        <div class="border-l-4 border-green-500 pl-4">
+          <p class="font-semibold text-gray-900">Microsoft 365 / Outlook</p>
+          <p class="text-gray-600">Host: smtp.office365.com, Port: 587 (STARTTLS)</p>
+        </div>
+        <div class="border-l-4 border-purple-500 pl-4">
+          <p class="font-semibold text-gray-900">SendGrid</p>
+          <p class="text-gray-600">Host: smtp.sendgrid.net, Port: 587, User: apikey</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('test-smtp-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('test-smtp-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Testing...';
+  
+  try {
+    const response = await fetch('/admin/settings/smtp/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('✓ SMTP connection successful!');
+    } else {
+      alert('✗ SMTP connection failed: ' + result.error);
+    }
+  } catch (error) {
+    alert('✗ Test failed: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Test Connection';
+  }
+});
+</script>

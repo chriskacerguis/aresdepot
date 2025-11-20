@@ -197,7 +197,16 @@ const migrations = [
   `CREATE INDEX IF NOT EXISTS idx_member_tasks_member_id ON member_tasks(member_id)`,
   `CREATE INDEX IF NOT EXISTS idx_member_tasks_task_id ON member_tasks(task_id)`,
   `CREATE INDEX IF NOT EXISTS idx_event_rsvps_event_id ON event_rsvps(event_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_event_rsvps_member_id ON event_rsvps(member_id)`
+  `CREATE INDEX IF NOT EXISTS idx_event_rsvps_member_id ON event_rsvps(member_id)`,
+
+  // Migration 12: Create settings table
+  `CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key TEXT UNIQUE NOT NULL,
+    value TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`
 ];
 
 async function runMigrations() {
