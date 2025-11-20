@@ -223,7 +223,27 @@ const migrations = [
   )`,
 
   // Migration 14: Add challenge column to users table for WebAuthn
-  `ALTER TABLE users ADD COLUMN current_challenge TEXT`
+  `ALTER TABLE users ADD COLUMN current_challenge TEXT`,
+
+  // Migration 15: Create documents table
+  `CREATE TABLE IF NOT EXISTS documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    file_path TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    file_size INTEGER,
+    mime_type TEXT,
+    tier_id INTEGER,
+    uploaded_by INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tier_id) REFERENCES tiers(id) ON DELETE SET NULL,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
+  )`,
+
+  // Migration 16: Create document index
+  `CREATE INDEX IF NOT EXISTS idx_documents_tier_id ON documents(tier_id)`
 ];
 
 async function runMigrations() {
@@ -240,6 +260,7 @@ async function runMigrations() {
       fs.mkdirSync(uploadsDir, { recursive: true });
       fs.mkdirSync(path.join(uploadsDir, 'licenses'), { recursive: true });
       fs.mkdirSync(path.join(uploadsDir, 'proofs'), { recursive: true });
+      fs.mkdirSync(path.join(uploadsDir, 'documents'), { recursive: true });
     }
 
     console.log('🔄 Running database migrations...');

@@ -5,9 +5,27 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Ensure required directories exist
+const requiredDirs = [
+  './data',
+  './uploads',
+  './uploads/licenses',
+  './uploads/photos',
+  './uploads/proofs',
+  './uploads/documents'
+];
+
+requiredDirs.forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`📁 Created directory: ${dir}`);
+  }
+});
 
 // Import routes
 const authRoutes = require('./src/routes/auth');
@@ -22,7 +40,8 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
       imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org"],
       connectSrc: ["'self'", "https://nominatim.openstreetmap.org", "https://unpkg.com"]
     }

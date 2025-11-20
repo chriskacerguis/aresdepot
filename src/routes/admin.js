@@ -10,7 +10,11 @@ const Event = require('../models/Event');
 const Achievement = require('../models/Achievement');
 const Setting = require('../models/Setting');
 const Passkey = require('../models/Passkey');
+const Document = require('../models/Document');
 const { testSmtpConnection } = require('../utils/email');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Admin dashboard
 router.get('/dashboard', requireAdmin, async (req, res) => {
@@ -976,6 +980,168 @@ router.post('/settings/smtp/test', requireAdmin, async (req, res) => {
     res.json(result);
   } catch (error) {
     res.json({ success: false, error: error.message });
+  }
+});
+
+// Configure multer for document uploads
+const documentStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '../../uploads/documents');
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'doc-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const documentUpload = multer({
+  storage: documentStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
+  fileFilter: (req, file, cb) => {
+    // Allow common document types
+    const allowedTypes = /pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip|png|jpg|jpeg/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
+  }
+});
+
+// Documents list
+router.get('/documents', requireAdmin, async (req, res) => {
+  try {
+    const documents = await Document.getAll();
+    const tiers = await Tier.getAll();
+    res.render('admin/documents', { 
+      documents, 
+      tiers,
+      errors: [],
+      success: req.query.success,
+      formData: {} 
+    });
+  } catch (error) {
+    console.error('Documents error:', error);
+    res.render('error', { message: 'Error loading documents' });
+  }
+});
+
+// Upload document
+router.post('/documents/upload', 
+  requireAdmin,
+  documentUpload.single('document'),
+  [
+    body('title').trim().notEmpty().withMessage('Title is required'),
+    body('description').trim()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+      // Delete uploaded file if validation fails
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      const documents = await Document.getAll();
+      const tiers = await Tier.getAll();
+      return res.render('admin/documents', {
+        documents,
+        tiers,
+        errors: errors.array(),
+        formData: req.body
+      });
+    }
+
+    if (!req.file) {
+      const documents = await Document.getAll();
+      const tiers = await Tier.getAll();
+      return res.render('admin/documents', {
+        documents,
+        tiers,
+        errors: [{ msg: 'Please select a file to upload' }],
+        formData: req.body
+      });
+    }
+
+    try {
+      await Document.create({
+        title: req.body.title,
+        description: req.body.description,
+        filePath: req.file.path,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
+        tierId: req.body.tier_id || null,
+        uploadedBy: req.session.user.id
+      });
+
+      res.redirect('/admin/documents?success=' + encodeURIComponent('Document uploaded successfully'));
+    } catch (error) {
+      console.error('Document upload error:', error);
+      // Delete uploaded file on error
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      const documents = await Document.getAll();
+      const tiers = await Tier.getAll();
+      res.render('admin/documents', {
+        documents,
+        tiers,
+        errors: [{ msg: 'Error uploading document' }],
+        formData: req.body
+      });
+    }
+  }
+);
+
+// Edit document
+router.post('/documents/:id/edit',
+  requireAdmin,
+  [
+    body('title').trim().notEmpty().withMessage('Title is required'),
+    body('description').trim()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+      return res.redirect('/admin/documents?error=' + encodeURIComponent('Validation failed'));
+    }
+
+    try {
+      await Document.update(req.params.id, {
+        title: req.body.title,
+        description: req.body.description,
+        tierId: req.body.tier_id || null
+      });
+
+      res.redirect('/admin/documents?success=' + encodeURIComponent('Document updated successfully'));
+    } catch (error) {
+      console.error('Document update error:', error);
+      res.redirect('/admin/documents?error=' + encodeURIComponent('Error updating document'));
+    }
+  }
+);
+
+// Delete document
+router.post('/documents/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.id);
+    if (document) {
+      // Delete file from filesystem
+      if (fs.existsSync(document.file_path)) {
+        fs.unlinkSync(document.file_path);
+      }
+      await Document.delete(req.params.id);
+    }
+    res.redirect('/admin/documents?success=' + encodeURIComponent('Document deleted successfully'));
+  } catch (error) {
+    console.error('Document delete error:', error);
+    res.redirect('/admin/documents?error=' + encodeURIComponent('Error deleting document'));
   }
 });
 

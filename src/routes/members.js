@@ -7,8 +7,10 @@ const Member = require('../models/Member');
 const Task = require('../models/Task');
 const Event = require('../models/Event');
 const Passkey = require('../models/Passkey');
+const Document = require('../models/Document');
 const multer = require('multer');
 const { geocodeAddress } = require('../utils/geocode');
+const path = require('path');
 
 // Member dashboard
 router.get('/dashboard', requireAuth, async (req, res) => {
@@ -270,6 +272,51 @@ router.delete('/passkeys/:id', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Delete passkey error:', error);
     res.status(500).json({ error: 'Failed to delete passkey' });
+  }
+});
+
+// View documents
+router.get('/documents', requireAuth, async (req, res) => {
+  try {
+    const member = await Member.findByUserId(req.session.user.id);
+    
+    if (!member) {
+      return res.redirect('/members/profile/edit');
+    }
+
+    const documents = await Document.getAccessibleByMember(member.id);
+    res.render('members/documents', { documents });
+  } catch (error) {
+    console.error('Documents error:', error);
+    res.render('error', { message: 'Error loading documents' });
+  }
+});
+
+// Download document
+router.get('/documents/:id/download', requireAuth, async (req, res) => {
+  try {
+    const member = await Member.findByUserId(req.session.user.id);
+    
+    if (!member) {
+      return res.status(403).send('Access denied');
+    }
+
+    const canAccess = await Document.canMemberAccess(member.id, req.params.id);
+    
+    if (!canAccess) {
+      return res.status(403).send('You do not have access to this document');
+    }
+
+    const document = await Document.findById(req.params.id);
+    
+    if (!document) {
+      return res.status(404).send('Document not found');
+    }
+
+    res.download(document.file_path, document.file_name);
+  } catch (error) {
+    console.error('Document download error:', error);
+    res.status(500).send('Error downloading document');
   }
 });
 
