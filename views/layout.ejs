@@ -41,7 +41,7 @@
               </div>
             <% } %>
           </div>
-          <div class="hidden md:block">
+          <div class="flex items-center">
             <div class="ml-4 flex items-center md:ml-6">
               <% if (user) { %>
                 <div class="flex items-center gap-4">
@@ -50,9 +50,9 @@
                   <a href="/auth/logout" class="text-indigo-100 hover:text-white text-sm font-medium">Sign out</a>
                 </div>
               <% } else { %>
-                <div class="flex items-center gap-4">
-                  <a href="/auth/login" class="text-indigo-100 hover:text-white text-sm font-medium">Sign in</a>
-                  <a href="/auth/register" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50">Register</a>
+                <div class="flex items-center gap-4" style="position: relative; z-index: 50;">
+                  <a href="/auth/login" class="text-indigo-100 hover:text-white text-sm font-medium" style="cursor: pointer; pointer-events: auto;">Sign in</a>
+                  <a href="/auth/register" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50" style="cursor: pointer; pointer-events: auto;">Register</a>
                 </div>
               <% } %>
             </div>
