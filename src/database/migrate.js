@@ -65,6 +65,7 @@ const migrations = [
     mesh_network INTEGER DEFAULT 0,
     firstnet_device INTEGER DEFAULT 0,
     capabilities_notes TEXT,
+    admin_notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

@@ -61,7 +61,8 @@ async function seedMembers() {
         tower_antenna_height: 40,
         backup_batteries: 1,
         firstnet_device: 1,
-        capabilities_notes: 'Fully equipped base station with backup power. Available for emergency deployment.'
+        capabilities_notes: 'Fully equipped base station with backup power. Available for emergency deployment.',
+        admin_notes: 'Excellent operator with strong leadership skills. Recommended for EC position. Has completed all ICS training and has 10+ years of ARES experience.'
       },
       {
         email: 'sarah.johnson@example.com',
@@ -91,7 +92,8 @@ async function seedMembers() {
         cpr_first_aid_certified: 1,
         go_kit_ready: 1,
         firstnet_device: 1,
-        capabilities_notes: 'Mobile operations specialist. Starlink internet backup.'
+        capabilities_notes: 'Mobile operations specialist. Starlink internet backup.',
+        admin_notes: 'Background check pending - submitted 7 days ago. Follow up with county office next week.'
       },
       {
         email: 'michael.brown@example.com',
@@ -125,7 +127,8 @@ async function seedMembers() {
         backup_batteries: 1,
         tower_antenna_height: 60,
         go_kit_ready: 1,
-        capabilities_notes: 'HF digital modes expert. Large solar installation with battery backup.'
+        capabilities_notes: 'HF digital modes expert. Large solar installation with battery backup.',
+        admin_notes: 'Top digital modes operator in the county. Frequently assists with EmComm training. Consider for technical committee.'
       },
       {
         email: 'lisa.davis@example.com',
@@ -206,7 +209,8 @@ async function seedMembers() {
         vhf_uhf_capable: 1,
         vhf_uhf_power: 5,
         mobile_station: 1,
-        capabilities_notes: 'Handheld radio only. Interested in getting more involved.'
+        capabilities_notes: 'Handheld radio only. Interested in getting more involved.',
+        admin_notes: 'Background check failed - DUI on record. Status changed to inactive per policy. Eligible for reapplication in 2 years.'
       },
       {
         email: 'david.anderson@example.com',
@@ -240,7 +244,8 @@ async function seedMembers() {
         backup_batteries: 1,
         tower_antenna_height: 35,
         go_kit_ready: 1,
-        capabilities_notes: 'ICS-100, ICS-200, ICS-700, ICS-800 certified. Active ARES member.'
+        capabilities_notes: 'ICS-100, ICS-200, ICS-700, ICS-800 certified. Active ARES member.',
+        admin_notes: 'Very reliable during activations. Served as IC during last 3 events. Has medical background (paramedic).'
       },
       {
         email: 'mary.thomas@example.com',
@@ -638,15 +643,43 @@ async function seedMembers() {
     // Assign random progress to members
     const memberRecords = await db.all('SELECT id FROM members');
     
-    for (const member of memberRecords) {
-      // Random number of completed tasks (0-8 out of total tasks)
-      const numTasksToComplete = Math.floor(Math.random() * 9);
-      const tasksToComplete = allTasks
-        .sort(() => Math.random() - 0.5)
-        .slice(0, numTasksToComplete);
+    for (const [index, member] of memberRecords.entries()) {
+      let numTasksToComplete;
+      let tasksToComplete;
+      
+      // Ensure first 5 members have tier achievements
+      if (index < 5) {
+        // Member 0: Complete all Level 1 tasks (achieve Level 1)
+        // Member 1: Complete all Level 1 and Level 2 tasks (achieve Level 2)
+        // Member 2: Complete all tasks (achieve Level 3)
+        // Member 3: Complete all Level 1 tasks
+        // Member 4: Complete some Level 1 tasks (no tier yet)
+        const tier1Tasks = allTasks.filter(t => t.tier_id === tiers[0].id);
+        const tier2Tasks = allTasks.filter(t => t.tier_id === tiers[1].id);
+        const tier3Tasks = allTasks.filter(t => t.tier_id === tiers[2].id);
+        
+        if (index === 0) {
+          tasksToComplete = [...tier1Tasks];
+        } else if (index === 1) {
+          tasksToComplete = [...tier1Tasks, ...tier2Tasks];
+        } else if (index === 2) {
+          tasksToComplete = [...tier1Tasks, ...tier2Tasks, ...tier3Tasks];
+        } else if (index === 3) {
+          tasksToComplete = [...tier1Tasks];
+        } else {
+          tasksToComplete = tier1Tasks.slice(0, Math.floor(tier1Tasks.length / 2));
+        }
+      } else {
+        // Random number of completed tasks for remaining members (0-8 out of total tasks)
+        numTasksToComplete = Math.floor(Math.random() * 9);
+        tasksToComplete = allTasks
+          .sort(() => Math.random() - 0.5)
+          .slice(0, numTasksToComplete);
+      }
 
       for (const task of tasksToComplete) {
-        const isVerified = Math.random() > 0.3; // 70% chance of being verified
+        // Ensure first 4 members have all tasks verified for guaranteed tier achievements
+        const isVerified = (index < 4) ? true : (Math.random() > 0.3); // First 4 members: 100% verified, others: 70% chance
         const daysAgo = Math.floor(Math.random() * 30);
         
         await db.run(
@@ -684,7 +717,7 @@ async function seedMembers() {
         }
       }
 
-      console.log(`✅ Assigned ${numTasksToComplete} tasks to member ID ${member.id}`);
+      console.log(`✅ Assigned ${tasksToComplete.length} tasks to member ID ${member.id}`);
     }
 
     console.log('✅ Member data seeding completed successfully!');

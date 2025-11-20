@@ -223,7 +223,8 @@ router.post('/members/:id/update',
         emergencyContactName: req.body.emergencyContactName,
         emergencyContactRelationship: req.body.emergencyContactRelationship,
         emergencyContactPhone: req.body.emergencyContactPhone,
-        emergencyContactEmail: req.body.emergencyContactEmail
+        emergencyContactEmail: req.body.emergencyContactEmail,
+        adminNotes: req.body.adminNotes || null
       };
       
       // If background check status changed, update the date

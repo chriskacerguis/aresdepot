@@ -84,7 +84,8 @@ class Member {
       solarPower: 'solar_power',
       meshNetwork: 'mesh_network',
       firstnetDevice: 'firstnet_device',
-      capabilitiesNotes: 'capabilities_notes'
+      capabilitiesNotes: 'capabilities_notes',
+      adminNotes: 'admin_notes'
     };
 
     for (const [key, dbField] of Object.entries(fieldMapping)) {
@@ -107,9 +108,17 @@ class Member {
 
   static async getAll() {
     return await db.all(`
-      SELECT m.*, u.email
+      SELECT m.*, u.email, t.name as tier_name
       FROM members m
       JOIN users u ON m.user_id = u.id
+      LEFT JOIN member_tiers mt ON m.id = mt.member_id AND mt.achieved = 1
+      LEFT JOIN tiers t ON mt.tier_id = t.id
+      LEFT JOIN (
+        SELECT member_id, MAX(tier_id) as max_tier_id
+        FROM member_tiers
+        WHERE achieved = 1
+        GROUP BY member_id
+      ) max_tier ON m.id = max_tier.member_id AND t.id = max_tier.max_tier_id
       ORDER BY m.last_name, m.first_name
     `);
   }

@@ -72,10 +72,26 @@
           Extra: { bg: 'bg-emerald-100', text: 'text-emerald-700', ring: 'ring-emerald-600/20', label: 'Extra' }
         };
         const license = member.license_class ? licenseConfig[member.license_class] : null;
+        
+        // Find the highest achieved tier
+        const achievedTiers = member.tiers ? member.tiers.filter(t => t.achieved) : [];
+        const highestTier = achievedTiers.length > 0 ? achievedTiers[achievedTiers.length - 1] : null;
+        
+        const tierConfig = {
+          'Level 1 - Basic': { bg: 'bg-orange-100', text: 'text-orange-700', ring: 'ring-orange-600/20' },
+          'Level 2 - Intermediate': { bg: 'bg-slate-200', text: 'text-slate-700', ring: 'ring-slate-600/20' },
+          'Level 3 - Advanced': { bg: 'bg-yellow-100', text: 'text-yellow-800', ring: 'ring-yellow-600/20' }
+        };
+        const tierStyle = highestTier ? tierConfig[highestTier.name] : null;
       %>
         <% if (license) { %>
           <span class="inline-flex items-center rounded-md <%= license.bg %> px-2.5 py-1 text-sm font-semibold <%= license.text %> ring-1 ring-inset <%= license.ring %>">
             <%= license.label %>
+          </span>
+        <% } %>
+        <% if (highestTier && tierStyle) { %>
+          <span class="inline-flex items-center rounded-md <%= tierStyle.bg %> px-2.5 py-1 text-sm font-semibold <%= tierStyle.text %> ring-1 ring-inset <%= tierStyle.ring %> ml-2">
+            <%= highestTier.name %>
           </span>
         <% } %>
       </div>
@@ -192,6 +208,14 @@
               </div>
             </div>
           </div>
+          <div class="md:col-span-2 mt-4">
+            <p class="text-sm font-medium text-gray-500">Admin Notes:</p>
+            <% if (member.admin_notes) { %>
+              <p class="mt-1 text-sm text-gray-900 whitespace-pre-wrap"><%= member.admin_notes %></p>
+            <% } else { %>
+              <p class="mt-1 text-sm text-gray-500 italic">No admin notes on file</p>
+            <% } %>
+          </div>
         </div>
       </div>
 
@@ -299,6 +323,15 @@
                   </p>
                 <% } %>
               </div>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-900" for="adminNotes">Admin Notes</label>
+              <div class="mt-2">
+                <textarea class="form-input" id="adminNotes" name="adminNotes" rows="4" placeholder="Private notes visible only to administrators..."><%= member.admin_notes || '' %></textarea>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">
+                These notes are only visible to administrators and will not be shown to the member.
+              </p>
             </div>
           </div>
           <div class="flex gap-3 pt-4">
