@@ -1,0 +1,133 @@
+<% title = 'Manage Events' %>
+
+<div class="px-4 sm:px-0">
+  <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Manage Events</h1>
+
+  <!-- Create Event Form -->
+  <div class="card mb-8">
+    <div class="card-body">
+      <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Event</h2>
+      
+      <% if (errors && errors.length > 0) { %>
+        <div class="rounded-md bg-red-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <% errors.forEach(error => { %>
+                <p class="text-sm text-red-800"><%= error.msg %></p>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <form action="/admin/events/create" method="POST" class="space-y-6">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label class="form-label" for="name">Event Name *</label>
+            <div class="mt-2">
+              <input class="form-input" id="name" name="name" type="text" required value="<%= formData.name || '' %>">
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="eventDate">Event Date/Time *</label>
+            <div class="mt-2">
+              <input class="form-input" id="eventDate" name="eventDate" type="datetime-local" required value="<%= formData.eventDate || '' %>">
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label class="form-label" for="location">Location</label>
+          <div class="mt-2">
+            <input class="form-input" id="location" name="location" type="text" value="<%= formData.location || '' %>">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" for="description">Description</label>
+          <div class="mt-2">
+            <textarea class="form-input" id="description" name="description" rows="3"><%= formData.description || '' %></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+          <div>
+            <label class="form-label" for="minimumTierId">Minimum Tier (Optional)</label>
+            <div class="mt-2">
+              <select class="form-input" id="minimumTierId" name="minimumTierId">
+                <option value="">No Requirement</option>
+                <% tiers.forEach(tier => { %>
+                  <option value="<%= tier.id %>" <%= formData.minimumTierId == tier.id ? 'selected' : '' %>>
+                    <%= tier.name %>
+                  </option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="maxAttendees">Max Attendees (Optional)</label>
+            <div class="mt-2">
+              <input class="form-input" id="maxAttendees" name="maxAttendees" type="number" value="<%= formData.maxAttendees || '' %>">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <button class="btn-primary" type="submit">Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Existing Events -->
+  <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">All Events</h2>
+  <% if (events.length > 0) { %>
+    <div class="space-y-4">
+      <% events.forEach(event => { %>
+        <div class="card">
+          <div class="card-body">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <h3 class="text-base font-semibold text-gray-900"><%= event.name %></h3>
+                <p class="mt-1 text-sm text-gray-600"><%= event.description %></p>
+                <p class="mt-2 text-sm text-gray-500">
+                  <span class="inline-flex items-center gap-1">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <%= event.location %>
+                  </span>
+                  <span class="mx-2">•</span>
+                  <span class="inline-flex items-center gap-1">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <%= new Date(event.event_date).toLocaleString() %>
+                  </span>
+                </p>
+                <p class="mt-1 text-xs text-gray-500">
+                  <% if (event.minimum_tier_name) { %>
+                    Minimum Tier: <%= event.minimum_tier_name %> • 
+                  <% } %>
+                  Attendees: <%= event.attendee_count %><% if (event.max_attendees) { %> / <%= event.max_attendees %><% } %>
+                </p>
+              </div>
+              <div class="ml-6 flex-shrink-0 flex gap-2">
+                <a href="/events/<%= event.id %>" class="btn-primary">View</a>
+                <a href="/admin/reports/event/<%= event.id %>" class="btn-secondary">Report</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <p class="text-gray-600">No events created yet.</p>
+  <% } %>
+</div>

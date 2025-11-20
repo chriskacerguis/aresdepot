@@ -1,0 +1,146 @@
+<% title = 'Admin Dashboard' %>
+
+<div class="px-4 sm:px-0">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+    <p class="mt-2 text-sm text-gray-700">Overview of your ARES organization activity and metrics.</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Total Members</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= stats.totalMembers %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Active Tiers</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= stats.totalTiers %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Upcoming Events</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= stats.upcomingEvents %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Pending Verifications</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= stats.pendingVerifications %></dd>
+      <% if (stats.pendingVerifications > 0) { %>
+        <dd class="mt-2">
+          <a href="/admin/achievements" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Review pending →</a>
+        </dd>
+      <% } %>
+    </div>
+  </dl>
+
+  <!-- Two Column Layout -->
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    
+    <!-- Recent Members -->
+    <div>
+      <div class="sm:flex sm:items-center mb-4">
+        <div class="sm:flex-auto">
+          <h2 class="text-base font-semibold text-gray-900">Recent Members</h2>
+          <p class="mt-1 text-sm text-gray-700">Newest members who have joined the organization.</p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <a href="/admin/members" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View all<span aria-hidden="true"> →</span></a>
+        </div>
+      </div>
+      <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <ul role="list" class="divide-y divide-gray-200">
+          <% recentMembers.forEach(member => { %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium text-indigo-600">
+                    <a href="/admin/members/<%= member.id %>" class="hover:text-indigo-500"><%= member.first_name %> <%= member.last_name %></a>
+                  </p>
+                  <p class="mt-1 flex items-center text-sm text-gray-500">
+                    <span class="truncate"><%= member.callsign %> · <%= member.county %></span>
+                  </p>
+                </div>
+                <div class="ml-5 flex-shrink-0">
+                  <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div>
+      <div class="sm:flex sm:items-center mb-4">
+        <div class="sm:flex-auto">
+          <h2 class="text-base font-semibold text-gray-900">Upcoming Events</h2>
+          <p class="mt-1 text-sm text-gray-700">Events scheduled in the coming weeks.</p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <a href="/admin/events" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View all<span aria-hidden="true"> →</span></a>
+        </div>
+      </div>
+      <% if (upcomingEvents.length > 0) { %>
+        <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          <ul role="list" class="divide-y divide-gray-200">
+            <% upcomingEvents.forEach(event => { %>
+              <li class="px-4 py-4 sm:px-6">
+                <div class="flex items-center justify-between">
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-medium text-gray-900"><%= event.name %></p>
+                    <p class="mt-1 flex items-center text-sm text-gray-500">
+                      <svg class="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <%= new Date(event.event_date).toLocaleDateString() %>
+                      <span class="mx-2">·</span>
+                      <svg class="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <%= event.attendee_count %> attending
+                    </p>
+                  </div>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+      <% } else { %>
+        <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg px-4 py-8 text-center">
+          <p class="text-sm text-gray-500">No upcoming events</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Pending Verifications (Full Width) -->
+  <% if (pendingVerifications.length > 0) { %>
+    <div class="mt-8">
+      <div class="sm:flex sm:items-center mb-4">
+        <div class="sm:flex-auto">
+          <h2 class="text-base font-semibold text-gray-900">Pending Achievement Verifications</h2>
+          <p class="mt-1 text-sm text-gray-700">Members awaiting verification for special achievements.</p>
+        </div>
+      </div>
+      <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <ul role="list" class="divide-y divide-gray-200">
+          <% pendingVerifications.forEach(item => { %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-medium text-gray-900"><%= item.first_name %> <%= item.last_name %> · <%= item.callsign %></p>
+                  <p class="mt-1 text-sm text-gray-500"><%= item.achievement_name %></p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                  <a href="/admin/achievements" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Review</a>
+                </div>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  <% } %>
+</div>

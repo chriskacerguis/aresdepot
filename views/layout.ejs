@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>ARES Depot</title>
+  <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="h-full">
+  <div class="min-h-full flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-indigo-600">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <a href="/" class="text-white text-xl font-bold flex items-center gap-2">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                </svg>
+                <span>ARES Depot</span>
+              </a>
+            </div>
+            <% if (user) { %>
+              <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                  <% if (isAdmin) { %>
+                    <a href="/admin/dashboard" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Dashboard</a>
+                    <a href="/admin/members" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Members</a>
+                    <a href="/admin/tiers" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Tiers</a>
+                    <a href="/admin/events" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Events</a>
+                    <a href="/admin/achievements" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Achievements</a>
+                    <a href="/admin/reports" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Reports</a>
+                  <% } else { %>
+                    <a href="/members/dashboard" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Dashboard</a>
+                    <a href="/members/tasks" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">My Tasks</a>
+                    <a href="/achievements" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Achievements</a>
+                    <a href="/members/directory" class="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md px-3 py-2 text-sm font-medium">Directory</a>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-4 flex items-center md:ml-6">
+              <% if (user) { %>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm text-indigo-100"><%= user.email %></span>
+                  <a href="/members/profile/edit" class="text-indigo-100 hover:text-white text-sm font-medium">Profile</a>
+                  <a href="/auth/logout" class="text-indigo-100 hover:text-white text-sm font-medium">Sign out</a>
+                </div>
+              <% } else { %>
+                <div class="flex items-center gap-4">
+                  <a href="/auth/login" class="text-indigo-100 hover:text-white text-sm font-medium">Sign in</a>
+                  <a href="/auth/register" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-50">Register</a>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+      <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+        <%- body %>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="mx-auto max-w-7xl px-6 py-4 md:flex md:items-center md:justify-between lg:px-8">
+        <p class="text-center text-xs leading-5 text-gray-500">
+          &copy; <%= new Date().getFullYear() %> ARES Depot. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

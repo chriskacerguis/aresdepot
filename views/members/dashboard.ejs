@@ -1,0 +1,114 @@
+<% title = 'Member Dashboard' %>
+
+<div class="px-4 sm:px-0">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+      Welcome back, <%= member.first_name %> <%= member.last_name %> (<%= member.callsign %>)
+    </h1>
+  </div>
+
+  <!-- Tier Progress -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Your Progress</h2>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% member.tiers.forEach(tier => { %>
+        <div class="card <%= tier.achieved ? 'ring-2 ring-green-600' : '' %>">
+          <div class="card-body">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="text-base font-semibold text-gray-900"><%= tier.name %></h3>
+              <% if (tier.achieved) { %>
+                <span class="badge badge-success">✓ Achieved</span>
+              <% } %>
+            </div>
+            <p class="text-sm text-gray-600 mb-4"><%= tier.description %></p>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-700">
+                <%= tier.completed_tasks %> / <%= tier.total_tasks %> tasks
+              </span>
+              <div class="w-24 bg-gray-200 rounded-full h-2.5">
+                <div 
+                  class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
+                  style="width: <%= tier.total_tasks > 0 ? (tier.completed_tasks / tier.total_tasks * 100) : 0 %>%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Special Achievements -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Special Achievements</h2>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <% member.achievements.forEach(achievement => { %>
+        <div class="card <%= achievement.verified ? 'bg-gradient-to-br from-green-50 to-white ring-2 ring-green-600' : '' %>">
+          <div class="card-body text-center">
+            <div class="text-4xl mb-2"><%= achievement.verified ? '🏆' : '⚪' %></div>
+            <h4 class="font-semibold text-sm text-gray-900"><%= achievement.name %></h4>
+            <% if (achievement.verified) { %>
+              <p class="text-xs text-green-700 mt-1 font-medium">Verified</p>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Upcoming Events -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Upcoming Events</h2>
+    <% if (events.length > 0) { %>
+      <div class="space-y-4">
+        <% events.forEach(event => { %>
+          <div class="card">
+            <div class="card-body">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <h3 class="text-base font-semibold text-gray-900"><%= event.name %></h3>
+                  <p class="mt-1 text-sm text-gray-600"><%= event.description %></p>
+                  <p class="mt-2 text-sm text-gray-500">
+                    <span class="inline-flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <%= event.location %>
+                    </span>
+                    <span class="mx-2">•</span>
+                    <span class="inline-flex items-center gap-1">
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <%= new Date(event.event_date).toLocaleDateString() %>
+                    </span>
+                  </p>
+                  <% if (event.minimum_tier_name) { %>
+                    <p class="mt-1 text-xs text-gray-500">Minimum Tier: <%= event.minimum_tier_name %></p>
+                  <% } %>
+                </div>
+                <div class="ml-6 flex-shrink-0">
+                  <% if (event.userRSVP && event.userRSVP.status === 'attending') { %>
+                    <span class="badge badge-success mb-2 block">✓ RSVP'd</span>
+                    <form method="POST" action="/events/<%= event.id %>/cancel-rsvp">
+                      <button type="submit" class="btn-secondary">Cancel RSVP</button>
+                    </form>
+                  <% } else { %>
+                    <a href="/events/<%= event.id %>" class="btn-primary">RSVP</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="card">
+        <div class="card-body">
+          <p class="text-sm text-gray-500">No upcoming events at this time.</p>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>

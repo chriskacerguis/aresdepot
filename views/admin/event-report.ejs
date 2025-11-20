@@ -1,0 +1,87 @@
+<% title = 'Event Report - ' + event.name %>
+
+<div class="px-4 sm:px-0">
+  <div class="mb-6 no-print">
+    <div class="flex items-center justify-between">
+      <a href="/admin/events" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">← Back to Events</a>
+      <button onclick="window.print()" class="btn-secondary">Print Report</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900"><%= event.name %></h1>
+        <p class="mt-2 text-base text-gray-600">Event Attendance Report</p>
+        <p class="mt-1 text-sm text-gray-500">
+          <%= new Date(event.event_date).toLocaleString() %> • <%= event.location %>
+        </p>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-3">Event Details</h2>
+        <p class="text-sm text-gray-700"><%= event.description %></p>
+        <% if (event.minimum_tier_name) { %>
+          <p class="mt-2 text-sm text-gray-600">Minimum Tier Requirement: <span class="font-medium"><%= event.minimum_tier_name %></span></p>
+        <% } %>
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Attendees (<%= attendees.length %>)</h2>
+      
+      <% if (attendees.length > 0) { %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Callsign</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Phone</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">County</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Address</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <% attendees.forEach(attendee => { %>
+                <tr>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                    <%= attendee.first_name %> <%= attendee.last_name %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.callsign %></td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.phone %></td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.member_email %></td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.county %></td>
+                  <td class="px-3 py-4 text-sm text-gray-500">
+                    <% if (attendee.address) { %>
+                      <%= attendee.address %><br>
+                      <%= attendee.city %>, <%= attendee.state %> <%= attendee.zip %>
+                    <% } else { %>
+                      <span class="text-gray-400">-</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="rounded-md bg-gray-50 p-4">
+          <p class="text-sm text-gray-600">No attendees have RSVP'd yet.</p>
+        </div>
+      <% } %>
+
+      <div class="mt-8 border-t border-gray-200 pt-4">
+        <p class="text-xs text-gray-500 text-center">
+          Report generated on <%= new Date().toLocaleString() %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    .no-print { display: none; }
+    nav, footer { display: none; }
+  }
+</style>

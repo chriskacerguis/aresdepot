@@ -1,0 +1,103 @@
+const db = require('../database/config');
+
+class Achievement {
+  static async create(name, description, requiresProof = true) {
+    const result = await db.run(
+      'INSERT INTO special_achievements (name, description, requires_proof) VALUES (?, ?, ?)',
+      [name, description, requiresProof ? 1 : 0]
+    );
+    return result.lastID;
+  }
+
+  static async findById(id) {
+    return await db.get('SELECT * FROM special_achievements WHERE id = ?', [id]);
+  }
+
+  static async getAll() {
+    return await db.all('SELECT * FROM special_achievements ORDER BY name');
+  }
+
+  static async update(id, name, description, requiresProof) {
+    await db.run(
+      'UPDATE special_achievements SET name = ?, description = ?, requires_proof = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [name, description, requiresProof ? 1 : 0, id]
+    );
+  }
+
+  static async delete(id) {
+    await db.run('DELETE FROM special_achievements WHERE id = ?', [id]);
+  }
+
+  static async submitForMember(memberId, achievementId, proofFilePath = null, notes = '') {
+    const existing = await db.get(
+      'SELECT id FROM member_special_achievements WHERE member_id = ? AND achievement_id = ?',
+      [memberId, achievementId]
+    );
+
+    if (existing) {
+      await db.run(
+        `UPDATE member_special_achievements SET 
+          proof_file_path = COALESCE(?, proof_file_path),
+          notes = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?`,
+        [proofFilePath, notes, existing.id]
+      );
+    } else {
+      await db.run(
+        'INSERT INTO member_special_achievements (member_id, achievement_id, proof_file_path, notes) VALUES (?, ?, ?, ?)',
+        [memberId, achievementId, proofFilePath, notes]
+      );
+    }
+  }
+
+  static async verify(memberId, achievementId, verifiedBy, notes = '') {
+    const existing = await db.get(
+      'SELECT id FROM member_special_achievements WHERE member_id = ? AND achievement_id = ?',
+      [memberId, achievementId]
+    );
+
+    if (existing) {
+      await db.run(
+        `UPDATE member_special_achievements SET 
+          verified = 1,
+          verified_by = ?,
+          verified_at = CURRENT_TIMESTAMP,
+          notes = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?`,
+        [verifiedBy, notes, existing.id]
+      );
+    }
+  }
+
+  static async getMemberAchievements(memberId) {
+    return await db.all(`
+      SELECT 
+        sa.id, sa.name, sa.description, sa.requires_proof,
+        msa.verified, msa.verified_at, msa.proof_file_path, msa.notes,
+        u.email as verified_by_email
+      FROM special_achievements sa
+      LEFT JOIN member_special_achievements msa 
+        ON sa.id = msa.achievement_id AND msa.member_id = ?
+      LEFT JOIN users u ON msa.verified_by = u.id
+      ORDER BY sa.name
+    `, [memberId]);
+  }
+
+  static async getPendingVerifications() {
+    return await db.all(`
+      SELECT 
+        msa.id, msa.proof_file_path, msa.notes, msa.created_at,
+        sa.name as achievement_name, sa.description as achievement_description,
+        m.first_name, m.last_name, m.callsign, m.id as member_id
+      FROM member_special_achievements msa
+      JOIN special_achievements sa ON msa.achievement_id = sa.id
+      JOIN members m ON msa.member_id = m.id
+      WHERE msa.verified = 0
+      ORDER BY msa.created_at ASC
+    `);
+  }
+}
+
+module.exports = Achievement;

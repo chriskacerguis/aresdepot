@@ -1,0 +1,118 @@
+<% title = 'Manage Achievements' %>
+
+<div class="px-4 sm:px-0">
+  <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Manage Special Achievements</h1>
+
+  <!-- Pending Verifications -->
+  <% if (pending.length > 0) { %>
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Pending Verifications (<%= pending.length %>)</h2>
+      <div class="space-y-4">
+        <% pending.forEach(item => { %>
+          <div class="card">
+            <div class="card-body">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <h3 class="text-base font-semibold text-gray-900">
+                    <%= item.first_name %> <%= item.last_name %> (<%= item.callsign %>)
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-600"><%= item.achievement_name %></p>
+                  <% if (item.notes) { %>
+                    <p class="mt-1 text-sm text-gray-500"><span class="font-medium">Notes:</span> <%= item.notes %></p>
+                  <% } %>
+                  <% if (item.proof_file_path) { %>
+                    <a href="<%= item.proof_file_path %>" target="_blank" class="mt-2 inline-flex items-center text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                      View Proof File →
+                    </a>
+                  <% } %>
+                  <p class="mt-2 text-xs text-gray-500">Submitted: <%= new Date(item.created_at).toLocaleDateString() %></p>
+                </div>
+                <div class="ml-6 flex-shrink-0">
+                  <form method="POST" action="/admin/achievements/<%= item.member_id %>/<%= item.id %>/verify">
+                    <button type="submit" class="btn-primary">Verify</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Create Achievement Form -->
+  <div class="card mb-8">
+    <div class="card-body">
+      <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Achievement</h2>
+      
+      <% if (errors && errors.length > 0) { %>
+        <div class="rounded-md bg-red-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <% errors.forEach(error => { %>
+                <p class="text-sm text-red-800"><%= error.msg %></p>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <form class="space-y-6" method="POST" action="/admin/achievements/create">
+        <div>
+          <label class="form-label" for="name">Achievement Name *</label>
+          <div class="mt-2">
+            <input class="form-input" id="name" name="name" type="text" required value="<%= formData.name || '' %>">
+          </div>
+        </div>
+        
+        <div>
+          <label class="form-label" for="description">Description</label>
+          <div class="mt-2">
+            <textarea class="form-input" id="description" name="description" rows="3"><%= formData.description || '' %></textarea>
+          </div>
+        </div>
+
+        <div class="relative flex items-start">
+          <div class="flex h-6 items-center">
+            <input id="requiresProof" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= formData.requiresProof !== 'false' ? 'checked' : '' %>>
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <label for="requiresProof" class="font-medium text-gray-900">Requires proof upload</label>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn-primary" type="submit">Create Achievement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Existing Achievements -->
+  <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">All Achievements</h2>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <% achievements.forEach(achievement => { %>
+      <div class="card">
+        <div class="card-body">
+          <h3 class="text-base font-semibold text-gray-900"><%= achievement.name %></h3>
+          <p class="mt-1 text-sm text-gray-600"><%= achievement.description %></p>
+          <% if (achievement.requires_proof) { %>
+            <p class="mt-2 text-xs text-gray-500">
+              <span class="inline-flex items-center gap-1">
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                </svg>
+                Requires proof upload
+              </span>
+            </p>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</div>

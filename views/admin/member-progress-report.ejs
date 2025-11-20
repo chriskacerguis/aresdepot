@@ -1,0 +1,77 @@
+<% title = 'Member Progress Report' %>
+
+<div class="px-4 sm:px-0">
+  <div class="mb-6 no-print">
+    <div class="flex items-center justify-between">
+      <a href="/admin/reports" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">← Back to Reports</a>
+      <button onclick="window.print()" class="btn-secondary">Print Report</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">Member Progress Report</h1>
+        <p class="mt-2 text-base text-gray-600">Overview of all member tier achievements</p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead>
+            <tr>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Callsign</th>
+              <% tiers.forEach(tier => { %>
+                <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
+                  <%= tier.name %>
+                </th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% members.forEach(member => { %>
+              <tr>
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                  <%= member.first_name %> <%= member.last_name %>
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= member.callsign %></td>
+                <% tiers.forEach(tier => { %>
+                  <% 
+                    const memberTier = member.tiers.find(t => t.id === tier.id);
+                    const progress = memberTier ? 
+                      (memberTier.total_tasks > 0 ? 
+                        Math.round((memberTier.completed_tasks / memberTier.total_tasks) * 100) : 0) 
+                      : 0;
+                    const achieved = memberTier && memberTier.achieved;
+                  %>
+                  <td class="whitespace-nowrap px-3 py-4 text-center text-sm">
+                    <% if (achieved) { %>
+                      <span class="badge badge-success">✓</span>
+                    <% } else if (progress > 0) { %>
+                      <span class="text-gray-600"><%= progress %>%</span>
+                    <% } else { %>
+                      <span class="text-gray-400">-</span>
+                    <% } %>
+                  </td>
+                <% }); %>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-8 border-t border-gray-200 pt-4">
+        <p class="text-xs text-gray-500 text-center">
+          Report generated on <%= new Date().toLocaleString() %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    .no-print { display: none; }
+    nav, footer { display: none; }
+  }
+</style>

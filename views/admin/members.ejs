@@ -1,0 +1,38 @@
+<% title = 'Manage Members' %>
+
+<div class="px-4 sm:px-0">
+  <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Manage Members</h1>
+
+  <div class="card">
+    <div class="inline-block min-w-full align-middle">
+      <table class="min-w-full divide-y divide-gray-300">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Callsign</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">County</th>
+            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+              <span class="sr-only">Actions</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 bg-white">
+          <% members.forEach(member => { %>
+            <tr>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                <%= member.first_name %> <%= member.last_name %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= member.callsign %></td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= member.email %></td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= member.county %></td>
+              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                <a href="/admin/members/<%= member.id %>" class="text-indigo-600 hover:text-indigo-500">View details<span class="sr-only">, <%= member.first_name %> <%= member.last_name %></span></a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<% title = event.name %>
+
+<div class="px-4 sm:px-0">
+  <div class="mb-6">
+    <a href="<%= isAdmin ? '/admin/events' : '/members/dashboard' %>" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+      <svg class="inline-block h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back
+    </a>
+  </div>
+
+  <!-- Event Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900"><%= event.name %></h1>
+    <p class="mt-2 text-base text-gray-700"><%= event.description %></p>
+  </div>
+
+  <!-- Event Details Card -->
+  <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg mb-8">
+    <div class="px-4 py-5 sm:p-6">
+      <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+        <div class="sm:col-span-1">
+          <dt class="flex items-center text-sm font-medium text-gray-500">
+            <svg class="mr-2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Date & Time
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= new Date(event.event_date).toLocaleString() %></dd>
+        </div>
+
+        <div class="sm:col-span-1">
+          <dt class="flex items-center text-sm font-medium text-gray-500">
+            <svg class="mr-2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Location
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= event.location %></dd>
+        </div>
+
+        <% if (event.minimum_tier_name) { %>
+          <div class="sm:col-span-1">
+            <dt class="flex items-center text-sm font-medium text-gray-500">
+              <svg class="mr-2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              Minimum Tier Required
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= event.minimum_tier_name %></dd>
+          </div>
+        <% } %>
+
+        <% if (event.max_attendees) { %>
+          <div class="sm:col-span-1">
+            <dt class="flex items-center text-sm font-medium text-gray-500">
+              <svg class="mr-2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Maximum Attendees
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= event.max_attendees %></dd>
+          </div>
+        <% } %>
+      </dl>
+    </div>
+  </div>
+
+  <!-- RSVP Section (Members) -->
+  <% if (!isAdmin) { %>
+    <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg mb-8">
+      <div class="px-4 py-5 sm:p-6">
+        <% if (!canAttend) { %>
+          <div class="rounded-md bg-yellow-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Tier Requirement Not Met</h3>
+                <p class="mt-2 text-sm text-yellow-700">You do not meet the minimum tier requirement for this event.</p>
+              </div>
+            </div>
+          </div>
+        <% } else if (rsvpStatus && rsvpStatus.status === 'attending') { %>
+          <div class="rounded-md bg-green-50 p-4 mb-6">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-green-800">RSVP Confirmed</h3>
+                <p class="mt-2 text-sm text-green-700">You are registered for this event.</p>
+              </div>
+            </div>
+          </div>
+          <form method="POST" action="/events/<%= event.id %>/cancel-rsvp">
+            <button type="submit" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              Cancel RSVP
+            </button>
+          </form>
+        <% } else { %>
+          <h3 class="text-base font-semibold text-gray-900 mb-4">RSVP for this Event</h3>
+          <form method="POST" action="/events/<%= event.id %>/rsvp" class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-900" for="notes">Additional Notes (Optional)</label>
+              <div class="mt-2">
+                <textarea class="form-input" id="notes" name="notes" rows="3" placeholder="Any special requirements or notes..."></textarea>
+              </div>
+            </div>
+            <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <svg class="mr-2 -ml-0.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Confirm RSVP
+            </button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Attendees Section (Admin) -->
+  <% if (isAdmin && attendees.length > 0) { %>
+    <div class="mb-6">
+      <div class="sm:flex sm:items-center mb-4">
+        <div class="sm:flex-auto">
+          <h2 class="text-base font-semibold text-gray-900">Attendees</h2>
+          <p class="mt-1 text-sm text-gray-700"><%= attendees.length %> member<%= attendees.length !== 1 ? 's' : '' %> registered for this event.</p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <a href="/admin/reports/event/<%= event.id %>" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <svg class="mr-2 -ml-0.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Generate Report
+          </a>
+        </div>
+      </div>
+      
+      <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Callsign</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Phone</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">RSVP Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <% attendees.forEach(attendee => { %>
+              <tr>
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <%= attendee.first_name %> <%= attendee.last_name %>
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.callsign %></td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= attendee.phone %></td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <%= new Date(attendee.rsvp_date).toLocaleDateString() %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+</div>
