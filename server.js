@@ -14,7 +14,7 @@ const authRoutes = require('./src/routes/auth');
 const memberRoutes = require('./src/routes/members');
 const adminRoutes = require('./src/routes/admin');
 const eventRoutes = require('./src/routes/events');
-const achievementRoutes = require('./src/routes/achievements');
+const certificationRoutes = require('./src/routes/certifications');
 
 // Security middleware
 app.use(helmet({
@@ -78,7 +78,7 @@ app.use('/auth', authRoutes);
 app.use('/members', memberRoutes);
 app.use('/admin', adminRoutes);
 app.use('/events', eventRoutes);
-app.use('/achievements', achievementRoutes);
+app.use('/certifications', certificationRoutes);
 
 // Home route
 app.get('/', (req, res) => {

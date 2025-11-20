@@ -1,7 +1,7 @@
-<% title = 'Manage Achievements' %>
+<% title = 'Manage Certifications' %>
 
 <div class="px-4 sm:px-0">
-  <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Manage Special Achievements</h1>
+  <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-8">Manage Special Certifications</h1>
 
   <!-- Pending Verifications -->
   <% if (pending.length > 0) { %>
@@ -16,7 +16,7 @@
                   <h3 class="text-base font-semibold text-gray-900">
                     <%= item.first_name %> <%= item.last_name %> (<%= item.callsign %>)
                   </h3>
-                  <p class="mt-1 text-sm text-gray-600"><%= item.achievement_name %></p>
+                  <p class="mt-1 text-sm text-gray-600"><%= item.certification_name %></p>
                   <% if (item.notes) { %>
                     <p class="mt-1 text-sm text-gray-500"><span class="font-medium">Notes:</span> <%= item.notes %></p>
                   <% } %>
@@ -28,7 +28,7 @@
                   <p class="mt-2 text-xs text-gray-500">Submitted: <%= new Date(item.created_at).toLocaleDateString() %></p>
                 </div>
                 <div class="ml-6 flex-shrink-0">
-                  <form method="POST" action="/admin/achievements/<%= item.member_id %>/<%= item.id %>/verify">
+                  <form method="POST" action="/admin/certifications/<%= item.member_id %>/<%= item.id %>/verify">
                     <button type="submit" class="btn-primary">Verify</button>
                   </form>
                 </div>
@@ -40,10 +40,10 @@
     </div>
   <% } %>
 
-  <!-- Create Achievement Form -->
+  <!-- Create Certification Form -->
   <div class="card mb-8">
     <div class="card-body">
-      <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Achievement</h2>
+      <h2 class="text-xl font-bold text-gray-900 mb-6">Create New Certification</h2>
       
       <% if (errors && errors.length > 0) { %>
         <div class="rounded-md bg-red-50 p-4 mb-6">
@@ -62,9 +62,9 @@
         </div>
       <% } %>
 
-      <form class="space-y-6" method="POST" action="/admin/achievements/create">
+      <form class="space-y-6" method="POST" action="/admin/certifications/create">
         <div>
-          <label class="form-label" for="name">Achievement Name *</label>
+          <label class="form-label" for="name">Certification Name *</label>
           <div class="mt-2">
             <input class="form-input" id="name" name="name" type="text" required value="<%= formData.name || '' %>">
           </div>
@@ -92,55 +92,55 @@
           </div>
           <div class="ml-3 text-sm leading-6">
             <label for="adminOnly" class="font-medium text-gray-900">Admin-only (only admins can grant/revoke)</label>
-            <p class="text-xs text-gray-500">Admin-only achievements are visible to all but can only be toggled by administrators</p>
+            <p class="text-xs text-gray-500">Admin-only certifications are visible to all but can only be toggled by administrators</p>
           </div>
         </div>
 
         <div>
-          <button class="btn-primary" type="submit">Create Achievement</button>
+          <button class="btn-primary" type="submit">Create Certification</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Existing Achievements -->
+  <!-- Existing Certifications -->
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-bold tracking-tight text-gray-900">All Achievements (<%= totalAchievements %>)</h2>
+    <h2 class="text-2xl font-bold tracking-tight text-gray-900">All Certifications (<%= totalCertifications %>)</h2>
     
     <!-- Search Form -->
-    <form method="GET" action="/admin/achievements" class="flex gap-2">
+    <form method="GET" action="/admin/certifications" class="flex gap-2">
       <input 
         type="text" 
         name="search" 
-        placeholder="Search achievements..." 
+        placeholder="Search certifications..." 
         value="<%= search %>"
         class="form-input w-64"
       >
       <button type="submit" class="btn-primary">Search</button>
       <% if (search) { %>
-        <a href="/admin/achievements" class="btn-secondary">Clear</a>
+        <a href="/admin/certifications" class="btn-secondary">Clear</a>
       <% } %>
     </form>
   </div>
   
   <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-    <% if (achievements.length === 0) { %>
+    <% if (certifications.length === 0) { %>
       <div class="px-4 py-8 text-center text-gray-500">
         <% if (search) { %>
-          No achievements found matching "<%= search %>"
+          No certifications found matching "<%= search %>"
         <% } else { %>
-          No achievements created yet
+          No certifications created yet
         <% } %>
       </div>
     <% } else { %>
     <ul role="list" class="divide-y divide-gray-200">
-      <% achievements.forEach((achievement, index) => { %>
+      <% certifications.forEach((certification, index) => { %>
         <li class="px-4 py-4 sm:px-6">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3">
-                <h3 class="text-sm font-semibold text-gray-900"><%= achievement.name %></h3>
-                <% if (achievement.requires_proof) { %>
+                <h3 class="text-sm font-semibold text-gray-900"><%= certification.name %></h3>
+                <% if (certification.requires_proof) { %>
                   <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -148,7 +148,7 @@
                     Proof Required
                   </span>
                 <% } %>
-                <% if (achievement.admin_only) { %>
+                <% if (certification.admin_only) { %>
                   <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -157,16 +157,16 @@
                   </span>
                 <% } %>
               </div>
-              <p class="mt-1 text-sm text-gray-600"><%= achievement.description %></p>
+              <p class="mt-1 text-sm text-gray-600"><%= certification.description %></p>
             </div>
             <div class="flex items-center gap-2">
-              <button type="button" data-edit="<%= index %>" class="edit-achievement-btn inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              <button type="button" data-edit="<%= index %>" class="edit-certification-btn inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-500">
                 <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 Edit
               </button>
-              <form method="POST" action="/admin/achievements/<%= achievement.id %>/delete" class="delete-achievement-form inline-block">
+              <form method="POST" action="/admin/certifications/<%= certification.id %>/delete" class="delete-certification-form inline-block">
                 <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-500">
                   <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -178,37 +178,37 @@
           </div>
           
           <!-- Edit Form (Hidden) -->
-          <div id="edit-achievement-<%= index %>" class="hidden mt-4 pt-4 border-t border-gray-200">
-            <form method="POST" action="/admin/achievements/<%= achievement.id %>/update" class="space-y-4">
+          <div id="edit-certification-<%= index %>" class="hidden mt-4 pt-4 border-t border-gray-200">
+            <form method="POST" action="/admin/certifications/<%= certification.id %>/update" class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-900" for="edit-name-<%= achievement.id %>">Achievement Name *</label>
+                <label class="block text-sm font-medium text-gray-900" for="edit-name-<%= certification.id %>">Certification Name *</label>
                 <div class="mt-1">
-                  <input class="form-input" id="edit-name-<%= achievement.id %>" name="name" type="text" required value="<%= achievement.name %>">
+                  <input class="form-input" id="edit-name-<%= certification.id %>" name="name" type="text" required value="<%= certification.name %>">
                 </div>
               </div>
               
               <div>
-                <label class="block text-sm font-medium text-gray-900" for="edit-description-<%= achievement.id %>">Description</label>
+                <label class="block text-sm font-medium text-gray-900" for="edit-description-<%= certification.id %>">Description</label>
                 <div class="mt-1">
-                  <textarea class="form-input" id="edit-description-<%= achievement.id %>" name="description" rows="2"><%= achievement.description %></textarea>
+                  <textarea class="form-input" id="edit-description-<%= certification.id %>" name="description" rows="2"><%= certification.description %></textarea>
                 </div>
               </div>
 
               <div class="relative flex items-start">
                 <div class="flex h-6 items-center">
-                  <input id="edit-requiresProof-<%= achievement.id %>" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= achievement.requires_proof ? 'checked' : '' %>>
+                  <input id="edit-requiresProof-<%= certification.id %>" name="requiresProof" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= certification.requires_proof ? 'checked' : '' %>>
                 </div>
                 <div class="ml-3 text-sm leading-6">
-                  <label for="edit-requiresProof-<%= achievement.id %>" class="font-medium text-gray-900">Requires proof upload</label>
+                  <label for="edit-requiresProof-<%= certification.id %>" class="font-medium text-gray-900">Requires proof upload</label>
                 </div>
               </div>
 
               <div class="relative flex items-start">
                 <div class="flex h-6 items-center">
-                  <input id="edit-adminOnly-<%= achievement.id %>" name="adminOnly" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= achievement.admin_only ? 'checked' : '' %>>
+                  <input id="edit-adminOnly-<%= certification.id %>" name="adminOnly" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= certification.admin_only ? 'checked' : '' %>>
                 </div>
                 <div class="ml-3 text-sm leading-6">
-                  <label for="edit-adminOnly-<%= achievement.id %>" class="font-medium text-gray-900">Admin-only</label>
+                  <label for="edit-adminOnly-<%= certification.id %>" class="font-medium text-gray-900">Admin-only</label>
                 </div>
               </div>
 
@@ -243,9 +243,9 @@
             Showing
             <span class="font-medium"><%= (currentPage - 1) * 10 + 1 %></span>
             to
-            <span class="font-medium"><%= Math.min(currentPage * 10, totalAchievements) %></span>
+            <span class="font-medium"><%= Math.min(currentPage * 10, totalCertifications) %></span>
             of
-            <span class="font-medium"><%= totalAchievements %></span>
+            <span class="font-medium"><%= totalCertifications %></span>
             results
           </p>
         </div>
@@ -288,10 +288,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Edit buttons
-  document.querySelectorAll('.edit-achievement-btn').forEach(button => {
+  document.querySelectorAll('.edit-certification-btn').forEach(button => {
     button.addEventListener('click', function() {
       const index = this.getAttribute('data-edit');
-      const form = document.getElementById('edit-achievement-' + index);
+      const form = document.getElementById('edit-certification-' + index);
       if (form) {
         form.classList.toggle('hidden');
       }
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.cancel-edit-btn').forEach(button => {
     button.addEventListener('click', function() {
       const index = this.getAttribute('data-cancel');
-      const form = document.getElementById('edit-achievement-' + index);
+      const form = document.getElementById('edit-certification-' + index);
       if (form) {
         form.classList.add('hidden');
       }
@@ -310,9 +310,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Delete confirmation
-  document.querySelectorAll('.delete-achievement-form').forEach(form => {
+  document.querySelectorAll('.delete-certification-form').forEach(form => {
     form.addEventListener('submit', function(e) {
-      if (!confirm('Are you sure you want to delete this achievement? This action cannot be undone.')) {
+      if (!confirm('Are you sure you want to delete this certification? This action cannot be undone.')) {
         e.preventDefault();
       }
     });

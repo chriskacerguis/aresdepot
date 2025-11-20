@@ -14,7 +14,7 @@ router.get('/', requireAuth, async (req, res) => {
     }
 
     const achievements = await Achievement.getMemberAchievements(member.id);
-    res.render('achievements/list', { achievements });
+    res.render('certifications/list', { achievements });
   } catch (error) {
     console.error('Achievements error:', error);
     res.render('error', { message: 'Error loading achievements' });
@@ -35,10 +35,10 @@ router.post('/:id/submit',
       const proofFilePath = req.file ? '/uploads/proofs/' + req.file.filename : null;
       await Achievement.submitForMember(member.id, req.params.id, proofFilePath, req.body.notes || '');
 
-      res.redirect('/achievements');
+      res.redirect('/certifications');
     } catch (error) {
       console.error('Achievement submission error:', error);
-      res.redirect('/achievements');
+      res.redirect('/certifications');
     }
   }
 );

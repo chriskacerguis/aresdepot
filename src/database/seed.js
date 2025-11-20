@@ -82,7 +82,7 @@ async function seed() {
     console.log('✅ Sample tasks created');
 
     // Create sample special achievements
-    const achievements = [
+    const certifications = [
       { name: 'Skywarn Spotter', description: 'Completed NWS Skywarn Spotter training', requires_proof: 1, admin_only: 0 },
       { name: 'RACES', description: 'Is a RACES member', requires_proof: 1, admin_only: 0 },
       { name: 'Official Emergency Station', description: 'ARRL Official Emergency Station designation', requires_proof: 1, admin_only: 0 },
@@ -93,16 +93,16 @@ async function seed() {
       { name: 'Field Deployable', description: 'Member is certified to be field deployable', requires_proof: 0, admin_only: 1 },
     ];
 
-    for (const achievement of achievements) {
-      const existing = await db.get('SELECT id FROM special_achievements WHERE name = ?', [achievement.name]);
+    for (const certification of certifications) {
+      const existing = await db.get('SELECT id FROM special_achievements WHERE name = ?', [certification.name]);
       if (!existing) {
         await db.run(
           'INSERT INTO special_achievements (name, description, requires_proof, admin_only) VALUES (?, ?, ?, ?)',
-          [achievement.name, achievement.description, achievement.requires_proof, achievement.admin_only]
+          [certification.name, certification.description, certification.requires_proof, certification.admin_only]
         );
       }
     }
-    console.log('✅ Sample special achievements created');
+    console.log('✅ Sample special certifications created');
 
     console.log('✅ Seeding completed successfully!');
     console.log(`\n📧 Admin Email: ${adminEmail}`);

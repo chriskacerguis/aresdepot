@@ -353,32 +353,32 @@ router.post('/events/create',
 );
 
 // Manage special achievements
-router.get('/achievements', requireAdmin, async (req, res) => {
+router.get('/certifications', requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const search = req.query.search || '';
     const offset = (page - 1) * limit;
 
-    let achievements = await Achievement.getAll();
+    let certifications = await Achievement.getAll();
     
     // Filter by search if provided
     if (search) {
       const searchLower = search.toLowerCase();
-      achievements = achievements.filter(a => 
+      certifications = certifications.filter(a => 
         a.name.toLowerCase().includes(searchLower) || 
         (a.description && a.description.toLowerCase().includes(searchLower))
       );
     }
     
-    const totalAchievements = achievements.length;
-    const totalPages = Math.ceil(totalAchievements / limit);
-    const paginatedAchievements = achievements.slice(offset, offset + limit);
+    const totalCertifications = certifications.length;
+    const totalPages = Math.ceil(totalCertifications / limit);
+    const paginatedCertifications = certifications.slice(offset, offset + limit);
     
     const pending = await Achievement.getPendingVerifications();
-    res.render('admin/achievements', { 
-      achievements: paginatedAchievements,
-      totalAchievements,
+    res.render('admin/certifications', { 
+      certifications: paginatedCertifications,
+      totalCertifications,
       currentPage: page,
       totalPages,
       search,
@@ -387,23 +387,27 @@ router.get('/achievements', requireAdmin, async (req, res) => {
       formData: {} 
     });
   } catch (error) {
-    console.error('Achievements error:', error);
-    res.render('error', { message: 'Error loading achievements' });
+    console.error('Certifications error:', error);
+    res.render('error', { message: 'Error loading certifications' });
   }
 });
 
 // Create special achievement
-router.post('/achievements/create',
+router.post('/certifications/create',
   requireAdmin,
   [body('name').trim().notEmpty()],
   async (req, res) => {
     const errors = require('express-validator').validationResult(req);
     
     if (!errors.isEmpty()) {
-      const achievements = await Achievement.getAll();
+      const certifications = await Achievement.getAll();
       const pending = await Achievement.getPendingVerifications();
-      return res.render('admin/achievements', {
-        achievements,
+      return res.render('admin/certifications', {
+        certifications,
+        totalCertifications: certifications.length,
+        currentPage: 1,
+        totalPages: Math.ceil(certifications.length / 5),
+        search: '',
         pending,
         errors: errors.array(),
         formData: req.body
@@ -417,15 +421,19 @@ router.post('/achievements/create',
         req.body.requiresProof === 'true',
         req.body.adminOnly === 'true'
       );
-      res.redirect('/admin/achievements');
+      res.redirect('/admin/certifications');
     } catch (error) {
-      console.error('Create achievement error:', error);
-      const achievements = await Achievement.getAll();
+      console.error('Create certification error:', error);
+      const certifications = await Achievement.getAll();
       const pending = await Achievement.getPendingVerifications();
-      res.render('admin/achievements', {
-        achievements,
+      res.render('admin/certifications', {
+        certifications,
+        totalCertifications: certifications.length,
+        currentPage: 1,
+        totalPages: Math.ceil(certifications.length / 5),
+        search: '',
         pending,
-        errors: [{ msg: 'Error creating achievement' }],
+        errors: [{ msg: 'Error creating certification' }],
         formData: req.body
       });
     }
@@ -433,14 +441,14 @@ router.post('/achievements/create',
 );
 
 // Update achievement
-router.post('/achievements/:id/update',
+router.post('/certifications/:id/update',
   requireAdmin,
   [body('name').trim().notEmpty()],
   async (req, res) => {
     const errors = require('express-validator').validationResult(req);
     
     if (!errors.isEmpty()) {
-      return res.redirect('/admin/achievements');
+      return res.redirect('/admin/certifications');
     }
 
     try {
@@ -451,38 +459,38 @@ router.post('/achievements/:id/update',
         req.body.requiresProof === 'true',
         req.body.adminOnly === 'true'
       );
-      res.redirect('/admin/achievements');
+      res.redirect('/admin/certifications');
     } catch (error) {
       console.error('Update achievement error:', error);
-      res.redirect('/admin/achievements');
+      res.redirect('/admin/certifications');
     }
   }
 );
 
 // Delete achievement
-router.post('/achievements/:id/delete', requireAdmin, async (req, res) => {
+router.post('/certifications/:id/delete', requireAdmin, async (req, res) => {
   try {
     await Achievement.delete(req.params.id);
-    res.redirect('/admin/achievements');
+    res.redirect('/admin/certifications');
   } catch (error) {
     console.error('Delete achievement error:', error);
-    res.redirect('/admin/achievements');
+    res.redirect('/admin/certifications');
   }
 });
 
 // Verify achievement
-router.post('/achievements/:memberId/:achievementId/verify', requireAdmin, async (req, res) => {
+router.post('/certifications/:memberId/:achievementId/verify', requireAdmin, async (req, res) => {
   try {
     await Achievement.verify(req.params.memberId, req.params.achievementId, req.session.user.id, req.body.notes || '');
-    res.redirect('/admin/achievements');
+    res.redirect('/admin/certifications');
   } catch (error) {
     console.error('Verify achievement error:', error);
-    res.redirect('/admin/achievements');
+    res.redirect('/admin/certifications');
   }
 });
 
 // Grant admin-only achievement
-router.post('/achievements/:memberId/:achievementId/grant', requireAdmin, async (req, res) => {
+router.post('/certifications/:memberId/:achievementId/grant', requireAdmin, async (req, res) => {
   try {
     await Achievement.grantAdminAchievement(req.params.memberId, req.params.achievementId, req.session.user.id, req.body.notes || '');
     res.redirect(`/admin/members/${req.params.memberId}`);
@@ -493,7 +501,7 @@ router.post('/achievements/:memberId/:achievementId/grant', requireAdmin, async 
 });
 
 // Revoke admin-only achievement
-router.post('/achievements/:memberId/:achievementId/revoke', requireAdmin, async (req, res) => {
+router.post('/certifications/:memberId/:achievementId/revoke', requireAdmin, async (req, res) => {
   try {
     await Achievement.revokeAdminAchievement(req.params.memberId, req.params.achievementId);
     res.redirect(`/admin/members/${req.params.memberId}`);

@@ -26,7 +26,7 @@
       <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= stats.pendingVerifications %></dd>
       <% if (stats.pendingVerifications > 0) { %>
         <dd class="mt-2">
-          <a href="/admin/achievements" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Review pending →</a>
+          <a href="/admin/certifications" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Review pending →</a>
         </dd>
       <% } %>
     </div>
@@ -120,8 +120,8 @@
     <div class="mt-8">
       <div class="sm:flex sm:items-center mb-4">
         <div class="sm:flex-auto">
-          <h2 class="text-base font-semibold text-gray-900">Pending Achievement Verifications</h2>
-          <p class="mt-1 text-sm text-gray-700">Members awaiting verification for special achievements.</p>
+          <h2 class="text-base font-semibold text-gray-900">Pending Certification Verifications</h2>
+          <p class="mt-1 text-sm text-gray-700">Members awaiting verification for special certifications.</p>
         </div>
       </div>
       <div class="overflow-hidden bg-white shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
@@ -134,7 +134,7 @@
                   <p class="mt-1 text-sm text-gray-500"><%= item.achievement_name %></p>
                 </div>
                 <div class="ml-4 flex-shrink-0">
-                  <a href="/admin/achievements" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Review</a>
+                  <a href="/admin/certifications" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Review</a>
                 </div>
               </div>
             </li>
