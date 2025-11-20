@@ -8,7 +8,7 @@ const Member = require('../models/Member');
 
 // Login page
 router.get('/login', redirectIfAuthenticated, (req, res) => {
-  res.render('auth/login', { errors: [], formData: {} });
+  res.render('auth/login', { errors: [], formData: {}, query: req.query });
 });
 
 // Login handler
@@ -159,5 +159,121 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
+
+// Forgot password page
+router.get('/forgot-password', redirectIfAuthenticated, (req, res) => {
+  res.render('auth/forgot-password', { errors: [], formData: {}, success: false });
+});
+
+// Forgot password handler
+router.post('/forgot-password',
+  [
+    body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email address')
+  ],
+  async (req, res) => {
+    const { email } = req.body;
+
+    try {
+      const user = await User.findByEmail(email);
+
+      if (user) {
+        // Generate reset token
+        const crypto = require('crypto');
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour
+
+        await User.setResetToken(user.id, resetToken, resetTokenExpires);
+
+        // Send email (for now, just log the reset link)
+        const resetLink = `${req.protocol}://${req.get('host')}/auth/reset-password/${resetToken}`;
+        console.log('Password reset link:', resetLink);
+        console.log('Password reset requested for:', email);
+        
+        // TODO: Send actual email here
+        // await sendPasswordResetEmail(email, resetLink);
+      }
+
+      // Always show success message for security (don't reveal if email exists)
+      res.render('auth/forgot-password', { 
+        errors: [], 
+        formData: {}, 
+        success: true 
+      });
+
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.render('auth/forgot-password', {
+        errors: [{ msg: 'An error occurred. Please try again.' }],
+        formData: req.body,
+        success: false
+      });
+    }
+  }
+);
+
+// Reset password page
+router.get('/reset-password/:token', async (req, res) => {
+  try {
+    const user = await User.findByResetToken(req.params.token);
+
+    if (!user || new Date(user.reset_token_expires) < new Date()) {
+      return res.render('error', { 
+        message: 'Password reset link is invalid or has expired.' 
+      });
+    }
+
+    res.render('auth/reset-password', { 
+      errors: [], 
+      token: req.params.token 
+    });
+
+  } catch (error) {
+    console.error('Reset password page error:', error);
+    res.render('error', { message: 'An error occurred' });
+  }
+});
+
+// Reset password handler
+router.post('/reset-password/:token',
+  [
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters'),
+    body('confirmPassword')
+      .custom((value, { req }) => value === req.body.password)
+      .withMessage('Passwords do not match')
+  ],
+  async (req, res) => {
+    const { password } = req.body;
+    const { token } = req.params;
+
+    try {
+      const user = await User.findByResetToken(token);
+
+      if (!user || new Date(user.reset_token_expires) < new Date()) {
+        return res.render('auth/reset-password', {
+          errors: [{ msg: 'Password reset link is invalid or has expired.' }],
+          token
+        });
+      }
+
+      // Update password and clear reset token
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await User.updatePassword(user.id, hashedPassword);
+      await User.clearResetToken(user.id);
+
+      // Redirect to login with success message
+      res.redirect('/auth/login?reset=success');
+
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.render('auth/reset-password', {
+        errors: [{ msg: 'An error occurred. Please try again.' }],
+        token
+      });
+    }
+  }
+);
 
 module.exports = router;

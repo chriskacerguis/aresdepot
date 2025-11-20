@@ -22,7 +22,12 @@ class Member {
   }
 
   static async findById(id) {
-    return await db.get('SELECT * FROM members WHERE id = ?', [id]);
+    return await db.get(`
+      SELECT m.*, u.email 
+      FROM members m
+      LEFT JOIN users u ON m.user_id = u.id
+      WHERE m.id = ?
+    `, [id]);
   }
 
   static async findByCallsign(callsign) {
@@ -32,16 +37,63 @@ class Member {
   static async update(memberId, memberData) {
     const { 
       firstName, lastName, address, city, state, zip,
-      phone, callsign, county, fccLicensePath 
+      phone, callsign, county, fccLicensePath, status
     } = memberData;
 
+    const fields = [];
+    const values = [];
+
+    if (firstName !== undefined) {
+      fields.push('first_name = ?');
+      values.push(firstName);
+    }
+    if (lastName !== undefined) {
+      fields.push('last_name = ?');
+      values.push(lastName);
+    }
+    if (address !== undefined) {
+      fields.push('address = ?');
+      values.push(address);
+    }
+    if (city !== undefined) {
+      fields.push('city = ?');
+      values.push(city);
+    }
+    if (state !== undefined) {
+      fields.push('state = ?');
+      values.push(state);
+    }
+    if (zip !== undefined) {
+      fields.push('zip = ?');
+      values.push(zip);
+    }
+    if (phone !== undefined) {
+      fields.push('phone = ?');
+      values.push(phone);
+    }
+    if (callsign !== undefined) {
+      fields.push('callsign = ?');
+      values.push(callsign);
+    }
+    if (county !== undefined) {
+      fields.push('county = ?');
+      values.push(county);
+    }
+    if (fccLicensePath !== undefined) {
+      fields.push('fcc_license_path = ?');
+      values.push(fccLicensePath);
+    }
+    if (status !== undefined) {
+      fields.push('status = ?');
+      values.push(status);
+    }
+
+    fields.push('updated_at = CURRENT_TIMESTAMP');
+    values.push(memberId);
+
     await db.run(
-      `UPDATE members SET
-        first_name = ?, last_name = ?, address = ?, city = ?, state = ?, zip = ?,
-        phone = ?, callsign = ?, county = ?, fcc_license_path = COALESCE(?, fcc_license_path),
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?`,
-      [firstName, lastName, address, city, state, zip, phone, callsign, county, fccLicensePath, memberId]
+      `UPDATE members SET ${fields.join(', ')} WHERE id = ?`,
+      values
     );
   }
 

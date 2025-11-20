@@ -31,6 +31,24 @@ class User {
     );
   }
 
+  static async setResetToken(userId, token, expiresAt) {
+    await db.run(
+      'UPDATE users SET reset_token = ?, reset_token_expires = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [token, expiresAt.toISOString(), userId]
+    );
+  }
+
+  static async findByResetToken(token) {
+    return await db.get('SELECT * FROM users WHERE reset_token = ?', [token]);
+  }
+
+  static async clearResetToken(userId) {
+    await db.run(
+      'UPDATE users SET reset_token = NULL, reset_token_expires = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [userId]
+    );
+  }
+
   static async getAllMembers() {
     return await db.all(`
       SELECT u.*, m.first_name, m.last_name, m.callsign, m.county

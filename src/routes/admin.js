@@ -155,6 +155,48 @@ router.get('/members/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// Update member contact info
+router.post('/members/:id/update',
+  requireAdmin,
+  [
+    body('firstName').trim().notEmpty(),
+    body('lastName').trim().notEmpty(),
+    body('phone').trim().notEmpty(),
+    body('address').trim().notEmpty(),
+    body('city').trim().notEmpty(),
+    body('state').trim().notEmpty(),
+    body('zip').trim().notEmpty(),
+    body('county').trim().notEmpty(),
+    body('status').isIn(['active', 'inactive', 'suspended', 'banned'])
+  ],
+  async (req, res) => {
+    const errors = require('express-validator').validationResult(req);
+    
+    if (!errors.isEmpty()) {
+      return res.redirect('/admin/members/' + req.params.id);
+    }
+
+    try {
+      await Member.update(req.params.id, {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        zip: req.body.zip,
+        county: req.body.county,
+        callsign: req.body.callsign,
+        status: req.body.status
+      });
+      res.redirect('/admin/members/' + req.params.id);
+    } catch (error) {
+      console.error('Update member error:', error);
+      res.redirect('/admin/members/' + req.params.id);
+    }
+  }
+);
+
 // Verify task
 router.post('/members/:memberId/tasks/:taskId/verify', requireAdmin, async (req, res) => {
   try {
@@ -274,6 +316,43 @@ router.post('/achievements/create',
     }
   }
 );
+
+// Update achievement
+router.post('/achievements/:id/update',
+  requireAdmin,
+  [body('name').trim().notEmpty()],
+  async (req, res) => {
+    const errors = require('express-validator').validationResult(req);
+    
+    if (!errors.isEmpty()) {
+      return res.redirect('/admin/achievements');
+    }
+
+    try {
+      await Achievement.update(
+        req.params.id,
+        req.body.name,
+        req.body.description || '',
+        req.body.requiresProof === 'true'
+      );
+      res.redirect('/admin/achievements');
+    } catch (error) {
+      console.error('Update achievement error:', error);
+      res.redirect('/admin/achievements');
+    }
+  }
+);
+
+// Delete achievement
+router.post('/achievements/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    await Achievement.delete(req.params.id);
+    res.redirect('/admin/achievements');
+  } catch (error) {
+    console.error('Delete achievement error:', error);
+    res.redirect('/admin/achievements');
+  }
+});
 
 // Verify achievement
 router.post('/achievements/:memberId/:achievementId/verify', requireAdmin, async (req, res) => {
