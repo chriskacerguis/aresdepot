@@ -15,18 +15,27 @@ router.get('/login', redirectIfAuthenticated, (req, res) => {
 router.post('/login', 
   loginLimiter,
   [
-    body('email').isEmail().normalizeEmail(),
+    body('identifier').notEmpty().withMessage('Callsign or email is required'),
     body('password').notEmpty()
   ],
   async (req, res) => {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
     try {
-      const user = await User.findByEmail(email);
+      // Try to find user by email first (for admins)
+      let user = await User.findByEmail(identifier);
+      
+      // If not found by email, try to find member by callsign
+      if (!user) {
+        const member = await Member.findByCallsign(identifier.toUpperCase());
+        if (member) {
+          user = await User.findById(member.user_id);
+        }
+      }
 
       if (!user || !(await User.verifyPassword(password, user.password))) {
         return res.render('auth/login', {
-          errors: [{ msg: 'Invalid email or password' }],
+          errors: [{ msg: 'Invalid callsign/email or password' }],
           formData: req.body
         });
       }
