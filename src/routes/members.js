@@ -52,11 +52,15 @@ router.get('/dashboard', requireAuth, async (req, res) => {
 // View/Edit profile
 router.get('/profile/edit', requireAuth, async (req, res) => {
   try {
+    const User = require('../models/User');
+    const user = await User.findById(req.session.user.id);
     const member = await Member.findByUserId(req.session.user.id);
     res.render('members/profile-edit', { 
+      user: user || {},
       member: member || {},
       errors: [],
-      formData: member || {}
+      formData: member || {},
+      success: req.query.success || null
     });
   } catch (error) {
     console.error('Profile error:', error);
@@ -98,6 +102,7 @@ router.post('/profile/edit',
     upload(req, res, next);
   },
   [
+    body('email').trim().isEmail().normalizeEmail().withMessage('Valid email required'),
     body('firstName').trim().notEmpty(),
     body('lastName').trim().notEmpty(),
     body('callsign').trim().notEmpty().toUpperCase(),
@@ -115,11 +120,27 @@ router.post('/profile/edit',
       });
     }
 
-    const { firstName, lastName, address, city, state, zip, phone, callsign, county, licenseClass } = req.body;
+    const { email, firstName, lastName, address, city, state, zip, phone, callsign, county, licenseClass } = req.body;
     const fccLicensePath = req.files?.fccLicense ? '/uploads/licenses/' + req.files.fccLicense[0].filename : null;
     const profilePhotoPath = req.files?.profilePhoto ? '/uploads/photos/' + req.files.profilePhoto[0].filename : null;
 
     try {
+      // Update email if changed
+      const User = require('../models/User');
+      const currentUser = await User.findById(req.session.user.id);
+      if (email && email !== currentUser.email) {
+        try {
+          await User.updateEmail(req.session.user.id, email);
+          req.session.user.email = email; // Update session
+        } catch (emailError) {
+          return res.render('members/profile-edit', {
+            errors: [{ msg: emailError.message }],
+            formData: req.body,
+            member: await Member.findByUserId(req.session.user.id) || req.body
+          });
+        }
+      }
+
       const member = await Member.findByUserId(req.session.user.id);
 
       // Check if address changed and geocode if needed
@@ -198,7 +219,7 @@ router.post('/profile/edit',
         });
       }
 
-      res.redirect('/members/dashboard');
+      res.redirect('/members/profile/edit?success=' + encodeURIComponent('Profile updated successfully'));
     } catch (error) {
       console.error('Profile update error:', error);
       res.render('members/profile-edit', {

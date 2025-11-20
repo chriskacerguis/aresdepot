@@ -31,6 +31,21 @@ class User {
     );
   }
 
+  static async updateEmail(userId, newEmail) {
+    // Check if email already exists for another user
+    const existing = await db.get(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [newEmail, userId]
+    );
+    if (existing) {
+      throw new Error('Email already in use by another account');
+    }
+    await db.run(
+      'UPDATE users SET email = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [newEmail, userId]
+    );
+  }
+
   static async setResetToken(userId, token, expiresAt) {
     await db.run(
       'UPDATE users SET reset_token = ?, reset_token_expires = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
