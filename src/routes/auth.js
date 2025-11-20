@@ -5,6 +5,7 @@ const { redirectIfAuthenticated } = require('../middleware/auth');
 const { loginLimiter } = require('../middleware/rateLimiter');
 const User = require('../models/User');
 const Member = require('../models/Member');
+const { geocodeAddress } = require('../utils/geocode');
 
 // Login page
 router.get('/login', redirectIfAuthenticated, (req, res) => {
@@ -117,6 +118,17 @@ router.post('/register',
       // Create user
       const userId = await User.create(email, password, false);
 
+      // Geocode address if provided
+      let latitude = null;
+      let longitude = null;
+      if (address && city && state && zip) {
+        const coords = await geocodeAddress(address, city, state, zip);
+        if (coords) {
+          latitude = coords.lat;
+          longitude = coords.lon;
+        }
+      }
+
       // Create member profile
       await Member.create({
         userId,
@@ -129,6 +141,8 @@ router.post('/register',
         phone,
         callsign,
         county,
+        latitude,
+        longitude,
         fccLicensePath: null
       });
 

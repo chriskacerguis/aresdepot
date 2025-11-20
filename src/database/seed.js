@@ -1,5 +1,6 @@
 const db = require('./config');
 const bcrypt = require('bcryptjs');
+const { geocodeAddress } = require('../utils/geocode');
 require('dotenv').config();
 
 async function seed() {
@@ -18,10 +19,16 @@ async function seed() {
         'INSERT INTO users (email, password, is_admin) VALUES (?, ?, 1)',
         [adminCallsign + '@admin.local', hashedPassword]
       );
+      
+      // Geocode admin address
+      const coords = await geocodeAddress('301 W 2nd St', 'Austin', 'TX', '78701');
+      const latitude = coords ? coords.lat : null;
+      const longitude = coords ? coords.lon : null;
+      
       // Create member record for admin
       await db.run(
-        'INSERT INTO members (user_id, first_name, last_name, callsign, phone, address, city, state, zip, county) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userId.lastID, 'Admin', 'User', adminCallsign, '512-555-0000', '301 W 2nd St', 'Austin', 'TX', '78701', 'Travis']
+        'INSERT INTO members (user_id, first_name, last_name, callsign, phone, address, city, state, zip, county, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userId.lastID, 'Admin', 'User', adminCallsign, '512-555-0000', '301 W 2nd St', 'Austin', 'TX', '78701', 'Travis', latitude, longitude]
       );
       console.log('✅ Admin user created');
     } else {

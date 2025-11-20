@@ -28,6 +28,8 @@ const migrations = [
     phone TEXT,
     callsign TEXT UNIQUE NOT NULL,
     county TEXT,
+    latitude REAL,
+    longitude REAL,
     fcc_license_path TEXT,
     profile_photo_path TEXT,
     license_class TEXT,

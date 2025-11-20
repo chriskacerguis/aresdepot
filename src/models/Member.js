@@ -4,15 +4,15 @@ class Member {
   static async create(memberData) {
     const { 
       userId, firstName, lastName, address, city, state, zip,
-      phone, callsign, county, fccLicensePath 
+      phone, callsign, county, latitude, longitude, fccLicensePath 
     } = memberData;
 
     const result = await db.run(
       `INSERT INTO members (
         user_id, first_name, last_name, address, city, state, zip,
-        phone, callsign, county, fcc_license_path
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, firstName, lastName, address, city, state, zip, phone, callsign, county, fccLicensePath]
+        phone, callsign, county, latitude, longitude, fcc_license_path
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, firstName, lastName, address, city, state, zip, phone, callsign, county, latitude, longitude, fccLicensePath]
     );
     return result.lastID;
   }
@@ -48,6 +48,8 @@ class Member {
       phone: 'phone',
       callsign: 'callsign',
       county: 'county',
+      latitude: 'latitude',
+      longitude: 'longitude',
       fccLicensePath: 'fcc_license_path',
       profilePhotoPath: 'profile_photo_path',
       licenseClass: 'license_class',

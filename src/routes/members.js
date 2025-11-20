@@ -7,6 +7,7 @@ const Member = require('../models/Member');
 const Task = require('../models/Task');
 const Event = require('../models/Event');
 const multer = require('multer');
+const { geocodeAddress } = require('../utils/geocode');
 
 // Member dashboard
 router.get('/dashboard', requireAuth, async (req, res) => {
@@ -113,6 +114,25 @@ router.post('/profile/edit',
     try {
       const member = await Member.findByUserId(req.session.user.id);
 
+      // Check if address changed and geocode if needed
+      let latitude = member?.latitude || null;
+      let longitude = member?.longitude || null;
+      
+      const addressChanged = member && (
+        member.address !== address || 
+        member.city !== city || 
+        member.state !== state || 
+        member.zip !== zip
+      );
+
+      if ((addressChanged || !member) && address && city && state && zip) {
+        const coords = await geocodeAddress(address, city, state, zip);
+        if (coords) {
+          latitude = coords.lat;
+          longitude = coords.lon;
+        }
+      }
+
       const updateData = { 
         firstName, 
         lastName, 
@@ -124,6 +144,8 @@ router.post('/profile/edit',
         callsign, 
         county, 
         licenseClass,
+        latitude,
+        longitude,
         // Radio Equipment
         hfCapable: req.body.hfCapable ? 1 : 0,
         hfPower: req.body.hfPower || null,

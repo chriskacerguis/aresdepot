@@ -1,5 +1,9 @@
 const db = require('./config');
 const bcrypt = require('bcryptjs');
+const { geocodeAddress } = require('../utils/geocode');
+
+// Helper to delay between geocoding requests
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function seedMembers() {
   try {
@@ -585,7 +589,9 @@ async function seedMembers() {
     ];
 
     // Create users and members
-    for (const memberData of members) {
+    console.log(`\n📍 Geocoding ${members.length} member addresses...`);
+    for (let i = 0; i < members.length; i++) {
+      const memberData = members[i];
       const hashedPassword = await bcrypt.hash(memberData.password, 10);
       
       // Create user account
@@ -593,6 +599,27 @@ async function seedMembers() {
         `INSERT INTO users (email, password, is_admin) VALUES (?, ?, 0)`,
         [memberData.email, hashedPassword]
       );
+
+      // Geocode the address
+      let latitude = null;
+      let longitude = null;
+      
+      if (memberData.address && memberData.city && memberData.state && memberData.zip) {
+        console.log(`  Geocoding ${memberData.callsign}: ${memberData.address}, ${memberData.city}, ${memberData.state} ${memberData.zip}`);
+        const coords = await geocodeAddress(memberData.address, memberData.city, memberData.state, memberData.zip);
+        if (coords) {
+          latitude = coords.lat;
+          longitude = coords.lon;
+          console.log(`    ✅ ${latitude}, ${longitude}`);
+        } else {
+          console.log(`    ⚠️  Failed`);
+        }
+        
+        // Respect rate limit (1 request per second)
+        if (i < members.length - 1) {
+          await delay(1000);
+        }
+      }
 
       // Create member profile
       const capabilityFields = [
@@ -607,7 +634,7 @@ async function seedMembers() {
 
       const fields = [
         'user_id', 'first_name', 'last_name', 'callsign', 'phone',
-        'address', 'city', 'state', 'zip', 'county'
+        'address', 'city', 'state', 'zip', 'county', 'latitude', 'longitude'
       ];
       const values = [
         userResult.lastID,
@@ -619,7 +646,9 @@ async function seedMembers() {
         memberData.city,
         memberData.state,
         memberData.zip,
-        memberData.county
+        memberData.county,
+        latitude,
+        longitude
       ];
 
       // Add capability fields that are present

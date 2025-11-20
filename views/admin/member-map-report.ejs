@@ -101,16 +101,60 @@ const memberIcon = L.divIcon({
 // Helper function to delay between requests
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-// Geocode addresses with rate limiting (1 request per second to respect Nominatim usage policy)
-async function geocodeMembers() {
+// Process members: use cached coordinates or geocode if missing
+async function processMembers() {
   const results = [];
+  const membersToGeocode = [];
   
+  // First pass: use cached coordinates
   for (let i = 0; i < members.length; i++) {
     const member = members[i];
+    
+    if (member.latitude && member.longitude) {
+      // Use cached coordinates
+      const lat = parseFloat(member.latitude);
+      const lon = parseFloat(member.longitude);
+      
+      const popupContent = `
+        <div style="min-width: 200px;">
+          <h3 style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">${member.first_name} ${member.last_name}</h3>
+          <p style="margin: 4px 0; font-size: 13px;"><strong>Callsign:</strong> ${member.callsign}</p>
+          <p style="margin: 4px 0; font-size: 12px; color: #666;">${member.address}<br>${member.city}, ${member.state} ${member.zip}</p>
+          <p style="margin: 4px 0; font-size: 12px;"><strong>County:</strong> ${member.county}</p>
+          <p style="margin: 4px 0; font-size: 12px;">${member.phone}</p>
+          <p style="margin: 4px 0; font-size: 12px; color: #666;">${member.email}</p>
+          <a href="/admin/members/${member.id}" style="display: inline-block; margin-top: 8px; color: #4F46E5; text-decoration: none; font-size: 12px; font-weight: 600;">View Profile →</a>
+        </div>
+      `;
+      
+      const marker = L.marker([lat, lon], { icon: memberIcon })
+        .bindPopup(popupContent)
+        .addTo(map);
+      
+      markers[member.id] = marker;
+      results.push({ lat, lon });
+    } else if (member.address && member.city && member.state && member.zip) {
+      // No cached coordinates, needs geocoding
+      membersToGeocode.push({ index: i, member });
+      results.push(null); // placeholder
+    } else {
+      // No address data
+      results.push(null);
+    }
+  }
+  
+  // Update progress
+  const loadingText = document.querySelector('#loading-indicator p');
+  if (loadingText) {
+    loadingText.textContent = `Loaded ${members.length - membersToGeocode.length} cached locations. Geocoding ${membersToGeocode.length} remaining...`;
+  }
+  
+  // Second pass: geocode missing coordinates
+  for (let i = 0; i < membersToGeocode.length; i++) {
+    const { index, member } = membersToGeocode[i];
     const address = `${member.address}, ${member.city}, ${member.state} ${member.zip}`;
     
     try {
-      // Add User-Agent header requirement for Nominatim
       const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`, {
         headers: {
           'User-Agent': 'ARES-Depot-Member-Map'
@@ -119,7 +163,6 @@ async function geocodeMembers() {
       
       if (!response.ok) {
         console.warn(`Failed to geocode ${member.callsign}: HTTP ${response.status}`);
-        results.push(null);
         continue;
       }
       
@@ -146,35 +189,41 @@ async function geocodeMembers() {
           .addTo(map);
         
         markers[member.id] = marker;
+        results[index] = { lat, lon };
         
-        results.push({ lat, lon });
+        // Cache coordinates in database
+        fetch(`/admin/members/${member.id}/geocode`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ latitude: lat, longitude: lon })
+        }).catch(err => console.warn('Failed to cache coordinates:', err));
+        
       } else {
         console.warn(`No geocoding results for ${member.callsign}`);
-        results.push(null);
       }
     } catch (error) {
       console.error(`Error geocoding address for ${member.callsign}:`, error);
-      results.push(null);
     }
     
     // Wait 1 second between requests to respect rate limits
-    if (i < members.length - 1) {
+    if (i < membersToGeocode.length - 1) {
       await delay(1000);
     }
     
     // Update loading indicator progress
-    const progress = Math.round(((i + 1) / members.length) * 100);
-    const loadingText = document.querySelector('#loading-indicator p');
+    const progress = Math.round(((i + 1) / membersToGeocode.length) * 100);
     if (loadingText) {
-      loadingText.textContent = `Loading member locations... ${i + 1}/${members.length} (${progress}%)`;
+      loadingText.textContent = `Geocoding remaining locations... ${i + 1}/${membersToGeocode.length} (${progress}%)`;
     }
   }
   
   return results;
 }
 
-// Start geocoding and setup map
-geocodeMembers().then(results => {
+// Start processing and setup map
+processMembers().then(results => {
   const validResults = results.filter(r => r !== null);
   if (validResults.length > 0) {
     const bounds = L.latLngBounds(validResults.map(r => [r.lat, r.lon]));

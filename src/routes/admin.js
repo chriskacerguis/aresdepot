@@ -609,7 +609,7 @@ router.get('/reports/member-map', requireAdmin, async (req, res) => {
   try {
     const db = require('../database/config');
     const members = await db.all(`
-      SELECT m.id, m.first_name, m.last_name, m.callsign, m.address, m.city, m.state, m.zip, m.county, m.phone, u.email
+      SELECT m.id, m.first_name, m.last_name, m.callsign, m.address, m.city, m.state, m.zip, m.county, m.phone, m.latitude, m.longitude, u.email
       FROM members m
       JOIN users u ON m.user_id = u.id
       WHERE m.status = 'active' AND m.address IS NOT NULL AND m.address != ''
@@ -620,6 +620,24 @@ router.get('/reports/member-map', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Member map report error:', error);
     res.render('error', { message: 'Error generating map report' });
+  }
+});
+
+// Cache geocoded coordinates for a member
+router.post('/members/:id/geocode', requireAdmin, async (req, res) => {
+  try {
+    const { latitude, longitude } = req.body;
+    const memberId = req.params.id;
+    
+    if (!latitude || !longitude) {
+      return res.status(400).json({ error: 'Missing coordinates' });
+    }
+    
+    await Member.update(memberId, { latitude, longitude });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error caching coordinates:', error);
+    res.status(500).json({ error: 'Failed to cache coordinates' });
   }
 });
 
