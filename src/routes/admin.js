@@ -541,6 +541,34 @@ router.get('/reports', requireAdmin, (req, res) => {
   res.render('admin/reports');
 });
 
+// Deployment Readiness Report
+router.get('/reports/deployment-ready', requireAdmin, async (req, res) => {
+  try {
+    const readyMembers = await db.all(`
+      SELECT m.*, u.email,
+             t.name as tier_name,
+             t.sort_order as tier_order
+      FROM members m
+      INNER JOIN users u ON m.user_id = u.id
+      LEFT JOIN (
+        SELECT mt.member_id, t.name, t.sort_order
+        FROM member_tiers mt
+        INNER JOIN tiers t ON mt.tier_id = t.id
+        WHERE mt.achieved_at IS NOT NULL
+        ORDER BY t.sort_order DESC
+        LIMIT 1
+      ) t ON m.id = t.member_id
+      WHERE m.deployment_ready = 1
+      ORDER BY m.last_name, m.first_name
+    `);
+    
+    res.render('admin/deployment-ready-report', { members: readyMembers });
+  } catch (error) {
+    console.error('Deployment readiness report error:', error);
+    res.render('error', { message: 'Error generating report' });
+  }
+});
+
 // Event report
 router.get('/reports/event/:id', requireAdmin, async (req, res) => {
   try {
