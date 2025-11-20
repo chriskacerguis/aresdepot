@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const { requireAuth, requireMember } = require('../middleware/auth');
-const { uploadLicense } = require('../middleware/upload');
+const { uploadLicense, uploadPhoto } = require('../middleware/upload');
 const Member = require('../models/Member');
 const Task = require('../models/Task');
 const Event = require('../models/Event');
+const multer = require('multer');
 
 // Member dashboard
 router.get('/dashboard', requireAuth, async (req, res) => {
@@ -57,7 +58,36 @@ router.get('/profile/edit', requireAuth, async (req, res) => {
 // Update profile
 router.post('/profile/edit',
   requireAuth,
-  uploadLicense.single('fccLicense'),
+  (req, res, next) => {
+    const upload = multer({
+      storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+          const path = require('path');
+          const dir = file.fieldname === 'fccLicense' ? 
+            path.join(__dirname, '../../uploads/licenses') : 
+            path.join(__dirname, '../../uploads/photos');
+          cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+          const prefix = file.fieldname === 'fccLicense' ? 'license-' : 'photo-';
+          cb(null, prefix + uniqueSuffix + require('path').extname(file.originalname));
+        }
+      }),
+      fileFilter: (req, file, cb) => {
+        if (file.fieldname === 'fccLicense') {
+          cb(null, file.mimetype === 'application/pdf');
+        } else {
+          cb(null, /jpeg|jpg|png/.test(file.mimetype));
+        }
+      },
+      limits: { fileSize: 5 * 1024 * 1024 }
+    }).fields([
+      { name: 'fccLicense', maxCount: 1 },
+      { name: 'profilePhoto', maxCount: 1 }
+    ]);
+    upload(req, res, next);
+  },
   [
     body('firstName').trim().notEmpty(),
     body('lastName').trim().notEmpty(),
@@ -76,20 +106,23 @@ router.post('/profile/edit',
       });
     }
 
-    const { firstName, lastName, address, city, state, zip, phone, callsign, county } = req.body;
-    const fccLicensePath = req.file ? '/uploads/licenses/' + req.file.filename : null;
+    const { firstName, lastName, address, city, state, zip, phone, callsign, county, licenseClass } = req.body;
+    const fccLicensePath = req.files?.fccLicense ? '/uploads/licenses/' + req.files.fccLicense[0].filename : null;
+    const profilePhotoPath = req.files?.profilePhoto ? '/uploads/photos/' + req.files.profilePhoto[0].filename : null;
 
     try {
       const member = await Member.findByUserId(req.session.user.id);
 
+      const updateData = { firstName, lastName, address, city, state, zip, phone, callsign, county, licenseClass };
+      if (fccLicensePath) updateData.fccLicensePath = fccLicensePath;
+      if (profilePhotoPath) updateData.profilePhotoPath = profilePhotoPath;
+
       if (member) {
-        await Member.update(member.id, {
-          firstName, lastName, address, city, state, zip, phone, callsign, county, fccLicensePath
-        });
+        await Member.update(member.id, updateData);
       } else {
         await Member.create({
           userId: req.session.user.id,
-          firstName, lastName, address, city, state, zip, phone, callsign, county, fccLicensePath
+          ...updateData
         });
       }
 

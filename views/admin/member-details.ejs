@@ -3,23 +3,82 @@
 <div class="px-4 sm:px-0">
   <a href="/admin/members" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">← Back to Members</a>
   
+  <% 
+    const statusBannerConfig = {
+      inactive: { 
+        bg: 'bg-gray-100', 
+        border: 'border-gray-200', 
+        text: 'text-gray-800',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+        title: 'Inactive Member',
+        description: 'This member account is currently inactive and has no system access.'
+      },
+      suspended: { 
+        bg: 'bg-yellow-50', 
+        border: 'border-yellow-200', 
+        text: 'text-yellow-800',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />',
+        title: 'Suspended Member',
+        description: 'This member account is temporarily suspended. Access has been restricted pending review.'
+      },
+      banned: { 
+        bg: 'bg-red-50', 
+        border: 'border-red-200', 
+        text: 'text-red-800',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />',
+        title: 'Banned Member',
+        description: 'This member has been permanently banned from the system. All access has been revoked.'
+      }
+    };
+    const currentStatus = member.status || 'active';
+    const banner = statusBannerConfig[currentStatus];
+  %>
+  
+  <% if (banner) { %>
+    <div class="mt-4 rounded-lg <%= banner.bg %> border <%= banner.border %> p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 <%= banner.text %>" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <%- banner.icon %>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-semibold <%= banner.text %>"><%= banner.title %></h3>
+          <p class="mt-1 text-sm <%= banner.text %>"><%= banner.description %></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  
   <div class="mt-4 mb-8">
-    <div class="flex items-center gap-3">
-      <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-        <%= member.first_name %> <%= member.last_name %> (<%= member.callsign %>)
-      </h1>
+    <div class="flex items-center gap-4">
+      <% if (member.profile_photo_path) { %>
+        <img src="<%= member.profile_photo_path %>" alt="<%= member.first_name %> <%= member.last_name %>" class="h-20 w-20 rounded-full object-cover border-2 border-gray-300">
+      <% } else { %>
+        <div class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center">
+          <svg class="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+      <% } %>
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+          <%= member.first_name %> <%= member.last_name %> (<%= member.callsign %>)
+        </h1>
       <% 
-        const statusConfig = {
-          active: { bg: 'bg-green-50', text: 'text-green-700', ring: 'ring-green-600/20', label: 'Active' },
-          inactive: { bg: 'bg-gray-50', text: 'text-gray-600', ring: 'ring-gray-500/20', label: 'Inactive' },
-          suspended: { bg: 'bg-yellow-50', text: 'text-yellow-800', ring: 'ring-yellow-600/20', label: 'Suspended' },
-          banned: { bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-600/20', label: 'Banned' }
+        const licenseConfig = {
+          Technician: { bg: 'bg-slate-100', text: 'text-slate-700', ring: 'ring-slate-600/20', label: 'Technician' },
+          General: { bg: 'bg-amber-100', text: 'text-amber-700', ring: 'ring-amber-600/20', label: 'General' },
+          Extra: { bg: 'bg-emerald-100', text: 'text-emerald-700', ring: 'ring-emerald-600/20', label: 'Extra' }
         };
-        const status = statusConfig[member.status || 'active'];
+        const license = member.license_class ? licenseConfig[member.license_class] : null;
       %>
-      <span class="inline-flex items-center rounded-md <%= status.bg %> px-2.5 py-1 text-sm font-semibold <%= status.text %> ring-1 ring-inset <%= status.ring %>">
-        <%= status.label %>
-      </span>
+        <% if (license) { %>
+          <span class="inline-flex items-center rounded-md <%= license.bg %> px-2.5 py-1 text-sm font-semibold <%= license.text %> ring-1 ring-inset <%= license.ring %>">
+            <%= license.label %>
+          </span>
+        <% } %>
+      </div>
     </div>
   </div>
 
@@ -112,24 +171,41 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-900" for="county">County *</label>
+              <label class="block text="sm font-medium text-gray-900" for="county">County *</label>
               <div class="mt-2">
                 <input class="form-input" id="county" name="county" type="text" required value="<%= member.county %>">
               </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-900" for="status">Status *</label>
-              <div class="mt-2">
-                <select class="form-input" id="status" name="status" required>
-                  <option value="active" <%= member.status === 'active' ? 'selected' : '' %>>Active</option>
-                  <option value="inactive" <%= member.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
-                  <option value="suspended" <%= member.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
-                  <option value="banned" <%= member.status === 'banned' ? 'selected' : '' %>>Banned</option>
-                </select>
+          </div>
+          
+          <div class="border-t border-gray-200 pt-6 mt-6">
+            <h3 class="text-base font-semibold text-gray-900 mb-4">Admin Settings</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-900" for="title">Title *</label>
+                <div class="mt-2">
+                  <select class="form-input" id="title" name="title" required>
+                    <option value="Member" <%= (member.title || 'Member') === 'Member' ? 'selected' : '' %>>Member</option>
+                    <option value="Assistant Emergency Coordinator" <%= member.title === 'Assistant Emergency Coordinator' ? 'selected' : '' %>>Assistant Emergency Coordinator</option>
+                    <option value="Deputy Emergency Coordinator" <%= member.title === 'Deputy Emergency Coordinator' ? 'selected' : '' %>>Deputy Emergency Coordinator</option>
+                    <option value="Emergency Coordinator" <%= member.title === 'Emergency Coordinator' ? 'selected' : '' %>>Emergency Coordinator</option>
+                  </select>
+                </div>
               </div>
-              <p class="mt-1 text-xs text-gray-500">
-                Active: Full access • Inactive: No access • Suspended: Temporary restriction • Banned: Permanent restriction
-              </p>
+              <div>
+                <label class="block text-sm font-medium text-gray-900" for="status">Status *</label>
+                <div class="mt-2">
+                  <select class="form-input" id="status" name="status" required>
+                    <option value="active" <%= member.status === 'active' ? 'selected' : '' %>>Active</option>
+                    <option value="inactive" <%= member.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                    <option value="suspended" <%= member.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+                    <option value="banned" <%= member.status === 'banned' ? 'selected' : '' %>>Banned</option>
+                  </select>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">
+                  Active: Full access • Inactive: No access • Suspended: Temporary restriction • Banned: Permanent restriction
+                </p>
+              </div>
             </div>
           </div>
           <div class="flex gap-3 pt-4">

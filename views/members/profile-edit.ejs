@@ -54,6 +54,26 @@
             </div>
           </div>
 
+          <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+            <div>
+              <label class="form-label" for="licenseClass">License Class</label>
+              <div class="mt-2">
+                <select class="form-input" id="licenseClass" name="licenseClass">
+                  <option value="">Select License Class</option>
+                  <option value="Technician" <%= (member.license_class || formData.licenseClass) === 'Technician' ? 'selected' : '' %>>Technician</option>
+                  <option value="General" <%= (member.license_class || formData.licenseClass) === 'General' ? 'selected' : '' %>>General</option>
+                  <option value="Extra" <%= (member.license_class || formData.licenseClass) === 'Extra' ? 'selected' : '' %>>Amateur Extra</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="form-label" for="county">County *</label>
+              <div class="mt-2">
+                <input class="form-input" id="county" name="county" type="text" required value="<%= member.county || formData.county || '' %>">
+              </div>
+            </div>
+          </div>
+
           <div>
             <label class="form-label" for="address">Street Address</label>
             <div class="mt-2">
@@ -83,9 +103,15 @@
           </div>
 
           <div>
-            <label class="form-label" for="county">County *</label>
+            <label class="form-label" for="profilePhoto">Profile Photo</label>
+            <% if (member.profile_photo_path) { %>
+              <div class="mt-2 mb-3">
+                <img src="<%= member.profile_photo_path %>" alt="Current profile photo" class="h-24 w-24 rounded-full object-cover border-2 border-gray-200">
+              </div>
+            <% } %>
             <div class="mt-2">
-              <input class="form-input" id="county" name="county" type="text" required value="<%= member.county || formData.county || '' %>">
+              <input class="form-input" id="profilePhoto" name="profilePhoto" type="file" accept="image/jpeg,image/jpg,image/png">
+              <p class="mt-1 text-xs text-gray-500">Upload a profile photo (JPG or PNG)</p>
             </div>
           </div>
 

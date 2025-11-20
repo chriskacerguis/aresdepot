@@ -41,6 +41,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '62701',
         county: 'Sangamon',
+        license_class: 'Extra',
         status: 'active',
         // Capabilities
         emergency_power: 1,
@@ -73,6 +74,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '61602',
         county: 'Peoria',
+        license_class: 'General',
         status: 'active',
         // Capabilities
         vhf_uhf_capable: 1,
@@ -100,6 +102,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '61101',
         county: 'Winnebago',
+        license_class: 'Extra',
         status: 'active',
         // Capabilities
         hf_capable: 1,
@@ -133,6 +136,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '61820',
         county: 'Champaign',
+        license_class: 'General',
         status: 'active',
         // Capabilities
         vhf_uhf_capable: 1,
@@ -161,6 +165,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '62521',
         county: 'Macon',
+        license_class: 'General',
         status: 'active',
         // Capabilities
         hf_capable: 1,
@@ -187,6 +192,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '61701',
         county: 'McLean',
+        license_class: 'Technician',
         status: 'inactive',
         // Capabilities
         vhf_uhf_capable: 1,
@@ -206,6 +212,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '60502',
         county: 'Kane',
+        license_class: 'Extra',
         status: 'active',
         // Capabilities
         hf_capable: 1,
@@ -240,6 +247,7 @@ async function seedMembers() {
         state: 'IL',
         zip: '60431',
         county: 'Will',
+        license_class: 'Technician',
         status: 'active',
         // Capabilities
         vhf_uhf_capable: 1,
@@ -271,7 +279,7 @@ async function seedMembers() {
 
       // Create member profile
       const capabilityFields = [
-        'status', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
+        'license_class', 'status', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
         'vhf_uhf_capable', 'vhf_uhf_power', 'winlink_capable', 'satellite_internet',
         'satellite_internet_type', 'mobile_station', 'portable_station', 'aprs_capable',
         'dstar_capable', 'dmr_capable', 'fusion_capable', 'packet_radio', 'sstv_capable',
