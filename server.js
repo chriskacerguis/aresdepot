@@ -22,7 +22,7 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com", "https://cdn.jsdelivr.net"],
       imgSrc: ["'self'", "data:", "blob:", "https://*.tile.openstreetmap.org"],
       connectSrc: ["'self'", "https://nominatim.openstreetmap.org", "https://unpkg.com"]
     }

@@ -68,6 +68,46 @@ class User {
     );
     return newAdminStatus;
   }
+
+  static async getOrCreateCalendarToken(userId) {
+    const user = await db.get('SELECT calendar_token FROM users WHERE id = ?', [userId]);
+    
+    if (user && user.calendar_token) {
+      return user.calendar_token;
+    }
+    
+    // Generate new token
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    await db.run(
+      'UPDATE users SET calendar_token = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [token, userId]
+    );
+    
+    return token;
+  }
+
+  static async findByCalendarToken(token) {
+    return await db.get(`
+      SELECT u.*, m.id as member_id, m.status as member_status
+      FROM users u
+      LEFT JOIN members m ON u.id = m.user_id
+      WHERE u.calendar_token = ?
+    `, [token]);
+  }
+
+  static async regenerateCalendarToken(userId) {
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    
+    await db.run(
+      'UPDATE users SET calendar_token = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [token, userId]
+    );
+    
+    return token;
+  }
 }
 
 module.exports = User;

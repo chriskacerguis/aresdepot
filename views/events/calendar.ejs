@@ -9,14 +9,73 @@
           <h1 class="text-3xl font-bold text-gray-900">Event Calendar</h1>
           <p class="mt-2 text-sm text-gray-600">View and RSVP to upcoming events</p>
         </div>
-        <% if (user.is_admin) { %>
-          <a href="/admin/events" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Event
-          </a>
-        <% } %>
+        <div class="flex items-center gap-3">
+          <!-- Calendar Subscription -->
+          <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" 
+                    type="button"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Subscribe
+            </button>
+            
+            <div x-show="open" 
+                 @click.away="open = false"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95"
+                 class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                 style="display: none;">
+              <div class="p-4">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">Calendar Subscription</h3>
+                <p class="text-xs text-gray-600 mb-3">
+                  Subscribe to this calendar in your favorite calendar app to stay updated with ARES events.
+                </p>
+                
+                <div class="mb-3">
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Calendar URL:</label>
+                  <div class="flex items-center gap-2">
+                    <input type="text" 
+                           readonly 
+                           value="<%= `${req.protocol}://${req.get('host')}/events/feed/${calendarToken}.ics` %>"
+                           id="calendar-url"
+                           class="flex-1 px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-gray-50 font-mono">
+                    <button onclick="copyCalendarUrl()" 
+                            class="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="text-xs text-gray-500 space-y-1">
+                  <p><strong>How to subscribe:</strong></p>
+                  <ul class="list-disc list-inside space-y-0.5 ml-2">
+                    <li><strong>Google Calendar:</strong> Settings → Add calendar → From URL</li>
+                    <li><strong>Apple Calendar:</strong> File → New Calendar Subscription</li>
+                    <li><strong>Outlook:</strong> Add calendar → Subscribe from web</li>
+                  </ul>
+                  <p class="mt-2 text-amber-600">
+                    ⚠️ Keep this URL private. If your account is deactivated, this subscription will stop working.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <% if (user.is_admin) { %>
+            <a href="/admin/events" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Event
+            </a>
+          <% } %>
+        </div>
       </div>
     </div>
 
@@ -259,3 +318,29 @@
     </div>
   </div>
 </div>
+
+<script>
+function copyCalendarUrl() {
+  const input = document.getElementById('calendar-url');
+  input.select();
+  input.setSelectionRange(0, 99999); // For mobile devices
+  
+  navigator.clipboard.writeText(input.value).then(() => {
+    // Show feedback
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.classList.add('bg-green-600');
+    button.classList.remove('bg-indigo-600');
+    
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('bg-green-600');
+      button.classList.add('bg-indigo-600');
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+    alert('Failed to copy URL. Please copy manually.');
+  });
+}
+</script>

@@ -11,6 +11,7 @@ const migrations = [
     is_admin INTEGER DEFAULT 0,
     reset_token TEXT,
     reset_token_expires DATETIME,
+    calendar_token TEXT UNIQUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,

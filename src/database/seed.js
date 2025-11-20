@@ -1,6 +1,5 @@
 const db = require('./config');
 const bcrypt = require('bcryptjs');
-const { geocodeAddress } = require('../utils/geocode');
 require('dotenv').config();
 
 async function seed() {
@@ -20,10 +19,9 @@ async function seed() {
         [adminCallsign + '@admin.local', hashedPassword]
       );
       
-      // Geocode admin address
-      const coords = await geocodeAddress('301 W 2nd St', 'Austin', 'TX', '78701');
-      const latitude = coords ? coords.lat : null;
-      const longitude = coords ? coords.lon : null;
+      // Pre-calculated coordinates for 301 W 2nd St, Austin, TX 78701
+      const latitude = 30.2648968;
+      const longitude = -97.7469115;
       
       // Create member record for admin
       await db.run(

@@ -1,9 +1,5 @@
 const db = require('./config');
 const bcrypt = require('bcryptjs');
-const { geocodeAddress } = require('../utils/geocode');
-
-// Helper to delay between geocoding requests
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function seedMembers() {
   try {
@@ -33,7 +29,7 @@ async function seedMembers() {
       return;
     }
 
-    // Sample member data
+    // Sample member data with pre-calculated coordinates
     const members = [
       {
         email: 'john.smith@example.com',
@@ -47,6 +43,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78701',
         county: 'Travis',
+        latitude: 30.2648968,
+        longitude: -97.7469115,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Passed',
@@ -82,6 +80,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78701',
         county: 'Travis',
+        latitude: 30.276485,
+        longitude: -97.739768,
         license_class: 'General',
         status: 'active',
         background_check: 'Pending',
@@ -113,6 +113,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78704',
         county: 'Travis',
+        latitude: 30.2656013,
+        longitude: -97.7664668,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Passed',
@@ -148,6 +150,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78745',
         county: 'Travis',
+        latitude: 30.230688,
+        longitude: -97.7998856,
         license_class: 'General',
         status: 'active',
         background_check: 'Not Started',
@@ -178,6 +182,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78722',
         county: 'Travis',
+        latitude: 30.3142905,
+        longitude: -97.7068915,
         license_class: 'General',
         status: 'active',
         background_check: 'Passed',
@@ -207,6 +213,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78753',
         county: 'Travis',
+        latitude: 30.4031914,
+        longitude: -97.6791126,
         license_class: 'Technician',
         status: 'inactive',
         background_check: 'Failed',
@@ -230,6 +238,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78751',
         county: 'Travis',
+        latitude: 30.2841763,
+        longitude: -97.7189427,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Passed',
@@ -265,6 +275,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '60431',
         county: 'Travis',
+        latitude: 30.2268009,
+        longitude: -97.8215084,
         license_class: 'Technician',
         status: 'active',
         background_check: 'Pending',
@@ -296,6 +308,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78753',
         county: 'Travis',
+        latitude: 30.4031914,
+        longitude: -97.6791126,
         license_class: 'Technician',
         status: 'active',
         background_check: 'Passed',
@@ -317,6 +331,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78704',
         county: 'Travis',
+        latitude: 30.3351968,
+        longitude: -97.8051836,
         license_class: 'General',
         status: 'active',
         background_check: 'Passed',
@@ -342,6 +358,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78722',
         county: 'Travis',
+        latitude: 30.3308869,
+        longitude: -97.7318216,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Pending',
@@ -368,6 +386,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '60505',
         county: 'Travis',
+        latitude: 30.3484061,
+        longitude: -97.7343178,
         license_class: 'Technician',
         status: 'active',
         background_check: 'Not Started',
@@ -388,6 +408,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78745',
         county: 'Travis',
+        latitude: 30.1595168,
+        longitude: -97.7922019,
         license_class: 'General',
         status: 'active',
         background_check: 'Passed',
@@ -417,6 +439,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '60435',
         county: 'Travis',
+        latitude: 30.3600465,
+        longitude: -97.7348892,
         license_class: 'Technician',
         status: 'inactive',
         background_check: 'Passed',
@@ -436,6 +460,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78756',
         county: 'Travis',
+        latitude: 30.323925,
+        longitude: -97.7393813,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Passed',
@@ -466,6 +492,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78702',
         county: 'Travis',
+        latitude: 30.2638417,
+        longitude: -97.7291719,
         license_class: 'General',
         status: 'active',
         background_check: 'Pending',
@@ -490,6 +518,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78613',
         county: 'Travis',
+        latitude: 30.470046,
+        longitude: -97.8023053,
         license_class: 'Technician',
         status: 'active',
         background_check: 'Not Started',
@@ -511,6 +541,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78757',
         county: 'Travis',
+        latitude: 30.3602335,
+        longitude: -97.7424161,
         license_class: 'General',
         status: 'active',
         background_check: 'Passed',
@@ -539,6 +571,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78704',
         county: 'Travis',
+        latitude: 30.258731,
+        longitude: -97.789486,
         license_class: 'Extra',
         status: 'active',
         background_check: 'Passed',
@@ -577,6 +611,8 @@ async function seedMembers() {
         state: 'TX',
         zip: '78758',
         county: 'Travis',
+        latitude: 30.372676,
+        longitude: -97.7278594,
         license_class: 'Technician',
         status: 'active',
         background_check: 'Passed',
@@ -589,7 +625,7 @@ async function seedMembers() {
     ];
 
     // Create users and members
-    console.log(`\n📍 Geocoding ${members.length} member addresses...`);
+    console.log(`\n📝 Creating ${members.length} members...`);
     for (let i = 0; i < members.length; i++) {
       const memberData = members[i];
       const hashedPassword = await bcrypt.hash(memberData.password, 10);
@@ -600,28 +636,7 @@ async function seedMembers() {
         [memberData.email, hashedPassword]
       );
 
-      // Geocode the address
-      let latitude = null;
-      let longitude = null;
-      
-      if (memberData.address && memberData.city && memberData.state && memberData.zip) {
-        console.log(`  Geocoding ${memberData.callsign}: ${memberData.address}, ${memberData.city}, ${memberData.state} ${memberData.zip}`);
-        const coords = await geocodeAddress(memberData.address, memberData.city, memberData.state, memberData.zip);
-        if (coords) {
-          latitude = coords.lat;
-          longitude = coords.lon;
-          console.log(`    ✅ ${latitude}, ${longitude}`);
-        } else {
-          console.log(`    ⚠️  Failed`);
-        }
-        
-        // Respect rate limit (1 request per second)
-        if (i < members.length - 1) {
-          await delay(1000);
-        }
-      }
-
-      // Create member profile
+      // Create member profile with pre-calculated coordinates
       const capabilityFields = [
         'license_class', 'status', 'background_check', 'background_check_date', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
         'vhf_uhf_capable', 'vhf_uhf_power', 'winlink_capable', 'satellite_internet',
@@ -647,8 +662,8 @@ async function seedMembers() {
         memberData.state,
         memberData.zip,
         memberData.county,
-        latitude,
-        longitude
+        memberData.latitude,
+        memberData.longitude
       ];
 
       // Add capability fields that are present
