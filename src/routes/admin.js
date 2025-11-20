@@ -327,9 +327,37 @@ router.post('/events/create',
 // Manage special achievements
 router.get('/achievements', requireAdmin, async (req, res) => {
   try {
-    const achievements = await Achievement.getAll();
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const search = req.query.search || '';
+    const offset = (page - 1) * limit;
+
+    let achievements = await Achievement.getAll();
+    
+    // Filter by search if provided
+    if (search) {
+      const searchLower = search.toLowerCase();
+      achievements = achievements.filter(a => 
+        a.name.toLowerCase().includes(searchLower) || 
+        (a.description && a.description.toLowerCase().includes(searchLower))
+      );
+    }
+    
+    const totalAchievements = achievements.length;
+    const totalPages = Math.ceil(totalAchievements / limit);
+    const paginatedAchievements = achievements.slice(offset, offset + limit);
+    
     const pending = await Achievement.getPendingVerifications();
-    res.render('admin/achievements', { achievements, pending, errors: [], formData: {} });
+    res.render('admin/achievements', { 
+      achievements: paginatedAchievements,
+      totalAchievements,
+      currentPage: page,
+      totalPages,
+      search,
+      pending, 
+      errors: [], 
+      formData: {} 
+    });
   } catch (error) {
     console.error('Achievements error:', error);
     res.render('error', { message: 'Error loading achievements' });
