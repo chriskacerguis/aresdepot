@@ -20,8 +20,8 @@ async function seed() {
       );
       // Create member record for admin
       await db.run(
-        'INSERT INTO members (user_id, first_name, last_name, callsign, phone, address, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userId.lastID, 'Admin', 'User', adminCallsign, '555-0000', '123 Admin St', 'City', 'ST', '00000']
+        'INSERT INTO members (user_id, first_name, last_name, callsign, phone, address, city, state, zip, county) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userId.lastID, 'Admin', 'User', adminCallsign, '512-555-0000', '301 W 2nd St', 'Austin', 'TX', '78701', 'Travis']
       );
       console.log('✅ Admin user created');
     } else {

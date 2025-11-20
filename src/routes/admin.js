@@ -604,6 +604,25 @@ router.get('/reports/member-progress', requireAdmin, async (req, res) => {
   }
 });
 
+// Member location map report
+router.get('/reports/member-map', requireAdmin, async (req, res) => {
+  try {
+    const db = require('../database/config');
+    const members = await db.all(`
+      SELECT m.id, m.first_name, m.last_name, m.callsign, m.address, m.city, m.state, m.zip, m.county, m.phone, u.email
+      FROM members m
+      JOIN users u ON m.user_id = u.id
+      WHERE m.status = 'active' AND m.address IS NOT NULL AND m.address != ''
+      ORDER BY m.last_name, m.first_name
+    `);
+    
+    res.render('admin/member-map-report', { members });
+  } catch (error) {
+    console.error('Member map report error:', error);
+    res.render('error', { message: 'Error generating map report' });
+  }
+});
+
 // Capabilities report
 router.get('/reports/capabilities', requireAdmin, async (req, res) => {
   try {
