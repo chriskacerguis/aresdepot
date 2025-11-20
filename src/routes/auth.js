@@ -24,13 +24,16 @@ router.post('/login',
     try {
       // Find member by callsign
       const member = await Member.findByCallsign(identifier.toUpperCase());
+      console.log('Login attempt:', { identifier, found_member: !!member });
       let user = null;
       
       if (member) {
         user = await User.findById(member.user_id);
+        console.log('Found user:', { user_id: user?.id, is_admin: user?.is_admin });
       }
 
       if (!user || !(await User.verifyPassword(password, user.password))) {
+        console.log('Login failed:', { user_found: !!user });
         return res.render('auth/login', {
           errors: [{ msg: 'Invalid callsign or password' }],
           formData: req.body
@@ -40,6 +43,7 @@ router.post('/login',
       req.session.user = {
         id: user.id,
         email: user.email,
+        callsign: member ? member.callsign : identifier.toUpperCase(),
         is_admin: user.is_admin
       };
 
@@ -132,6 +136,7 @@ router.post('/register',
       req.session.user = {
         id: userId,
         email: email,
+        callsign: callsign,
         is_admin: false
       };
 

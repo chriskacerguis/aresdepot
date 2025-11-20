@@ -5,16 +5,18 @@ async function seedMembers() {
   try {
     console.log('🌱 Starting member data seeding...');
 
-    // Check if members already exist
-    const existingMembers = await db.all('SELECT id FROM members LIMIT 1');
+    // Check if members already exist (excluding admin)
+    const adminUser = await db.get('SELECT id FROM users WHERE is_admin = 1');
+    const existingMembers = await db.all(
+      'SELECT id FROM members WHERE user_id != ? LIMIT 1',
+      [adminUser ? adminUser.id : 0]
+    );
     if (existingMembers.length > 0) {
       console.log('⚠️  Members already exist. Skipping member seeding.');
       console.log('   To reseed, delete data/ares.db and run migrations again.');
       return;
     }
 
-    // Get the admin user
-    const adminUser = await db.get('SELECT id FROM users WHERE is_admin = 1');
     if (!adminUser) {
       console.error('❌ Admin user not found. Please run seed.js first.');
       return;

@@ -110,7 +110,7 @@ async function seed() {
     console.log('✅ Sample special certifications created');
 
     console.log('✅ Seeding completed successfully!');
-    console.log(`\n📧 Admin Email: ${adminEmail}`);
+    console.log(`\n📻 Admin Callsign: ${adminCallsign}`);
     console.log(`🔑 Admin Password: ${adminPassword}`);
     console.log('\n⚠️  Please change the admin password after first login!\n');
 
