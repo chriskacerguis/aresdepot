@@ -237,12 +237,21 @@ router.post('/members/:id/update',
         emergencyContactRelationship: req.body.emergencyContactRelationship,
         emergencyContactPhone: req.body.emergencyContactPhone,
         emergencyContactEmail: req.body.emergencyContactEmail,
-        adminNotes: req.body.adminNotes || null
+        adminNotes: req.body.adminNotes || null,
+        hasIdCard: req.body.hasIdCard === '1' ? 1 : 0,
+        idCardExpiryDate: req.body.idCardExpiryDate || null
       };
       
       // If background check status changed, update the date
       if (currentMember && currentMember.background_check !== req.body.backgroundCheck) {
         updateData.backgroundCheckDate = new Date().toISOString();
+      }
+      
+      // If ID card status changed to active and wasn't before, record issuance
+      if (req.body.hasIdCard === '1' && !currentMember.has_id_card) {
+        const admin = await Member.findByUserId(req.session.user.id);
+        updateData.idCardIssuedBy = admin ? admin.callsign : req.session.user.email;
+        updateData.idCardIssuedDate = new Date().toISOString().split('T')[0];
       }
       
       await Member.update(req.params.id, updateData);
@@ -650,6 +659,38 @@ router.post('/members/:id/geocode', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Error caching coordinates:', error);
     res.status(500).json({ error: 'Failed to cache coordinates' });
+  }
+});
+
+// Order ID card
+router.post('/members/:id/order-card', requireAdmin, async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id);
+    
+    if (!member) {
+      return res.status(404).json({ error: 'Member not found' });
+    }
+    
+    if (!member.profile_photo_path) {
+      return res.status(400).json({ error: 'Member must have a photo uploaded before ordering a card' });
+    }
+    
+    // TODO: Implement InstaCard API integration here
+    // For now, just return success
+    
+    // Auto-enable ID card status and set issued info
+    const admin = await Member.findByUserId(req.session.user.id);
+    await Member.update(req.params.id, {
+      hasIdCard: 1,
+      idCardIssuedBy: admin ? admin.callsign : req.session.user.email,
+      idCardIssuedDate: new Date().toISOString().split('T')[0],
+      idCardExpiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 1 year from now
+    });
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error ordering card:', error);
+    res.status(500).json({ error: 'Failed to order card' });
   }
 });
 

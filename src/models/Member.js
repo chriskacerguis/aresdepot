@@ -87,7 +87,11 @@ class Member {
       meshNetwork: 'mesh_network',
       firstnetDevice: 'firstnet_device',
       capabilitiesNotes: 'capabilities_notes',
-      adminNotes: 'admin_notes'
+      adminNotes: 'admin_notes',
+      hasIdCard: 'has_id_card',
+      idCardExpiryDate: 'id_card_expiry_date',
+      idCardIssuedBy: 'id_card_issued_by',
+      idCardIssuedDate: 'id_card_issued_date'
     };
 
     for (const [key, dbField] of Object.entries(fieldMapping)) {

@@ -243,7 +243,13 @@ const migrations = [
   )`,
 
   // Migration 16: Create document index
-  `CREATE INDEX IF NOT EXISTS idx_documents_tier_id ON documents(tier_id)`
+  `CREATE INDEX IF NOT EXISTS idx_documents_tier_id ON documents(tier_id)`,
+
+  // Migration 17: Add ID card fields to members
+  `ALTER TABLE members ADD COLUMN has_id_card INTEGER DEFAULT 0`,
+  `ALTER TABLE members ADD COLUMN id_card_expiry_date DATE`,
+  `ALTER TABLE members ADD COLUMN id_card_issued_by TEXT`,
+  `ALTER TABLE members ADD COLUMN id_card_issued_date DATE`
 ];
 
 async function runMigrations() {

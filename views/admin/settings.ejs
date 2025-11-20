@@ -1,134 +1,335 @@
 <% title = 'Admin Settings' %>
 
-<div class="px-4 sm:px-0 max-w-4xl mx-auto">
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+
+<div class="px-4 sm:px-0">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Admin Settings</h1>
-    <p class="mt-2 text-sm text-gray-700">Configure system settings and email notifications</p>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Settings</h1>
+    <p class="mt-2 text-sm text-gray-700">Configure system settings and preferences</p>
   </div>
 
-  <% if (success) { %>
-    <div class="rounded-md bg-green-50 p-4 mb-6">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
+  <!-- Layout with Sidebar -->
+  <div class="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-6" x-data="{ activeTab: window.location.hash.slice(1) || 'email' }">
+    <!-- Left Sidebar Navigation -->
+    <aside>
+      <nav class="card lg:sticky lg:top-4">
+        <div class="card-body p-0">
+          <ul class="divide-y divide-gray-200">
+            <li>
+              <a 
+                href="#email" 
+                @click.prevent="activeTab = 'email'; window.location.hash = 'email'"
+                :class="activeTab === 'email' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Email (SMTP)
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#general" 
+                @click.prevent="activeTab = 'general'; window.location.hash = 'general'"
+                :class="activeTab === 'general' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                General
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#notifications" 
+                @click.prevent="activeTab = 'notifications'; window.location.hash = 'notifications'"
+                :class="activeTab === 'notifications' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                Notifications
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#instacard" 
+                @click.prevent="activeTab = 'instacard'; window.location.hash = 'instacard'"
+                :class="activeTab === 'instacard' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                </svg>
+                InstaCard
+              </a>
+            </li>
+            <li>
+              <a 
+                href="#security" 
+                @click.prevent="activeTab = 'security'; window.location.hash = 'security'"
+                :class="activeTab === 'security' ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-700' : 'text-gray-700 hover:bg-gray-50'"
+                class="flex items-center px-4 py-3 text-sm font-medium transition-colors"
+              >
+                <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                Security
+              </a>
+            </li>
+          </ul>
         </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium text-green-800"><%= success %></p>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 min-w-0">
+      <% if (success) { %>
+        <div class="rounded-md bg-green-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-green-800"><%= success %></p>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="rounded-md bg-red-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-red-800"><%= error %></p>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Email (SMTP) Settings Tab -->
+      <div x-show="activeTab === 'email'" x-cloak>
+        <div class="card mb-6">
+          <div class="card-body">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-xl font-bold text-gray-900">Email (SMTP) Settings</h2>
+                <p class="mt-1 text-sm text-gray-600">Configure SMTP server for sending emails</p>
+              </div>
+              <button type="button" id="test-smtp-btn" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Test Connection
+              </button>
+            </div>
+
+            <form method="POST" action="/admin/settings/smtp" class="space-y-6">
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="smtp_host" class="block text-sm font-medium text-gray-700">SMTP Host</label>
+                  <input type="text" name="smtp_host" id="smtp_host" value="<%= smtpConfig.host %>" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="smtp.gmail.com">
+                  <p class="mt-1 text-xs text-gray-500">Example: smtp.gmail.com, smtp.office365.com</p>
+                </div>
+
+                <div>
+                  <label for="smtp_port" class="block text-sm font-medium text-gray-700">Port</label>
+                  <input type="number" name="smtp_port" id="smtp_port" value="<%= smtpConfig.port %>" required min="1" max="65535"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="587">
+                  <p class="mt-1 text-xs text-gray-500">Usually 587 (TLS) or 465 (SSL)</p>
+                </div>
+
+                <div>
+                  <label for="smtp_secure" class="block text-sm font-medium text-gray-700">Security</label>
+                  <select name="smtp_secure" id="smtp_secure" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="false" <%= !smtpConfig.secure ? 'selected' : '' %>>STARTTLS (Port 587)</option>
+                    <option value="true" <%= smtpConfig.secure ? 'selected' : '' %>>SSL/TLS (Port 465)</option>
+                  </select>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="smtp_user" class="block text-sm font-medium text-gray-700">Username</label>
+                  <input type="text" name="smtp_user" id="smtp_user" value="<%= smtpConfig.user %>"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="your-email@example.com">
+                  <p class="mt-1 text-xs text-gray-500">Usually your email address</p>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="smtp_pass" class="block text-sm font-medium text-gray-700">Password</label>
+                  <input type="password" name="smtp_pass" id="smtp_pass" value="<%= smtpConfig.pass %>"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="••••••••">
+                  <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing password. For Gmail, use an App Password.</p>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="smtp_from" class="block text-sm font-medium text-gray-700">From Email Address</label>
+                  <input type="email" name="smtp_from" id="smtp_from" value="<%= smtpConfig.from %>" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="noreply@aresdepot.org">
+                  <p class="mt-1 text-xs text-gray-500">Email address shown in the "From" field</p>
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-3">
+                <button type="submit" class="btn-primary">Save Settings</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card">
+          <div class="card-body">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Common SMTP Providers</h3>
+            <div class="space-y-4 text-sm">
+              <div class="border-l-4 border-blue-500 pl-4">
+                <p class="font-semibold text-gray-900">Gmail</p>
+                <p class="text-gray-600">Host: smtp.gmail.com, Port: 587 (STARTTLS)</p>
+                <p class="text-xs text-gray-500 mt-1">Note: Enable 2-factor authentication and use an App Password</p>
+              </div>
+              <div class="border-l-4 border-green-500 pl-4">
+                <p class="font-semibold text-gray-900">Microsoft 365 / Outlook</p>
+                <p class="text-gray-600">Host: smtp.office365.com, Port: 587 (STARTTLS)</p>
+              </div>
+              <div class="border-l-4 border-purple-500 pl-4">
+                <p class="font-semibold text-gray-900">SendGrid</p>
+                <p class="text-gray-600">Host: smtp.sendgrid.net, Port: 587, User: apikey</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  <% } %>
 
-  <% if (error) { %>
-    <div class="rounded-md bg-red-50 p-4 mb-6">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium text-red-800"><%= error %></p>
+      <!-- General Settings Tab -->
+      <div x-show="activeTab === 'general'" x-cloak>
+        <div class="card">
+          <div class="card-body">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">General Settings</h2>
+            <p class="text-sm text-gray-600">Coming soon...</p>
+          </div>
         </div>
       </div>
-    </div>
-  <% } %>
 
-  <!-- SMTP Settings -->
-  <div class="card mb-6">
-    <div class="card-body">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h2 class="text-xl font-bold text-gray-900">Email (SMTP) Settings</h2>
-          <p class="mt-1 text-sm text-gray-600">Configure SMTP server for sending emails</p>
+      <!-- Notifications Tab -->
+      <div x-show="activeTab === 'notifications'" x-cloak>
+        <div class="card">
+          <div class="card-body">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Notification Settings</h2>
+            <p class="text-sm text-gray-600">Coming soon...</p>
+          </div>
         </div>
-        <button type="button" id="test-smtp-btn" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Test Connection
-        </button>
       </div>
 
-      <form method="POST" action="/admin/settings/smtp" class="space-y-6">
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div class="sm:col-span-2">
-            <label for="smtp_host" class="block text-sm font-medium text-gray-700">SMTP Host</label>
-            <input type="text" name="smtp_host" id="smtp_host" value="<%= smtpConfig.host %>" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="smtp.gmail.com">
-            <p class="mt-1 text-xs text-gray-500">Example: smtp.gmail.com, smtp.office365.com</p>
-          </div>
+      <!-- InstaCard Tab -->
+      <div x-show="activeTab === 'instacard'" x-cloak>
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-6">
+              <h2 class="text-xl font-bold text-gray-900">InstaCard Integration</h2>
+              <p class="mt-1 text-sm text-gray-600">Configure InstaCard API credentials for member ID card generation</p>
+            </div>
 
-          <div>
-            <label for="smtp_port" class="block text-sm font-medium text-gray-700">Port</label>
-            <input type="number" name="smtp_port" id="smtp_port" value="<%= smtpConfig.port %>" required min="1" max="65535"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="587">
-            <p class="mt-1 text-xs text-gray-500">Usually 587 (TLS) or 465 (SSL)</p>
-          </div>
+            <form method="POST" action="/admin/settings/instacard" class="space-y-6">
+              <div class="grid grid-cols-1 gap-6">
+                <div>
+                  <label for="instacard_base_url" class="block text-sm font-medium text-gray-700">Base URL</label>
+                  <input 
+                    type="url" 
+                    name="instacard_base_url" 
+                    id="instacard_base_url" 
+                    value="" 
+                    required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="https://api.instacard.com">
+                  <p class="mt-1 text-xs text-gray-500">The base URL for the InstaCard API</p>
+                </div>
 
-          <div>
-            <label for="smtp_secure" class="block text-sm font-medium text-gray-700">Security</label>
-            <select name="smtp_secure" id="smtp_secure" 
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-              <option value="false" <%= !smtpConfig.secure ? 'selected' : '' %>>STARTTLS (Port 587)</option>
-              <option value="true" <%= smtpConfig.secure ? 'selected' : '' %>>SSL/TLS (Port 465)</option>
-            </select>
-          </div>
+                <div>
+                  <label for="instacard_email" class="block text-sm font-medium text-gray-700">Email</label>
+                  <input 
+                    type="email" 
+                    name="instacard_email" 
+                    id="instacard_email" 
+                    value="" 
+                    required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="your-email@example.com">
+                  <p class="mt-1 text-xs text-gray-500">Your InstaCard account email</p>
+                </div>
 
-          <div class="sm:col-span-2">
-            <label for="smtp_user" class="block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" name="smtp_user" id="smtp_user" value="<%= smtpConfig.user %>"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="your-email@example.com">
-            <p class="mt-1 text-xs text-gray-500">Usually your email address</p>
-          </div>
+                <div>
+                  <label for="instacard_password" class="block text-sm font-medium text-gray-700">Password</label>
+                  <input 
+                    type="password" 
+                    name="instacard_password" 
+                    id="instacard_password" 
+                    value="" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="••••••••">
+                  <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing password</p>
+                </div>
 
-          <div class="sm:col-span-2">
-            <label for="smtp_pass" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="smtp_pass" id="smtp_pass" value="<%= smtpConfig.pass %>"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="••••••••">
-            <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing password. For Gmail, use an App Password.</p>
-          </div>
+                <div>
+                  <label for="instacard_org_id" class="block text-sm font-medium text-gray-700">Organization ID</label>
+                  <input 
+                    type="text" 
+                    name="instacard_org_id" 
+                    id="instacard_org_id" 
+                    value="" 
+                    required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="org_1234567890">
+                  <p class="mt-1 text-xs text-gray-500">Your InstaCard organization identifier</p>
+                </div>
 
-          <div class="sm:col-span-2">
-            <label for="smtp_from" class="block text-sm font-medium text-gray-700">From Email Address</label>
-            <input type="email" name="smtp_from" id="smtp_from" value="<%= smtpConfig.from %>" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="noreply@aresdepot.org">
-            <p class="mt-1 text-xs text-gray-500">Email address shown in the "From" field</p>
+                <div>
+                  <label for="instacard_card_id" class="block text-sm font-medium text-gray-700">Card ID</label>
+                  <input 
+                    type="text" 
+                    name="instacard_card_id" 
+                    id="instacard_card_id" 
+                    value="" 
+                    required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    placeholder="card_1234567890">
+                  <p class="mt-1 text-xs text-gray-500">The card template ID to use for member cards</p>
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-3">
+                <button type="submit" class="btn-primary">Save Settings</button>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
 
-        <div class="flex justify-end gap-3">
-          <a href="/admin/dashboard" class="btn-secondary">Cancel</a>
-          <button type="submit" class="btn-primary">Save Settings</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Help Section -->
-  <div class="card">
-    <div class="card-body">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Common SMTP Providers</h3>
-      <div class="space-y-4 text-sm">
-        <div class="border-l-4 border-blue-500 pl-4">
-          <p class="font-semibold text-gray-900">Gmail</p>
-          <p class="text-gray-600">Host: smtp.gmail.com, Port: 587 (STARTTLS)</p>
-          <p class="text-xs text-gray-500 mt-1">Note: Enable 2-factor authentication and use an App Password</p>
-        </div>
-        <div class="border-l-4 border-green-500 pl-4">
-          <p class="font-semibold text-gray-900">Microsoft 365 / Outlook</p>
-          <p class="text-gray-600">Host: smtp.office365.com, Port: 587 (STARTTLS)</p>
-        </div>
-        <div class="border-l-4 border-purple-500 pl-4">
-          <p class="font-semibold text-gray-900">SendGrid</p>
-          <p class="text-gray-600">Host: smtp.sendgrid.net, Port: 587, User: apikey</p>
+      <!-- Security Tab -->
+      <div x-show="activeTab === 'security'" x-cloak>
+        <div class="card">
+          <div class="card-body">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Security Settings</h2>
+            <p class="text-sm text-gray-600">Coming soon...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -161,3 +362,4 @@ document.getElementById('test-smtp-btn').addEventListener('click', async () => {
   }
 });
 </script>
+
