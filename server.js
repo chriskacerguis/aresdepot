@@ -87,9 +87,25 @@ app.use(session({
 }));
 
 // Make user available to all templates
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.isAdmin = req.session.user?.is_admin || false;
+  
+  // Fetch member data if user is logged in
+  if (req.session.user) {
+    try {
+      const Member = require('./src/models/Member');
+      const member = await Member.findByUserId(req.session.user.id);
+      if (member) {
+        // Attach callsign to user object for display
+        res.locals.user.callsign = member.callsign;
+        res.locals.member = member;
+      }
+    } catch (error) {
+      console.error('Error fetching member data:', error);
+    }
+  }
+  
   next();
 });
 

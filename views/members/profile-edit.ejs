@@ -170,6 +170,42 @@
             </div>
           </div>
         </div>
+
+        <!-- Deployment Readiness Card -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-lg shadow-sm mt-6">
+          <div class="p-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="h-8 w-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-lg font-semibold text-amber-900 mb-2">Emergency Deployment Readiness</h3>
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input 
+                      id="deploymentReady" 
+                      name="deploymentReady" 
+                      value="true" 
+                      type="checkbox" 
+                      class="h-5 w-5 rounded border-amber-400 text-amber-600 focus:ring-amber-500"
+                      <%= member.deployment_ready ? 'checked' : '' %>
+                    >
+                  </div>
+                  <div class="ml-3">
+                    <label for="deploymentReady" class="text-sm font-medium text-amber-900">
+                      I am ready, willing, and in good physical health to be deployed at any time during an emergency.
+                    </label>
+                    <p class="text-xs text-amber-700 mt-1">
+                      By checking this box, you indicate your availability and readiness to respond to emergency situations when called upon.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- End Profile Tab Content -->
 

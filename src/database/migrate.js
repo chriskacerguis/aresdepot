@@ -249,7 +249,10 @@ const migrations = [
   `ALTER TABLE members ADD COLUMN has_id_card INTEGER DEFAULT 0`,
   `ALTER TABLE members ADD COLUMN id_card_expiry_date DATE`,
   `ALTER TABLE members ADD COLUMN id_card_issued_by TEXT`,
-  `ALTER TABLE members ADD COLUMN id_card_issued_date DATE`
+  `ALTER TABLE members ADD COLUMN id_card_issued_date DATE`,
+
+  // Migration 18: Add deployment readiness field
+  `ALTER TABLE members ADD COLUMN deployment_ready INTEGER DEFAULT 0`
 ];
 
 async function runMigrations() {

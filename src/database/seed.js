@@ -101,6 +101,7 @@ async function seed() {
       { name: 'COM/T', description: 'Completed COM/T training', requires_proof: 1, admin_only: 0 },
       { name: 'NetControl Certified', description: 'Member can serve as netcontrol', requires_proof: 0, admin_only: 1 },
       { name: 'Field Deployable', description: 'Member is certified to be field deployable', requires_proof: 0, admin_only: 1 },
+      { name: 'Medical Training', description: 'Member has completed an advanced form of medical training (EMS, Paramedic, Nurse, Doctor)', requires_proof: 1, admin_only: 0 },
     ];
 
     for (const certification of certifications) {

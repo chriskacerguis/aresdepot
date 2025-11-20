@@ -205,7 +205,8 @@ router.post('/profile/edit',
         firstnetDevice: req.body.firstnetDevice ? 1 : 0,
         // Emergency Readiness
         goKitReady: req.body.goKitReady ? 1 : 0,
-        capabilitiesNotes: req.body.capabilitiesNotes || null
+        capabilitiesNotes: req.body.capabilitiesNotes || null,
+        deploymentReady: req.body.deploymentReady ? 1 : 0
       };
       if (fccLicensePath) updateData.fccLicensePath = fccLicensePath;
       if (profilePhotoPath) updateData.profilePhotoPath = profilePhotoPath;

@@ -87,6 +87,7 @@ class Member {
       meshNetwork: 'mesh_network',
       firstnetDevice: 'firstnet_device',
       capabilitiesNotes: 'capabilities_notes',
+      deploymentReady: 'deployment_ready',
       adminNotes: 'admin_notes',
       hasIdCard: 'has_id_card',
       idCardExpiryDate: 'id_card_expiry_date',
