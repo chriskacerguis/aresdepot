@@ -90,11 +90,13 @@ class Task {
         t.id, t.tier_id, t.name, t.description, t.sort_order,
         tier.name as tier_name,
         mt.completed, mt.verified, mt.verified_at, mt.notes,
-        u.email as verified_by_email
+        u.email as verified_by_email,
+        m.callsign as verified_by_callsign
       FROM tasks t
       JOIN tiers tier ON t.tier_id = tier.id
       LEFT JOIN member_tasks mt ON t.id = mt.task_id AND mt.member_id = ?
       LEFT JOIN users u ON mt.verified_by = u.id
+      LEFT JOIN members m ON m.user_id = u.id
       ORDER BY tier.sort_order, t.sort_order
     `, [memberId]);
   }

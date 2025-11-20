@@ -721,4 +721,198 @@ router.get('/reports/capabilities', requireAdmin, async (req, res) => {
   }
 });
 
+// Certifications report
+router.get('/reports/certifications', requireAdmin, async (req, res) => {
+  try {
+    const db = require('../database/config');
+    const Achievement = require('../models/Achievement');
+    
+    // Get all certifications with member counts
+    const certifications = await db.all(`
+      SELECT 
+        sa.id,
+        sa.name,
+        sa.description,
+        sa.requires_proof,
+        sa.admin_only,
+        COUNT(DISTINCT CASE WHEN msa.verified = 1 THEN msa.member_id END) as verified_count,
+        COUNT(DISTINCT CASE WHEN msa.verified = 0 THEN msa.member_id END) as pending_count
+      FROM special_achievements sa
+      LEFT JOIN member_special_achievements msa ON sa.id = msa.achievement_id
+      GROUP BY sa.id, sa.name, sa.description, sa.requires_proof, sa.admin_only
+      ORDER BY sa.name
+    `);
+
+    // Get detailed member information for each certification
+    const certificationDetails = [];
+    for (const cert of certifications) {
+      const members = await db.all(`
+        SELECT 
+          m.id,
+          m.first_name,
+          m.last_name,
+          m.callsign,
+          msa.verified,
+          msa.verified_at,
+          msa.granted_at,
+          m2.callsign as verified_by_callsign,
+          m3.callsign as granted_by_callsign
+        FROM member_special_achievements msa
+        JOIN members m ON msa.member_id = m.id
+        LEFT JOIN members m2 ON msa.verified_by = m2.user_id
+        LEFT JOIN members m3 ON msa.granted_by = m3.user_id
+        WHERE msa.achievement_id = ?
+        ORDER BY msa.verified DESC, msa.verified_at DESC, m.last_name, m.first_name
+      `, [cert.id]);
+
+      certificationDetails.push({
+        ...cert,
+        members
+      });
+    }
+
+    // Calculate summary stats
+    const stats = {
+      totalCertifications: certifications.length,
+      totalVerified: certifications.reduce((sum, c) => sum + c.verified_count, 0),
+      totalPending: certifications.reduce((sum, c) => sum + c.pending_count, 0),
+      adminOnlyCerts: certifications.filter(c => c.admin_only).length
+    };
+
+    res.render('admin/certifications-report', { certifications: certificationDetails, stats });
+  } catch (error) {
+    console.error('Certifications report error:', error);
+    res.render('error', { message: 'Error generating certifications report' });
+  }
+});
+
+// Background check report
+router.get('/reports/background-checks', requireAdmin, async (req, res) => {
+  try {
+    const db = require('../database/config');
+    
+    // Get all members with background check information
+    const members = await db.all(`
+      SELECT 
+        m.id,
+        m.first_name,
+        m.last_name,
+        m.callsign,
+        m.status,
+        m.background_check,
+        m.background_check_date,
+        u.email
+      FROM members m
+      JOIN users u ON m.user_id = u.id
+      ORDER BY 
+        CASE m.background_check
+          WHEN 'Not Started' THEN 1
+          WHEN 'In Progress' THEN 2
+          WHEN 'Pending Review' THEN 3
+          WHEN 'Completed' THEN 4
+          WHEN 'Failed' THEN 5
+          ELSE 6
+        END,
+        m.background_check_date DESC,
+        m.last_name,
+        m.first_name
+    `);
+
+    // Calculate statistics
+    const stats = {
+      total: members.length,
+      notStarted: members.filter(m => m.background_check === 'Not Started').length,
+      inProgress: members.filter(m => m.background_check === 'In Progress').length,
+      pendingReview: members.filter(m => m.background_check === 'Pending Review').length,
+      completed: members.filter(m => m.background_check === 'Completed').length,
+      failed: members.filter(m => m.background_check === 'Failed').length,
+      activeMembers: members.filter(m => m.status === 'active').length,
+      completedActive: members.filter(m => m.background_check === 'Completed' && m.status === 'active').length
+    };
+
+    // Group members by status
+    const groupedMembers = {
+      notStarted: members.filter(m => m.background_check === 'Not Started'),
+      inProgress: members.filter(m => m.background_check === 'In Progress'),
+      pendingReview: members.filter(m => m.background_check === 'Pending Review'),
+      completed: members.filter(m => m.background_check === 'Completed'),
+      failed: members.filter(m => m.background_check === 'Failed')
+    };
+
+    res.render('admin/background-check-report', { members, stats, groupedMembers });
+  } catch (error) {
+    console.error('Background check report error:', error);
+    res.render('error', { message: 'Error generating background check report' });
+  }
+});
+
+// Event attendance report
+router.get('/reports/event-attendance', requireAdmin, async (req, res) => {
+  try {
+    const db = require('../database/config');
+    const months = parseInt(req.query.months) || 3;
+    
+    // Calculate date range
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+    
+    // Get events within the date range
+    const events = await db.all(`
+      SELECT 
+        e.id,
+        e.name,
+        e.description,
+        e.location,
+        e.event_date,
+        e.minimum_tier_id,
+        t.name as minimum_tier_name,
+        COUNT(DISTINCT CASE WHEN r.status = 'attending' THEN r.member_id END) as attendee_count
+      FROM events e
+      LEFT JOIN tiers t ON e.minimum_tier_id = t.id
+      LEFT JOIN event_rsvps r ON e.id = r.event_id
+      WHERE e.event_date >= ? AND e.event_date <= ?
+      GROUP BY e.id, e.name, e.description, e.location, e.event_date, e.minimum_tier_id, t.name
+      ORDER BY e.event_date DESC
+    `, [startDate.toISOString(), endDate.toISOString()]);
+
+    // Get detailed attendance for each event
+    const eventsWithAttendance = [];
+    for (const event of events) {
+      const attendees = await db.all(`
+        SELECT 
+          m.id,
+          m.first_name,
+          m.last_name,
+          m.callsign,
+          r.status,
+          r.created_at as rsvp_date
+        FROM event_rsvps r
+        JOIN members m ON r.member_id = m.id
+        WHERE r.event_id = ? AND r.status = 'attending'
+        ORDER BY m.last_name, m.first_name
+      `, [event.id]);
+
+      eventsWithAttendance.push({
+        ...event,
+        attendees
+      });
+    }
+
+    // Calculate statistics
+    const stats = {
+      totalEvents: events.length,
+      totalAttendance: events.reduce((sum, e) => sum + e.attendee_count, 0),
+      averageAttendance: events.length > 0 ? (events.reduce((sum, e) => sum + e.attendee_count, 0) / events.length).toFixed(1) : 0,
+      upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
+      pastEvents: events.filter(e => new Date(e.event_date) <= new Date()).length
+    };
+
+    res.render('admin/event-attendance-report', { events: eventsWithAttendance, stats, months });
+  } catch (error) {
+    console.error('Event attendance report error:', error);
+    res.render('error', { message: 'Error generating event attendance report' });
+  }
+});
+
 module.exports = router;

@@ -1,0 +1,185 @@
+<% title = 'Event Attendance Report' %>
+
+<div class="px-4 sm:px-0 max-w-7xl mx-auto">
+  <div class="mb-6">
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">Event Attendance Report</h1>
+        <p class="mt-2 text-sm text-gray-700">Event summaries and attendance for the past <%= months %> months</p>
+      </div>
+      <div class="mt-4 sm:mt-0 flex gap-3">
+        <!-- Time Period Selector -->
+        <div class="inline-flex rounded-md shadow-sm" role="group">
+          <a href="?months=3" class="px-4 py-2 text-sm font-medium <%= months === 3 ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' %> border border-gray-300 rounded-l-lg">
+            3 Months
+          </a>
+          <a href="?months=6" class="px-4 py-2 text-sm font-medium <%= months === 6 ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' %> border-t border-b border-gray-300">
+            6 Months
+          </a>
+          <a href="?months=12" class="px-4 py-2 text-sm font-medium <%= months === 12 ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' %> border border-gray-300 rounded-r-lg">
+            12 Months
+          </a>
+        </div>
+        <a href="/admin/reports" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Reports
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Total Events</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.totalEvents %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Total Attendance</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.totalAttendance %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Avg Attendance</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.averageAttendance %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Past / Upcoming</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= stats.pastEvents %> / <%= stats.upcomingEvents %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events List -->
+  <% if (events.length > 0) { %>
+    <div class="space-y-6">
+      <% events.forEach(event => { %>
+        <% const isPast = new Date(event.event_date) <= new Date(); %>
+        <div class="card">
+          <div class="card-body">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <h2 class="text-xl font-bold text-gray-900">
+                    <a href="/events/<%= event.id %>" class="text-indigo-600 hover:text-indigo-500"><%= event.name %></a>
+                  </h2>
+                  <% if (!isPast) { %>
+                    <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Upcoming</span>
+                  <% } %>
+                  <% if (event.minimum_tier_name) { %>
+                    <span class="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
+                      Min: <%= event.minimum_tier_name %>
+                    </span>
+                  <% } %>
+                </div>
+                <p class="text-sm text-gray-600 mb-2"><%= event.description %></p>
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                  <span class="inline-flex items-center gap-1">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <%= new Date(event.event_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+                  </span>
+                  <span class="inline-flex items-center gap-1">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <%= event.location %>
+                  </span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-3xl font-bold text-indigo-600"><%= event.attendee_count %></div>
+                <div class="text-xs text-gray-500 uppercase">Attendees</div>
+              </div>
+            </div>
+
+            <% if (event.attendees && event.attendees.length > 0) { %>
+              <div class="mt-4 border-t border-gray-200 pt-4">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Attendees (<%= event.attendees.length %>)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  <% event.attendees.forEach(attendee => { %>
+                    <div class="flex items-center gap-2 text-sm">
+                      <svg class="h-4 w-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <a href="/admin/members/<%= attendee.id %>" class="text-indigo-600 hover:text-indigo-500 truncate">
+                        <%= attendee.first_name %> <%= attendee.last_name %>
+                      </a>
+                      <span class="text-gray-500">(<%= attendee.callsign %>)</span>
+                    </div>
+                  <% }); %>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="mt-4 border-t border-gray-200 pt-4 text-center text-sm text-gray-500">
+                No attendees have RSVP'd yet
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="card">
+      <div class="card-body text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No events in this period</h3>
+        <p class="mt-1 text-sm text-gray-500">No events found for the past <%= months %> months. Try selecting a different time period.</p>
+        <div class="mt-6">
+          <a href="/admin/events" class="btn-primary">Manage Events</a>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>

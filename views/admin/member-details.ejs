@@ -1326,7 +1326,7 @@
                   <% } %>
                   <% if (task.verified) { %>
                     <p class="mt-1.5 text-xs text-green-600">
-                      Verified on <%= new Date(task.verified_at).toLocaleDateString() %>
+                      Verified by <%= task.verified_by_callsign || 'Admin' %> on <%= new Date(task.verified_at).toLocaleDateString() %>
                     </p>
                   <% } %>
                 </div>
