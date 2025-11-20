@@ -6,13 +6,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "dev:reset": "rm data/ares.db && npm run build && npm run migrate && npm run seed && npm run seed:members",
+    "dev:reset": "rm data/ares.db && npm run build && npm run migrate && npm run seed && npm run seed:members && npm run seed:events",
     "build": "npm run build:css",
     "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/output.css --minify",
     "watch:css": "tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
     "migrate": "node src/database/migrate.js",
     "seed": "node src/database/seed.js",
     "seed:members": "node src/database/seed-members.js",
+    "seed:events": "node src/database/seed-events.js",
     "help": "node dev-helper.js"
   },
   "keywords": ["ares", "emergency", "amateur-radio"],

@@ -118,6 +118,23 @@ class Event {
       [eventId, memberId]
     );
   }
+
+  static async getByMonth(year, month) {
+    // month is 1-12
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const endDate = month === 12 
+      ? `${year + 1}-01-01` 
+      : `${year}-${String(month + 1).padStart(2, '0')}-01`;
+
+    return await db.all(`
+      SELECT e.*, t.name as minimum_tier_name, t.sort_order as tier_order,
+        (SELECT COUNT(*) FROM event_rsvps WHERE event_id = e.id AND status = 'attending') as attendee_count
+      FROM events e
+      LEFT JOIN tiers t ON e.minimum_tier_id = t.id
+      WHERE date(e.event_date) >= date(?) AND date(e.event_date) < date(?)
+      ORDER BY e.event_date ASC
+    `, [startDate, endDate]);
+  }
 }
 
 module.exports = Event;

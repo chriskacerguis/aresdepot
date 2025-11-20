@@ -4,6 +4,45 @@ const { requireAuth } = require('../middleware/auth');
 const Event = require('../models/Event');
 const Member = require('../models/Member');
 
+// Calendar view
+router.get('/calendar', requireAuth, async (req, res) => {
+  try {
+    const now = new Date();
+    const year = req.query.year ? parseInt(req.query.year) : now.getFullYear();
+    const month = req.query.month ? parseInt(req.query.month) : now.getMonth() + 1;
+
+    const events = await Event.getByMonth(year, month);
+    const member = await Member.findByUserId(req.session.user.id);
+
+    // Get RSVP status for each event
+    const eventsWithRSVP = await Promise.all(events.map(async (event) => {
+      let canAttend = false;
+      let rsvpStatus = null;
+      
+      if (member) {
+        canAttend = await Event.canMemberAttend(member.id, event.id);
+        rsvpStatus = await Event.getMemberRSVPStatus(event.id, member.id);
+      }
+      
+      return {
+        ...event,
+        canAttend,
+        rsvpStatus
+      };
+    }));
+
+    res.render('events/calendar', { 
+      events: eventsWithRSVP,
+      currentYear: year,
+      currentMonth: month,
+      today: now
+    });
+  } catch (error) {
+    console.error('Calendar error:', error);
+    res.render('error', { message: 'Error loading calendar' });
+  }
+});
+
 // View event details
 router.get('/:id', requireAuth, async (req, res) => {
   try {
