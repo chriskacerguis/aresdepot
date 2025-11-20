@@ -40,7 +40,26 @@ async function seedMembers() {
         city: 'Springfield',
         state: 'IL',
         zip: '62701',
-        county: 'Sangamon'
+        county: 'Sangamon',
+        status: 'active',
+        // Capabilities
+        emergency_power: 1,
+        emergency_power_type: 'Generator (5kW)',
+        hf_capable: 1,
+        hf_power: 100,
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 50,
+        winlink_capable: 1,
+        aprs_capable: 1,
+        ft8_capable: 1,
+        mobile_station: 1,
+        portable_station: 1,
+        ares_races_trained: 1,
+        skywarn_trained: 1,
+        go_kit_ready: 1,
+        tower_antenna_height: 40,
+        backup_batteries: 1,
+        capabilities_notes: 'Fully equipped base station with backup power. Available for emergency deployment.'
       },
       {
         email: 'sarah.johnson@example.com',
@@ -53,7 +72,21 @@ async function seedMembers() {
         city: 'Peoria',
         state: 'IL',
         zip: '61602',
-        county: 'Peoria'
+        county: 'Peoria',
+        status: 'active',
+        // Capabilities
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 25,
+        aprs_capable: 1,
+        dmr_capable: 1,
+        mobile_station: 1,
+        portable_station: 1,
+        satellite_internet: 1,
+        satellite_internet_type: 'Starlink',
+        skywarn_trained: 1,
+        cpr_first_aid_certified: 1,
+        go_kit_ready: 1,
+        capabilities_notes: 'Mobile operations specialist. Starlink internet backup.'
       },
       {
         email: 'michael.brown@example.com',
@@ -66,7 +99,27 @@ async function seedMembers() {
         city: 'Rockford',
         state: 'IL',
         zip: '61101',
-        county: 'Winnebago'
+        county: 'Winnebago',
+        status: 'active',
+        // Capabilities
+        hf_capable: 1,
+        hf_power: 1500,
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 100,
+        winlink_capable: 1,
+        ft8_capable: 1,
+        js8call_capable: 1,
+        rtty_capable: 1,
+        dstar_capable: 1,
+        emergency_power: 1,
+        emergency_power_type: 'Solar + Battery Bank',
+        solar_power: 1,
+        backup_batteries: 1,
+        tower_antenna_height: 60,
+        ares_races_trained: 1,
+        incident_command_trained: 1,
+        go_kit_ready: 1,
+        capabilities_notes: 'HF digital modes expert. Large solar installation with battery backup.'
       },
       {
         email: 'lisa.davis@example.com',
@@ -79,7 +132,22 @@ async function seedMembers() {
         city: 'Champaign',
         state: 'IL',
         zip: '61820',
-        county: 'Champaign'
+        county: 'Champaign',
+        status: 'active',
+        // Capabilities
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 50,
+        dmr_capable: 1,
+        fusion_capable: 1,
+        aprs_capable: 1,
+        packet_radio: 1,
+        mobile_station: 1,
+        portable_station: 1,
+        mesh_network: 1,
+        skywarn_trained: 1,
+        cpr_first_aid_certified: 1,
+        go_kit_ready: 1,
+        capabilities_notes: 'Digital voice modes and mesh networking. Active SKYWARN spotter.'
       },
       {
         email: 'robert.wilson@example.com',
@@ -92,7 +160,20 @@ async function seedMembers() {
         city: 'Decatur',
         state: 'IL',
         zip: '62521',
-        county: 'Macon'
+        county: 'Macon',
+        status: 'active',
+        // Capabilities
+        hf_capable: 1,
+        hf_power: 100,
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 50,
+        winlink_capable: 1,
+        sstv_capable: 1,
+        portable_station: 1,
+        emergency_power: 1,
+        emergency_power_type: 'Generator',
+        go_kit_ready: 1,
+        capabilities_notes: 'Portable operations focus. SSTV enthusiast.'
       },
       {
         email: 'jennifer.taylor@example.com',
@@ -105,7 +186,13 @@ async function seedMembers() {
         city: 'Bloomington',
         state: 'IL',
         zip: '61701',
-        county: 'McLean'
+        county: 'McLean',
+        status: 'inactive',
+        // Capabilities
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 5,
+        mobile_station: 1,
+        capabilities_notes: 'Handheld radio only. Interested in getting more involved.'
       },
       {
         email: 'david.anderson@example.com',
@@ -118,7 +205,28 @@ async function seedMembers() {
         city: 'Aurora',
         state: 'IL',
         zip: '60502',
-        county: 'Kane'
+        county: 'Kane',
+        status: 'active',
+        // Capabilities
+        hf_capable: 1,
+        hf_power: 200,
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 65,
+        ft8_capable: 1,
+        js8call_capable: 1,
+        winlink_capable: 1,
+        aprs_capable: 1,
+        mobile_station: 1,
+        portable_station: 1,
+        emergency_power: 1,
+        emergency_power_type: 'Battery Bank',
+        backup_batteries: 1,
+        tower_antenna_height: 35,
+        ares_races_trained: 1,
+        incident_command_trained: 1,
+        cpr_first_aid_certified: 1,
+        go_kit_ready: 1,
+        capabilities_notes: 'ICS-100, ICS-200, ICS-700, ICS-800 certified. Active ARES member.'
       },
       {
         email: 'mary.thomas@example.com',
@@ -131,7 +239,23 @@ async function seedMembers() {
         city: 'Joliet',
         state: 'IL',
         zip: '60431',
-        county: 'Will'
+        county: 'Will',
+        status: 'active',
+        // Capabilities
+        vhf_uhf_capable: 1,
+        vhf_uhf_power: 50,
+        dstar_capable: 1,
+        dmr_capable: 1,
+        fusion_capable: 1,
+        aprs_capable: 1,
+        mobile_station: 1,
+        portable_station: 1,
+        satellite_internet: 1,
+        satellite_internet_type: 'HughesNet',
+        skywarn_trained: 1,
+        cpr_first_aid_certified: 1,
+        go_kit_ready: 1,
+        capabilities_notes: 'All digital voice modes. Red Cross volunteer.'
       }
     ];
 
@@ -146,23 +270,46 @@ async function seedMembers() {
       );
 
       // Create member profile
+      const capabilityFields = [
+        'status', 'emergency_power', 'emergency_power_type', 'hf_capable', 'hf_power',
+        'vhf_uhf_capable', 'vhf_uhf_power', 'winlink_capable', 'satellite_internet',
+        'satellite_internet_type', 'mobile_station', 'portable_station', 'aprs_capable',
+        'dstar_capable', 'dmr_capable', 'fusion_capable', 'packet_radio', 'sstv_capable',
+        'rtty_capable', 'ft8_capable', 'js8call_capable', 'ares_races_trained',
+        'skywarn_trained', 'incident_command_trained', 'cpr_first_aid_certified',
+        'go_kit_ready', 'tower_antenna_height', 'backup_batteries', 'solar_power',
+        'mesh_network', 'capabilities_notes'
+      ];
+
+      const fields = [
+        'user_id', 'first_name', 'last_name', 'callsign', 'phone',
+        'address', 'city', 'state', 'zip', 'county'
+      ];
+      const values = [
+        userResult.lastID,
+        memberData.first_name,
+        memberData.last_name,
+        memberData.callsign,
+        memberData.phone,
+        memberData.address,
+        memberData.city,
+        memberData.state,
+        memberData.zip,
+        memberData.county
+      ];
+
+      // Add capability fields that are present
+      for (const field of capabilityFields) {
+        if (memberData[field] !== undefined) {
+          fields.push(field);
+          values.push(memberData[field]);
+        }
+      }
+
+      const placeholders = fields.map(() => '?').join(', ');
       await db.run(
-        `INSERT INTO members (
-          user_id, first_name, last_name, callsign, phone,
-          address, city, state, zip, county
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          userResult.lastID,
-          memberData.first_name,
-          memberData.last_name,
-          memberData.callsign,
-          memberData.phone,
-          memberData.address,
-          memberData.city,
-          memberData.state,
-          memberData.zip,
-          memberData.county
-        ]
+        `INSERT INTO members (${fields.join(', ')}) VALUES (${placeholders})`,
+        values
       );
 
       console.log(`✅ Created member: ${memberData.first_name} ${memberData.last_name} (${memberData.callsign})`);

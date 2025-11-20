@@ -197,6 +197,48 @@ router.post('/members/:id/update',
   }
 );
 
+// Update member capabilities
+router.post('/members/:id/update-capabilities', requireAdmin, async (req, res) => {
+  try {
+    await Member.update(req.params.id, {
+      emergencyPower: req.body.emergencyPower === 'true' ? 1 : 0,
+      emergencyPowerType: req.body.emergencyPowerType || null,
+      hfCapable: req.body.hfCapable === 'true' ? 1 : 0,
+      hfPower: req.body.hfPower ? parseInt(req.body.hfPower) : null,
+      vhfUhfCapable: req.body.vhfUhfCapable === 'true' ? 1 : 0,
+      vhfUhfPower: req.body.vhfUhfPower ? parseInt(req.body.vhfUhfPower) : null,
+      winlinkCapable: req.body.winlinkCapable === 'true' ? 1 : 0,
+      satelliteInternet: req.body.satelliteInternet === 'true' ? 1 : 0,
+      satelliteInternetType: req.body.satelliteInternetType || null,
+      mobileStation: req.body.mobileStation === 'true' ? 1 : 0,
+      portableStation: req.body.portableStation === 'true' ? 1 : 0,
+      aprsCapable: req.body.aprsCapable === 'true' ? 1 : 0,
+      dstarCapable: req.body.dstarCapable === 'true' ? 1 : 0,
+      dmrCapable: req.body.dmrCapable === 'true' ? 1 : 0,
+      fusionCapable: req.body.fusionCapable === 'true' ? 1 : 0,
+      packetRadio: req.body.packetRadio === 'true' ? 1 : 0,
+      sstvCapable: req.body.sstvCapable === 'true' ? 1 : 0,
+      rttyCapable: req.body.rttyCapable === 'true' ? 1 : 0,
+      ft8Capable: req.body.ft8Capable === 'true' ? 1 : 0,
+      js8callCapable: req.body.js8callCapable === 'true' ? 1 : 0,
+      aresRacesTrained: req.body.aresRacesTrained === 'true' ? 1 : 0,
+      skywarnTrained: req.body.skywarnTrained === 'true' ? 1 : 0,
+      incidentCommandTrained: req.body.incidentCommandTrained === 'true' ? 1 : 0,
+      cprFirstAidCertified: req.body.cprFirstAidCertified === 'true' ? 1 : 0,
+      goKitReady: req.body.goKitReady === 'true' ? 1 : 0,
+      towerAntennaHeight: req.body.towerAntennaHeight ? parseInt(req.body.towerAntennaHeight) : null,
+      backupBatteries: req.body.backupBatteries === 'true' ? 1 : 0,
+      solarPower: req.body.solarPower === 'true' ? 1 : 0,
+      meshNetwork: req.body.meshNetwork === 'true' ? 1 : 0,
+      capabilitiesNotes: req.body.capabilitiesNotes || null
+    });
+    res.redirect('/admin/members/' + req.params.id);
+  } catch (error) {
+    console.error('Update capabilities error:', error);
+    res.redirect('/admin/members/' + req.params.id);
+  }
+});
+
 // Verify task
 router.post('/members/:memberId/tasks/:taskId/verify', requireAdmin, async (req, res) => {
   try {

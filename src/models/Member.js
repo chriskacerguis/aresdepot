@@ -35,58 +35,61 @@ class Member {
   }
 
   static async update(memberId, memberData) {
-    const { 
-      firstName, lastName, address, city, state, zip,
-      phone, callsign, county, fccLicensePath, status
-    } = memberData;
-
     const fields = [];
     const values = [];
 
-    if (firstName !== undefined) {
-      fields.push('first_name = ?');
-      values.push(firstName);
+    const fieldMapping = {
+      firstName: 'first_name',
+      lastName: 'last_name',
+      address: 'address',
+      city: 'city',
+      state: 'state',
+      zip: 'zip',
+      phone: 'phone',
+      callsign: 'callsign',
+      county: 'county',
+      fccLicensePath: 'fcc_license_path',
+      status: 'status',
+      emergencyPower: 'emergency_power',
+      emergencyPowerType: 'emergency_power_type',
+      hfCapable: 'hf_capable',
+      hfPower: 'hf_power',
+      vhfUhfCapable: 'vhf_uhf_capable',
+      vhfUhfPower: 'vhf_uhf_power',
+      winlinkCapable: 'winlink_capable',
+      satelliteInternet: 'satellite_internet',
+      satelliteInternetType: 'satellite_internet_type',
+      mobileStation: 'mobile_station',
+      portableStation: 'portable_station',
+      aprsCapable: 'aprs_capable',
+      dstarCapable: 'dstar_capable',
+      dmrCapable: 'dmr_capable',
+      fusionCapable: 'fusion_capable',
+      packetRadio: 'packet_radio',
+      sstvCapable: 'sstv_capable',
+      rttyCapable: 'rtty_capable',
+      ft8Capable: 'ft8_capable',
+      js8callCapable: 'js8call_capable',
+      aresRacesTrained: 'ares_races_trained',
+      skywarnTrained: 'skywarn_trained',
+      incidentCommandTrained: 'incident_command_trained',
+      cprFirstAidCertified: 'cpr_first_aid_certified',
+      goKitReady: 'go_kit_ready',
+      towerAntennaHeight: 'tower_antenna_height',
+      backupBatteries: 'backup_batteries',
+      solarPower: 'solar_power',
+      meshNetwork: 'mesh_network',
+      capabilitiesNotes: 'capabilities_notes'
+    };
+
+    for (const [key, dbField] of Object.entries(fieldMapping)) {
+      if (memberData[key] !== undefined) {
+        fields.push(`${dbField} = ?`);
+        values.push(memberData[key]);
+      }
     }
-    if (lastName !== undefined) {
-      fields.push('last_name = ?');
-      values.push(lastName);
-    }
-    if (address !== undefined) {
-      fields.push('address = ?');
-      values.push(address);
-    }
-    if (city !== undefined) {
-      fields.push('city = ?');
-      values.push(city);
-    }
-    if (state !== undefined) {
-      fields.push('state = ?');
-      values.push(state);
-    }
-    if (zip !== undefined) {
-      fields.push('zip = ?');
-      values.push(zip);
-    }
-    if (phone !== undefined) {
-      fields.push('phone = ?');
-      values.push(phone);
-    }
-    if (callsign !== undefined) {
-      fields.push('callsign = ?');
-      values.push(callsign);
-    }
-    if (county !== undefined) {
-      fields.push('county = ?');
-      values.push(county);
-    }
-    if (fccLicensePath !== undefined) {
-      fields.push('fcc_license_path = ?');
-      values.push(fccLicensePath);
-    }
-    if (status !== undefined) {
-      fields.push('status = ?');
-      values.push(status);
-    }
+
+    if (fields.length === 0) return;
 
     fields.push('updated_at = CURRENT_TIMESTAMP');
     values.push(memberId);

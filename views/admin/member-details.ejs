@@ -143,6 +143,480 @@
     </div>
   </div>
 
+  <!-- Capabilities -->
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Capabilities & Equipment</h2>
+        <button type="button" id="toggle-capabilities-btn" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit
+        </button>
+      </div>
+      
+      <!-- View Mode -->
+      <div id="capabilities-view">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Radio Equipment -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.98 0 13.789" />
+              </svg>
+              Radio Equipment
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.hf_capable ? '✓' : '✗' %> HF<% if (member.hf_power) { %> (<%= member.hf_power %>W)<% } %>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.vhf_uhf_capable ? '✓' : '✗' %> VHF/UHF<% if (member.vhf_uhf_power) { %> (<%= member.vhf_uhf_power %>W)<% } %>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.mobile_station ? '✓' : '✗' %> Mobile Station
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.portable_station ? '✓' : '✗' %> Portable Station
+              </div>
+              <% if (member.tower_antenna_height) { %>
+                <div class="text-xs text-gray-600 ml-5">Tower/Antenna: <%= member.tower_antenna_height %> ft</div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Digital Modes -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+              Digital Modes
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.winlink_capable ? '✓' : '✗' %> Winlink
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.aprs_capable ? '✓' : '✗' %> APRS
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.packet_radio ? '✓' : '✗' %> Packet Radio
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.ft8_capable ? '✓' : '✗' %> FT8
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.js8call_capable ? '✓' : '✗' %> JS8Call
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.rtty_capable ? '✓' : '✗' %> RTTY
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.sstv_capable ? '✓' : '✗' %> SSTV
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice Modes -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              Digital Voice
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.dstar_capable ? '✓' : '✗' %> D-STAR
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.dmr_capable ? '✓' : '✗' %> DMR
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.fusion_capable ? '✓' : '✗' %> Fusion (C4FM)
+              </div>
+            </div>
+          </div>
+
+          <!-- Power & Infrastructure -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Power & Infrastructure
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.emergency_power ? '✓' : '✗' %> Emergency Power<% if (member.emergency_power_type) { %> (<%= member.emergency_power_type %>)<% } %>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.backup_batteries ? '✓' : '✗' %> Backup Batteries
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.solar_power ? '✓' : '✗' %> Solar Power
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.satellite_internet ? '✓' : '✗' %> Satellite Internet<% if (member.satellite_internet_type) { %> (<%= member.satellite_internet_type %>)<% } %>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.mesh_network ? '✓' : '✗' %> Mesh Network
+              </div>
+            </div>
+          </div>
+
+          <!-- Training & Certifications -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              Training & Certs
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.ares_races_trained ? '✓' : '✗' %> ARES/RACES
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.skywarn_trained ? '✓' : '✗' %> SKYWARN
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.incident_command_trained ? '✓' : '✗' %> Incident Command (ICS)
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.cpr_first_aid_certified ? '✓' : '✗' %> CPR/First Aid
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Readiness -->
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Emergency Readiness
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <%= member.go_kit_ready ? '✓' : '✗' %> Go-Kit Ready
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% if (member.capabilities_notes) { %>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-900 mb-2">Additional Notes</h3>
+            <p class="text-sm text-gray-600 whitespace-pre-line"><%= member.capabilities_notes %></p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Edit Mode -->
+      <div id="capabilities-edit" class="hidden">
+        <form method="POST" action="/admin/members/<%= member.id %>/update-capabilities" class="space-y-8">
+          
+          <!-- Radio Equipment Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Radio Equipment</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-3">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="hfCapable" name="hfCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.hf_capable ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="hfCapable" class="font-medium text-gray-900">HF capable</label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-900" for="hfPower">HF Power (Watts)</label>
+                  <div class="mt-1">
+                    <input class="form-input" id="hfPower" name="hfPower" type="number" min="0" placeholder="e.g., 100" value="<%= member.hf_power || '' %>">
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="vhfUhfCapable" name="vhfUhfCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.vhf_uhf_capable ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="vhfUhfCapable" class="font-medium text-gray-900">VHF/UHF capable (2M/70CM)</label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-900" for="vhfUhfPower">VHF/UHF Power (Watts)</label>
+                  <div class="mt-1">
+                    <input class="form-input" id="vhfUhfPower" name="vhfUhfPower" type="number" min="0" placeholder="e.g., 50" value="<%= member.vhf_uhf_power || '' %>">
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="mobileStation" name="mobileStation" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.mobile_station ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="mobileStation" class="font-medium text-gray-900">Mobile station</label>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="portableStation" name="portableStation" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.portable_station ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="portableStation" class="font-medium text-gray-900">Portable station</label>
+                </div>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-900" for="towerAntennaHeight">Tower/Antenna Height (feet)</label>
+                <div class="mt-1">
+                  <input class="form-input" id="towerAntennaHeight" name="towerAntennaHeight" type="number" min="0" placeholder="e.g., 50" value="<%= member.tower_antenna_height || '' %>">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Modes Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Digital Modes</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="winlinkCapable" name="winlinkCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.winlink_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="winlinkCapable" class="font-medium text-gray-900">Winlink</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="aprsCapable" name="aprsCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.aprs_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="aprsCapable" class="font-medium text-gray-900">APRS</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="packetRadio" name="packetRadio" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.packet_radio ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="packetRadio" class="font-medium text-gray-900">Packet Radio</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="ft8Capable" name="ft8Capable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.ft8_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="ft8Capable" class="font-medium text-gray-900">FT8</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="js8callCapable" name="js8callCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.js8call_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="js8callCapable" class="font-medium text-gray-900">JS8Call</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="rttyCapable" name="rttyCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.rtty_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="rttyCapable" class="font-medium text-gray-900">RTTY</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="sstvCapable" name="sstvCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.sstv_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="sstvCapable" class="font-medium text-gray-900">SSTV</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Voice Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Digital Voice</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="dstarCapable" name="dstarCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.dstar_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="dstarCapable" class="font-medium text-gray-900">D-STAR</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="dmrCapable" name="dmrCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.dmr_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="dmrCapable" class="font-medium text-gray-900">DMR</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="fusionCapable" name="fusionCapable" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.fusion_capable ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="fusionCapable" class="font-medium text-gray-900">Fusion (C4FM)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Power & Infrastructure Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Power & Infrastructure</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-3">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="emergencyPower" name="emergencyPower" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.emergency_power ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="emergencyPower" class="font-medium text-gray-900">Emergency power</label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-900" for="emergencyPowerType">Type (e.g., Generator, Solar)</label>
+                  <div class="mt-1">
+                    <input class="form-input" id="emergencyPowerType" name="emergencyPowerType" type="text" value="<%= member.emergency_power_type || '' %>">
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="backupBatteries" name="backupBatteries" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.backup_batteries ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="backupBatteries" class="font-medium text-gray-900">Backup batteries</label>
+                  </div>
+                </div>
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="solarPower" name="solarPower" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.solar_power ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="solarPower" class="font-medium text-gray-900">Solar power</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="relative flex items-start">
+                  <div class="flex h-6 items-center">
+                    <input id="satelliteInternet" name="satelliteInternet" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.satellite_internet ? 'checked' : '' %>>
+                  </div>
+                  <div class="ml-3 text-sm leading-6">
+                    <label for="satelliteInternet" class="font-medium text-gray-900">Satellite internet</label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-900" for="satelliteInternetType">Type (e.g., Starlink, HughesNet)</label>
+                  <div class="mt-1">
+                    <input class="form-input" id="satelliteInternetType" name="satelliteInternetType" type="text" value="<%= member.satellite_internet_type || '' %>">
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="meshNetwork" name="meshNetwork" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.mesh_network ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="meshNetwork" class="font-medium text-gray-900">Mesh network capable</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Training & Certifications Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Training & Certifications</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="aresRacesTrained" name="aresRacesTrained" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.ares_races_trained ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="aresRacesTrained" class="font-medium text-gray-900">ARES/RACES trained</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="skywarnTrained" name="skywarnTrained" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.skywarn_trained ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="skywarnTrained" class="font-medium text-gray-900">SKYWARN trained</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="incidentCommandTrained" name="incidentCommandTrained" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.incident_command_trained ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="incidentCommandTrained" class="font-medium text-gray-900">Incident Command System (ICS) trained</label>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                  <input id="cprFirstAidCertified" name="cprFirstAidCertified" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.cpr_first_aid_certified ? 'checked' : '' %>>
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                  <label for="cprFirstAidCertified" class="font-medium text-gray-900">CPR/First Aid certified</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Readiness Section -->
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">Emergency Readiness</h3>
+            <div class="relative flex items-start">
+              <div class="flex h-6 items-center">
+                <input id="goKitReady" name="goKitReady" value="true" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" <%= member.go_kit_ready ? 'checked' : '' %>>
+              </div>
+              <div class="ml-3 text-sm leading-6">
+                <label for="goKitReady" class="font-medium text-gray-900">Go-Kit ready (portable emergency communications kit)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div>
+            <label class="block text-sm font-medium text-gray-900" for="capabilitiesNotes">Additional Notes</label>
+            <div class="mt-2">
+              <textarea class="form-input" id="capabilitiesNotes" name="capabilitiesNotes" rows="4" placeholder="Any additional equipment, capabilities, or notes..."><%= member.capabilities_notes || '' %></textarea>
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t">
+            <button type="submit" class="btn-primary">Save Changes</button>
+            <button type="button" id="cancel-capabilities-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Tier Progress -->
   <div class="mb-6">
     <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Tier Progress</h2>
@@ -223,6 +697,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Contact info toggle
   const toggleBtn = document.getElementById('toggle-edit-btn');
   const cancelBtn = document.getElementById('cancel-edit-btn');
   const viewMode = document.getElementById('contact-view');
@@ -236,6 +711,22 @@ document.addEventListener('DOMContentLoaded', function() {
   cancelBtn.addEventListener('click', function() {
     viewMode.classList.remove('hidden');
     editMode.classList.add('hidden');
+  });
+
+  // Capabilities toggle
+  const toggleCapabilitiesBtn = document.getElementById('toggle-capabilities-btn');
+  const cancelCapabilitiesBtn = document.getElementById('cancel-capabilities-btn');
+  const capabilitiesView = document.getElementById('capabilities-view');
+  const capabilitiesEdit = document.getElementById('capabilities-edit');
+
+  toggleCapabilitiesBtn.addEventListener('click', function() {
+    capabilitiesView.classList.add('hidden');
+    capabilitiesEdit.classList.remove('hidden');
+  });
+
+  cancelCapabilitiesBtn.addEventListener('click', function() {
+    capabilitiesView.classList.remove('hidden');
+    capabilitiesEdit.classList.add('hidden');
   });
 });
 </script>
